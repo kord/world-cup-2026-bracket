@@ -4,7 +4,8 @@ import { GroupSidebar } from "./components/GroupSidebar";
 import { GroupDetail } from "./components/GroupDetail";
 import { FixtureCard } from "./components/FixtureCard";
 import { useMatchPicks } from "./data/useMatchPicks";
-import { getNextFixtures, getGroupFixtureIds, getFutureFixtureIds } from "./data/fixtures";
+import { getNextFixtures, getUpcomingFixtures, getGroupFixtureIds, getFutureFixtureIds } from "./data/fixtures";
+import { encodePicks } from "./data/pickEncoding";
 import "./App.css";
 
 function NextMatches({
@@ -16,24 +17,51 @@ function NextMatches({
   onPick: (id: number, sel: import("./data/useMatchPicks").PickSelection) => void;
   onSelectGroup: (name: string) => void;
 }) {
-  const fixtures = useMemo(() => getNextFixtures(), []);
-  if (fixtures.length === 0) return null;
+  const liveFixtures = useMemo(() => getNextFixtures(), []);
+  const upcomingFixtures = useMemo(() => getUpcomingFixtures(), []);
 
-  const group = fixtures[0].group;
+  // Dedupe: upcoming should exclude any fixture already shown in live
+  const liveIds = useMemo(() => new Set(liveFixtures.map((f) => f.id)), [liveFixtures]);
+  const upcomingFiltered = useMemo(
+    () => upcomingFixtures.filter((f) => !liveIds.has(f.id)),
+    [upcomingFixtures, liveIds],
+  );
+
+  if (liveFixtures.length === 0 && upcomingFiltered.length === 0) return null;
 
   return (
     <div className="next-matches">
-      <p className="next-match-label">
-        {fixtures.length === 1 ? "Next match" : "Next matches"} —{" "}
-        <button className="next-match-group-link" onClick={() => onSelectGroup(group)}>
-          Group {group}
-        </button>
-      </p>
-      <div className="next-matches-grid">
-        {fixtures.map((f) => (
-          <FixtureCard key={f.id} fixture={f} getPick={getPick} onPick={onPick} />
-        ))}
-      </div>
+      {liveFixtures.length > 0 && (
+        <>
+          <p className="next-match-label">
+            {liveFixtures.length === 1 ? "Live now" : "Live now"} —{" "}
+            <button className="next-match-group-link" onClick={() => onSelectGroup(liveFixtures[0].group)}>
+              Group {liveFixtures[0].group}
+            </button>
+          </p>
+          <div className="next-matches-grid">
+            {liveFixtures.map((f) => (
+              <FixtureCard key={f.id} fixture={f} getPick={getPick} onPick={onPick} />
+            ))}
+          </div>
+        </>
+      )}
+
+      {upcomingFiltered.length > 0 && (
+        <>
+          <p className="next-match-label">
+            {upcomingFiltered.length === 1 ? "Next match" : "Next matches"} —{" "}
+            <button className="next-match-group-link" onClick={() => onSelectGroup(upcomingFiltered[0].group)}>
+              Group {upcomingFiltered[0].group}
+            </button>
+          </p>
+          <div className="next-matches-grid">
+            {upcomingFiltered.map((f) => (
+              <FixtureCard key={f.id} fixture={f} getPick={getPick} onPick={onPick} />
+            ))}
+          </div>
+        </>
+      )}
     </div>
   );
 }
@@ -42,6 +70,7 @@ function App() {
   const groups = getGroups();
   const [selectedGroup, setSelectedGroup] = useState<string | null>(null);
   const [confirmClear, setConfirmClear] = useState(false);
+  const [shareMsg, setShareMsg] = useState<string | null>(null);
   const { picks, getPick, togglePick, fillAllHome, fillHome } = useMatchPicks();
 
   // Compute pick completion per group (only future matches count)
@@ -59,6 +88,18 @@ function App() {
   }, [picks, groupFixtureIds, futureIdSet]);
 
   const activeGroup = groups.find((g) => g.name === selectedGroup) ?? null;
+
+  const allFuturePicked = useMemo(() => {
+    return futureIds.length > 0 && futureIds.every((id) => picks[String(id)] != null);
+  }, [futureIds, picks]);
+
+  const handleShare = () => {
+    const encoded = encodePicks(picks);
+    navigator.clipboard.writeText(encoded).then(() => {
+      setShareMsg("Copied!");
+      setTimeout(() => setShareMsg(null), 2000);
+    });
+  };
 
   const handleClear = () => {
     if (!confirmClear) {
@@ -83,6 +124,11 @@ function App() {
         >
           {confirmClear ? "Click again to confirm" : "Clear all picks"}
         </button>
+        {allFuturePicked && (
+          <button className="share-btn" onClick={handleShare}>
+            {shareMsg ?? "Share picks"}
+          </button>
+        )}
         {import.meta.env.DEV && (
           <>
             <button className="clear-picks-btn dev-btn" onClick={fillAllHome}>

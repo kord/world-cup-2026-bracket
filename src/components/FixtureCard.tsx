@@ -3,6 +3,7 @@ import type { PickSelection } from "../data/useMatchPicks";
 import { flagUrl } from "../data/countryCodes";
 import { getMatchTimeInfo } from "../data/matchTime";
 import { predictByName } from "../data/eloRatings";
+import { getScrapeResult, isPickCorrect } from "../data/matchResults";
 
 interface FixtureCardProps {
     fixture: MatchFixture;
@@ -30,18 +31,27 @@ export function FixtureCard({ fixture, getPick, onPick }: FixtureCardProps) {
     const awayFlag = flagUrl(fixture.away);
     const pick = getPick(fixture.id);
     const locked = timeInfo.status !== "future";
+    const scrapeResult = getScrapeResult(fixture.id);
+    const hasResult = scrapeResult !== null;
+    const pickCorrect = hasResult ? isPickCorrect(fixture.id, pick) : null;
 
     return (
-        <div className={`matchup-card match-${timeInfo.status}`}>
+        <div className={`matchup-card match-${timeInfo.status}${hasResult ? " has-result" : ""}`}>
             <div className="matchup-row">
-                <span className="matchup-team">
+                <span className={`matchup-team${hasResult && scrapeResult!.result === "home" ? " winner" : ""}`}>
                     {homeFlag && (
                         <img className="flag" src={homeFlag} alt="" width="28" height="19" />
                     )}
                     <span className="matchup-team-name">{fixture.home}</span>
                 </span>
-                <span className="matchup-vs">vs</span>
-                <span className="matchup-team">
+                {hasResult ? (
+                    <span className="matchup-score">
+                        {scrapeResult!.homeScore}–{scrapeResult!.awayScore}
+                    </span>
+                ) : (
+                    <span className="matchup-vs">vs</span>
+                )}
+                <span className={`matchup-team${hasResult && scrapeResult!.result === "away" ? " winner" : ""}`}>
                     {awayFlag && (
                         <img className="flag" src={awayFlag} alt="" width="28" height="19" />
                     )}
@@ -57,7 +67,7 @@ export function FixtureCard({ fixture, getPick, onPick }: FixtureCardProps) {
                 <span className="fixture-venue">{fixture.venue}</span>
             </div>
 
-            {prediction && (
+            {prediction && !hasResult && (
                 <div className="matchup-prediction" title="Calculated using FIFA official ELO ratings">
                     <div className="pred-col">
                         <span className="pred-pct pred-home">{prediction.homeWin}%</span>
@@ -72,23 +82,28 @@ export function FixtureCard({ fixture, getPick, onPick }: FixtureCardProps) {
             )}
 
             <div className={`matchup-pick${locked ? " locked" : ""}`}>
-                {locked && <span className="pick-locked-label">Picks locked</span>}
+                {hasResult && pickCorrect !== null && (
+                    <span className={`pick-result-badge ${pickCorrect ? "correct" : "incorrect"}`}>
+                        {pickCorrect ? "Correct ✓" : "Incorrect ✗"}
+                    </span>
+                )}
+                {locked && !hasResult && <span className="pick-locked-label">Picks locked</span>}
                 <button
-                    className={`pick-btn pick-home${pick === "home" ? " selected" : ""}`}
+                    className={`pick-btn pick-home${pick === "home" ? " selected" : ""}${hasResult && scrapeResult!.result === "home" ? " was-correct" : ""}`}
                     onClick={() => onPick(fixture.id, "home")}
                     disabled={locked}
                 >
                     Home
                 </button>
                 <button
-                    className={`pick-btn pick-tie${pick === "tie" ? " selected" : ""}`}
+                    className={`pick-btn pick-tie${pick === "tie" ? " selected" : ""}${hasResult && scrapeResult!.result === "tie" ? " was-correct" : ""}`}
                     onClick={() => onPick(fixture.id, "tie")}
                     disabled={locked}
                 >
                     Tie
                 </button>
                 <button
-                    className={`pick-btn pick-away${pick === "away" ? " selected" : ""}`}
+                    className={`pick-btn pick-away${pick === "away" ? " selected" : ""}${hasResult && scrapeResult!.result === "away" ? " was-correct" : ""}`}
                     onClick={() => onPick(fixture.id, "away")}
                     disabled={locked}
                 >

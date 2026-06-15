@@ -7,7 +7,7 @@ interface PickEntry {
     timestamp: number;
 }
 
-type PicksStore = Record<string, PickEntry>;
+export type PicksStore = Record<string, PickEntry>;
 
 const STORAGE_KEY = "wc2026-picks";
 

@@ -57,6 +57,24 @@
   }
 }
 
+.share-btn {
+  margin-top: 10px;
+  margin-left: 8px;
+  font: inherit;
+  font-size: 0.72rem;
+  padding: 4px 14px;
+  border: 1px solid #38a169;
+  border-radius: 5px;
+  background: #38a169;
+  color: #fff;
+  cursor: pointer;
+  transition: opacity 0.15s;
+
+  &:hover {
+    opacity: 0.85;
+  }
+}
+
 /* ===== Two-column body ===== */
 .app-body {
   display: flex;
@@ -394,6 +412,11 @@
   background: var(--bg);
 }
 
+.matchup-card.match-past.has-result {
+  opacity: 1;
+  background: var(--bg);
+}
+
 .matchup-card.match-live {
   border-color: #e53e3e;
   box-shadow: 0 0 0 1px rgba(229, 62, 62, 0.3);
@@ -403,6 +426,57 @@
 .matchup-card.match-future {
   border-color: var(--accent-border);
   background: var(--bg);
+}
+
+/* ===== Match Score (past results) ===== */
+.matchup-score {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--text-h);
+  letter-spacing: 1px;
+  flex-shrink: 0;
+}
+
+/* ===== Winner Highlight ===== */
+.matchup-team.winner .matchup-team-name {
+  color: #1a7a2e;
+  font-weight: 800;
+}
+
+/* ===== Pick Result Badge ===== */
+.pick-result-badge {
+  width: 100%;
+  font-size: 0.6rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  text-align: center;
+  margin-bottom: 2px;
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+.pick-result-badge.correct {
+  background: #d4edda;
+  color: #1a7a2e;
+}
+
+.pick-result-badge.incorrect {
+  background: #fce4e4;
+  color: #c0392b;
+}
+
+/* ===== Result Button Highlight ===== */
+.pick-btn.was-correct {
+  border-color: #38a169;
+  background: #d4edda;
+  color: #1a7a2e;
+}
+
+.pick-btn.was-correct.selected {
+  background: #38a169;
+  color: #fff;
+  border-color: #38a169;
 }
 
 .matchup-pick {

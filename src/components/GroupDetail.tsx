@@ -4,6 +4,7 @@ import { findFixture } from "../data/fixtures";
 import { getMatchTimeInfo, type MatchStatus } from "../data/matchTime";
 import { predictByName, type EloPrediction } from "../data/eloRatings";
 import type { PickSelection } from "../data/useMatchPicks";
+import { getScrapeResult, isPickCorrect } from "../data/matchResults";
 
 interface GroupDetailProps {
     group: Group;
@@ -72,24 +73,6 @@ function getMatchups(groupName: string, teams: TeamPercentages[]): Matchup[] {
     return pairs;
 }
 
-function TeamFlag({ team }: { team: TeamPercentages }) {
-    const flag = flagUrl(team.team);
-    return (
-        <span className="matchup-team">
-            {flag && (
-                <img
-                    className="flag"
-                    src={flag}
-                    alt=""
-                    width="28"
-                    height="19"
-                />
-            )}
-            <span className="matchup-team-name">{team.team}</span>
-        </span>
-    );
-}
-
 function StatusBadge({ status }: { status: MatchStatus }) {
     const labels: Record<MatchStatus, string> = {
         past: "Played",
@@ -114,78 +97,107 @@ export function GroupDetail({ group, getPick, onPick }: GroupDetailProps) {
             </p>
 
             <div className="matchups-grid">
-                {matchups.map((m, i) => (
-                    <div
-                        key={i}
-                        className={`matchup-card${m.status ? ` match-${m.status}` : ""}`}
-                    >
-                        <div className="matchup-row">
-                            <TeamFlag team={m.home} />
-                            <span className="matchup-vs">vs</span>
-                            <TeamFlag team={m.away} />
-                        </div>
-                        {m.fixture && m.localTime && (
-                            <div className="matchup-fixture">
-                                <span className="fixture-date">
-                                    {m.localTime}
-                                    {m.status && (
-                                        <StatusBadge status={m.status} />
+                {matchups.map((m, i) => {
+                    const matchId = m.fixture?.id;
+                    const scrapeResult = matchId != null ? getScrapeResult(matchId) : null;
+                    const hasResult = scrapeResult !== null;
+                    const pick = matchId != null ? getPick(matchId) : null;
+                    const pickCorrect = matchId != null ? isPickCorrect(matchId, pick) : null;
+
+                    return (
+                        <div
+                            key={i}
+                            className={`matchup-card${m.status ? ` match-${m.status}` : ""}${hasResult ? " has-result" : ""}`}
+                        >
+                            <div className="matchup-row">
+                                <span className={`matchup-team${hasResult && scrapeResult!.result === "home" ? " winner" : ""}`}>
+                                    {flagUrl(m.home.team) && (
+                                        <img className="flag" src={flagUrl(m.home.team)!} alt="" width="28" height="19" />
                                     )}
+                                    <span className="matchup-team-name">{m.home.team}</span>
                                 </span>
-                                <span className="fixture-venue">
-                                    {m.fixture.venue}
+                                {hasResult ? (
+                                    <span className="matchup-score">
+                                        {scrapeResult!.homeScore}–{scrapeResult!.awayScore}
+                                    </span>
+                                ) : (
+                                    <span className="matchup-vs">vs</span>
+                                )}
+                                <span className={`matchup-team${hasResult && scrapeResult!.result === "away" ? " winner" : ""}`}>
+                                    {flagUrl(m.away.team) && (
+                                        <img className="flag" src={flagUrl(m.away.team)!} alt="" width="28" height="19" />
+                                    )}
+                                    <span className="matchup-team-name">{m.away.team}</span>
                                 </span>
                             </div>
-                        )}
-                        {m.eloPrediction && (
-                            <div className="matchup-prediction" title="Calculated using FIFA official ELO ratings">
-                                <div className="pred-col">
-                                    <span className="pred-pct pred-home">
-                                        {m.eloPrediction.homeWin}%
+                            {m.fixture && m.localTime && (
+                                <div className="matchup-fixture">
+                                    <span className="fixture-date">
+                                        {m.localTime}
+                                        {m.status && (
+                                            <StatusBadge status={m.status} />
+                                        )}
+                                    </span>
+                                    <span className="fixture-venue">
+                                        {m.fixture.venue}
                                     </span>
                                 </div>
-                                <div className="pred-col">
-                                    <span className="pred-pct pred-draw">
-                                        {m.eloPrediction.draw}%
-                                    </span>
-                                </div>
-                                <div className="pred-col">
-                                    <span className="pred-pct pred-away">
-                                        {m.eloPrediction.awayWin}%
-                                    </span>
-                                </div>
-                            </div>
-                        )}
-                        <div className={`matchup-pick${m.status !== "future" ? " locked" : ""}`}>
-                            {m.fixture && (
-                                <>
-                                    {m.status !== "future" && <span className="pick-locked-label">Picks locked</span>}
-                                    <button
-                                        className={`pick-btn pick-home${getPick(m.fixture.id) === "home" ? " selected" : ""}`}
-                                        onClick={() => onPick(m.fixture!.id, "home")}
-                                        disabled={m.status !== "future"}
-                                    >
-                                        Home
-                                    </button>
-                                    <button
-                                        className={`pick-btn pick-tie${getPick(m.fixture.id) === "tie" ? " selected" : ""}`}
-                                        onClick={() => onPick(m.fixture!.id, "tie")}
-                                        disabled={m.status !== "future"}
-                                    >
-                                        Tie
-                                    </button>
-                                    <button
-                                        className={`pick-btn pick-away${getPick(m.fixture.id) === "away" ? " selected" : ""}`}
-                                        onClick={() => onPick(m.fixture!.id, "away")}
-                                        disabled={m.status !== "future"}
-                                    >
-                                        Away
-                                    </button>
-                                </>
                             )}
+                            {m.eloPrediction && !hasResult && (
+                                <div className="matchup-prediction" title="Calculated using FIFA official ELO ratings">
+                                    <div className="pred-col">
+                                        <span className="pred-pct pred-home">
+                                            {m.eloPrediction.homeWin}%
+                                        </span>
+                                    </div>
+                                    <div className="pred-col">
+                                        <span className="pred-pct pred-draw">
+                                            {m.eloPrediction.draw}%
+                                        </span>
+                                    </div>
+                                    <div className="pred-col">
+                                        <span className="pred-pct pred-away">
+                                            {m.eloPrediction.awayWin}%
+                                        </span>
+                                    </div>
+                                </div>
+                            )}
+                            <div className={`matchup-pick${m.status !== "future" ? " locked" : ""}`}>
+                                {m.fixture && (
+                                    <>
+                                        {hasResult && pickCorrect !== null && (
+                                            <span className={`pick-result-badge ${pickCorrect ? "correct" : "incorrect"}`}>
+                                                {pickCorrect ? "Correct ✓" : "Incorrect ✗"}
+                                            </span>
+                                        )}
+                                        {m.status !== "future" && !hasResult && <span className="pick-locked-label">Picks locked</span>}
+                                        <button
+                                            className={`pick-btn pick-home${getPick(m.fixture.id) === "home" ? " selected" : ""}${hasResult && scrapeResult!.result === "home" ? " was-correct" : ""}`}
+                                            onClick={() => onPick(m.fixture!.id, "home")}
+                                            disabled={m.status !== "future"}
+                                        >
+                                            Home
+                                        </button>
+                                        <button
+                                            className={`pick-btn pick-tie${getPick(m.fixture.id) === "tie" ? " selected" : ""}${hasResult && scrapeResult!.result === "tie" ? " was-correct" : ""}`}
+                                            onClick={() => onPick(m.fixture!.id, "tie")}
+                                            disabled={m.status !== "future"}
+                                        >
+                                            Tie
+                                        </button>
+                                        <button
+                                            className={`pick-btn pick-away${getPick(m.fixture.id) === "away" ? " selected" : ""}${hasResult && scrapeResult!.result === "away" ? " was-correct" : ""}`}
+                                            onClick={() => onPick(m.fixture!.id, "away")}
+                                            disabled={m.status !== "future"}
+                                        >
+                                            Away
+                                        </button>
+                                    </>
+                                )}
+                            </div>
                         </div>
-                    </div>
-                ))}
+                    );
+                })}
             </div>
         </div>
     );
