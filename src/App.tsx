@@ -4,7 +4,7 @@ import { GroupSidebar } from "./components/GroupSidebar";
 import { GroupDetail } from "./components/GroupDetail";
 import { FixtureCard } from "./components/FixtureCard";
 import { useMatchPicks } from "./data/useMatchPicks";
-import { getNextFixtures } from "./data/fixtures";
+import { getNextFixtures, getGroupFixtureIds } from "./data/fixtures";
 import "./App.css";
 
 function NextMatches({
@@ -34,7 +34,18 @@ function NextMatches({
 function App() {
   const groups = getGroups();
   const [selectedGroup, setSelectedGroup] = useState<string | null>(null);
-  const { getPick, togglePick } = useMatchPicks();
+  const { picks, getPick, togglePick } = useMatchPicks();
+
+  // Compute pick completion per group
+  const groupFixtureIds = useMemo(() => getGroupFixtureIds(), []);
+  const groupPickCounts = useMemo(() => {
+    const counts: Record<string, { picked: number; total: number }> = {};
+    for (const [group, ids] of Object.entries(groupFixtureIds)) {
+      const picked = ids.filter((id) => picks[String(id)] != null).length;
+      counts[group] = { picked, total: ids.length };
+    }
+    return counts;
+  }, [picks, groupFixtureIds]);
 
   const activeGroup = groups.find((g) => g.name === selectedGroup) ?? null;
 
@@ -53,6 +64,7 @@ function App() {
           groups={groups}
           selected={selectedGroup}
           onSelect={setSelectedGroup}
+          pickCounts={groupPickCounts}
         />
         <main className="main-content">
           {activeGroup ? (

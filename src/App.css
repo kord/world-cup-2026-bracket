@@ -70,6 +70,25 @@
     box-shadow: 0 0 0 2px var(--accent-border);
     background: var(--accent-bg);
   }
+
+  &.pick-all {
+    border-left: 3px solid #38a169;
+  }
+
+  &.pick-some {
+    border-left: 3px solid #d69e2e;
+  }
+}
+
+.sidebar-pick-count {
+  font-size: 0.55rem;
+  font-weight: 700;
+  color: var(--text);
+  background: var(--border);
+  border-radius: 3px;
+  padding: 1px 4px;
+  line-height: 1.3;
+  align-self: flex-end;
 }
 
 .sidebar-group-letter {

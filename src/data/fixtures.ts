@@ -162,3 +162,13 @@ export function getNextFixtures(): MatchFixture[] {
 
     return FIXTURES.filter((f) => f.kickoff === earliest!.kickoff);
 }
+
+/** Return a map of group name → array of fixture IDs in that group */
+export function getGroupFixtureIds(): Record<string, number[]> {
+    const map: Record<string, number[]> = {};
+    for (const f of FIXTURES) {
+        if (!map[f.group]) map[f.group] = [];
+        map[f.group].push(f.id);
+    }
+    return map;
+}
