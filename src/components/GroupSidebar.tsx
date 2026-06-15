@@ -24,7 +24,7 @@ export function GroupSidebar({ groups, selected, onSelect, pickCounts }: GroupSi
                         key={g.name}
                         className={`sidebar-group pick-${completion}${g.name === selected ? " active" : ""}`}
                         onClick={() => onSelect(g.name)}
-                        title={`Group ${g.name}: ${g.teams.map((t) => t.team).join(", ")} (${counts?.picked ?? 0}/${counts?.total ?? 6} picked)`}
+                        title={`Group ${g.name}: ${g.teams.map((t) => t.team).join(", ")}`}
                     >
                         <span className="sidebar-group-letter">Group {g.name}</span>
                         <span className="sidebar-flags">
@@ -42,11 +42,6 @@ export function GroupSidebar({ groups, selected, onSelect, pickCounts }: GroupSi
                                 ) : null;
                             })}
                         </span>
-                        {counts && counts.picked > 0 && (
-                            <span className="sidebar-pick-count">
-                                {counts.picked}/{counts.total}
-                            </span>
-                        )}
                     </button>
                 );
             })}

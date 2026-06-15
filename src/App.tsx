@@ -10,17 +10,24 @@ import "./App.css";
 function NextMatches({
   getPick,
   onPick,
+  onSelectGroup,
 }: {
   getPick: (id: number) => import("./data/useMatchPicks").PickSelection;
   onPick: (id: number, sel: import("./data/useMatchPicks").PickSelection) => void;
+  onSelectGroup: (name: string) => void;
 }) {
   const fixtures = useMemo(() => getNextFixtures(), []);
   if (fixtures.length === 0) return null;
 
+  const group = fixtures[0].group;
+
   return (
     <div className="next-matches">
       <p className="next-match-label">
-        {fixtures.length === 1 ? "Next match" : "Next matches"}
+        {fixtures.length === 1 ? "Next match" : "Next matches"} —{" "}
+        <button className="next-match-group-link" onClick={() => onSelectGroup(group)}>
+          Group {group}
+        </button>
       </p>
       <div className="next-matches-grid">
         {fixtures.map((f) => (
@@ -75,7 +82,7 @@ function App() {
             />
           ) : (
             <div className="placeholder">
-              <NextMatches getPick={getPick} onPick={togglePick} />
+              <NextMatches getPick={getPick} onPick={togglePick} onSelectGroup={setSelectedGroup} />
               <p>Select a group from the left to view matchups</p>
             </div>
           )}
