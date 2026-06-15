@@ -154,9 +154,8 @@ function parseTeams(raw: string): Team[] {
 
 /** Convert a raw Team into a TeamPercentages with odds translated to percentages */
 function toPercentages(t: Team): TeamPercentages {
-    const name = t.team === "Bosnia and Herzegovina" ? "Bosnia+" : t.team;
     return {
-        team: name,
+        team: t.team,
         winPct: oddsToPct(t.win),
         finalsPct: oddsToPct(t.finals),
         semisPct: oddsToPct(t.semis),
