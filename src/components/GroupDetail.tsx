@@ -2,6 +2,7 @@ import type { Group, TeamPercentages, MatchFixture } from "../types";
 import { flagUrl } from "../data/countryCodes";
 import { findFixture } from "../data/fixtures";
 import { getMatchTimeInfo, parseET, type MatchStatus } from "../data/matchTime";
+import { predictByName, type EloPrediction } from "../data/eloRatings";
 
 interface GroupDetailProps {
     group: Group;
@@ -14,6 +15,7 @@ interface Matchup {
     fixture: MatchFixture | null;
     localTime: string | null;
     status: MatchStatus | null;
+    eloPrediction: EloPrediction | null;
 }
 
 /** Sort key: kickoff timestamp (null fixtures go last) */
@@ -35,6 +37,7 @@ function getMatchups(groupName: string, teams: TeamPercentages[]): Matchup[] {
                 fixture,
                 localTime: timeInfo?.localTime ?? null,
                 status: timeInfo?.status ?? null,
+                eloPrediction: predictByName(teams[i].team, teams[j].team),
             });
         }
     }
@@ -105,6 +108,28 @@ export function GroupDetail({ group }: GroupDetailProps) {
                                 <span className="fixture-venue">
                                     {m.fixture.venue}
                                 </span>
+                            </div>
+                        )}
+                        {m.eloPrediction && (
+                            <div className="matchup-prediction">
+                                <div className="pred-col">
+                                    <span className="pred-pct pred-home">
+                                        {m.eloPrediction.homeWin}%
+                                    </span>
+                                    <span className="pred-label">Home</span>
+                                </div>
+                                <div className="pred-col">
+                                    <span className="pred-pct pred-draw">
+                                        {m.eloPrediction.draw}%
+                                    </span>
+                                    <span className="pred-label">Draw</span>
+                                </div>
+                                <div className="pred-col">
+                                    <span className="pred-pct pred-away">
+                                        {m.eloPrediction.awayWin}%
+                                    </span>
+                                    <span className="pred-label">Away</span>
+                                </div>
                             </div>
                         )}
                         <div className="matchup-pick">
