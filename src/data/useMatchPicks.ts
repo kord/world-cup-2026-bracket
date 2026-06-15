@@ -63,5 +63,28 @@ export function useMatchPicks() {
         [],
     );
 
-    return { picks, getPick, togglePick };
+    const fillAllHome = useCallback(() => {
+        setPicks(() => {
+            const next: PicksStore = {};
+            for (let i = 1; i <= 72; i++) {
+                next[String(i)] = { selection: "home", timestamp: Date.now() };
+            }
+            savePicks(next);
+            return next;
+        });
+    }, []);
+
+    const fillHome = useCallback((ids: number[]) => {
+        setPicks((prev) => {
+            const next = { ...prev };
+            const now = Date.now();
+            for (const id of ids) {
+                next[String(id)] = { selection: "home", timestamp: now };
+            }
+            savePicks(next);
+            return next;
+        });
+    }, []);
+
+    return { picks, getPick, togglePick, fillAllHome, fillHome };
 }

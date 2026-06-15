@@ -4,7 +4,7 @@ import { GroupSidebar } from "./components/GroupSidebar";
 import { GroupDetail } from "./components/GroupDetail";
 import { FixtureCard } from "./components/FixtureCard";
 import { useMatchPicks } from "./data/useMatchPicks";
-import { getNextFixtures, getGroupFixtureIds } from "./data/fixtures";
+import { getNextFixtures, getGroupFixtureIds, getFutureFixtureIds } from "./data/fixtures";
 import "./App.css";
 
 function NextMatches({
@@ -42,7 +42,7 @@ function App() {
   const groups = getGroups();
   const [selectedGroup, setSelectedGroup] = useState<string | null>(null);
   const [confirmClear, setConfirmClear] = useState(false);
-  const { picks, getPick, togglePick } = useMatchPicks();
+  const { picks, getPick, togglePick, fillAllHome, fillHome } = useMatchPicks();
 
   // Compute pick completion per group
   const groupFixtureIds = useMemo(() => getGroupFixtureIds(), []);
@@ -54,6 +54,9 @@ function App() {
     }
     return counts;
   }, [picks, groupFixtureIds]);
+
+  // Future fixture IDs for dev button
+  const futureIds = useMemo(() => getFutureFixtureIds(), []);
 
   const activeGroup = groups.find((g) => g.name === selectedGroup) ?? null;
 
@@ -80,6 +83,16 @@ function App() {
         >
           {confirmClear ? "Click again to confirm" : "Clear all picks"}
         </button>
+        {import.meta.env.DEV && (
+          <>
+            <button className="clear-picks-btn dev-btn" onClick={fillAllHome}>
+              Fill all home wins
+            </button>
+            <button className="clear-picks-btn dev-btn" onClick={() => fillHome(futureIds)}>
+              Fill future home wins
+            </button>
+          </>
+        )}
       </header>
 
       <div className="app-body">

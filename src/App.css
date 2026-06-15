@@ -50,6 +50,11 @@
     color: #fff;
     border-color: #e53e3e;
   }
+
+  &.dev-btn {
+    margin-left: 8px;
+    border-style: dashed;
+  }
 }
 
 /* ===== Two-column body ===== */

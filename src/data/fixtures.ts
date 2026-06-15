@@ -163,6 +163,18 @@ export function getNextFixtures(): MatchFixture[] {
     return FIXTURES.filter((f) => f.kickoff === earliest!.kickoff);
 }
 
+/** Return all 72 fixture IDs */
+export function getAllFixtureIds(): number[] {
+    return FIXTURES.map((f) => f.id);
+}
+
+/** Return fixture IDs for matches that haven't kicked off yet */
+export function getFutureFixtureIds(): number[] {
+    return FIXTURES
+        .filter((f) => getMatchTimeInfo(f).status === "future")
+        .map((f) => f.id);
+}
+
 /** Return a map of group name → array of fixture IDs in that group */
 export function getGroupFixtureIds(): Record<string, number[]> {
     const map: Record<string, number[]> = {};
