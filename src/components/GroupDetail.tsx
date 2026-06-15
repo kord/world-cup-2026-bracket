@@ -156,24 +156,28 @@ export function GroupDetail({ group, getPick, onPick }: GroupDetailProps) {
                                 </div>
                             </div>
                         )}
-                        <div className="matchup-pick">
+                        <div className={`matchup-pick${m.status !== "future" ? " locked" : ""}`}>
                             {m.fixture && (
                                 <>
+                                    {m.status !== "future" && <span className="pick-locked-label">Picks locked</span>}
                                     <button
                                         className={`pick-btn pick-home${getPick(m.fixture.id) === "home" ? " selected" : ""}`}
                                         onClick={() => onPick(m.fixture!.id, "home")}
+                                        disabled={m.status !== "future"}
                                     >
                                         Home
                                     </button>
                                     <button
                                         className={`pick-btn pick-tie${getPick(m.fixture.id) === "tie" ? " selected" : ""}`}
                                         onClick={() => onPick(m.fixture!.id, "tie")}
+                                        disabled={m.status !== "future"}
                                     >
                                         Tie
                                     </button>
                                     <button
                                         className={`pick-btn pick-away${getPick(m.fixture.id) === "away" ? " selected" : ""}`}
                                         onClick={() => onPick(m.fixture!.id, "away")}
+                                        disabled={m.status !== "future"}
                                     >
                                         Away
                                     </button>

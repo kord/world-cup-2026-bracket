@@ -28,6 +28,30 @@
   }
 }
 
+.clear-picks-btn {
+  margin-top: 10px;
+  font: inherit;
+  font-size: 0.72rem;
+  padding: 4px 14px;
+  border: 1px solid var(--border);
+  border-radius: 5px;
+  background: var(--bg);
+  color: var(--text);
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s, color 0.15s;
+
+  &:hover {
+    border-color: #e53e3e;
+    color: #e53e3e;
+  }
+
+  &.confirm {
+    background: #e53e3e;
+    color: #fff;
+    border-color: #e53e3e;
+  }
+}
+
 /* ===== Two-column body ===== */
 .app-body {
   display: flex;
@@ -379,6 +403,31 @@
 .matchup-pick {
   display: flex;
   gap: 6px;
+}
+
+.matchup-pick.locked {
+  flex-wrap: wrap;
+}
+
+.pick-locked-label {
+  width: 100%;
+  font-size: 0.6rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #c05621;
+  text-align: center;
+  margin-bottom: 2px;
+}
+
+.pick-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.pick-btn:disabled:hover {
+  border-color: var(--border);
+  background: var(--bg);
 }
 
 .pick-btn {

@@ -29,6 +29,7 @@ export function FixtureCard({ fixture, getPick, onPick }: FixtureCardProps) {
     const homeFlag = flagUrl(fixture.home);
     const awayFlag = flagUrl(fixture.away);
     const pick = getPick(fixture.id);
+    const locked = timeInfo.status !== "future";
 
     return (
         <div className={`matchup-card match-${timeInfo.status}`}>
@@ -70,22 +71,26 @@ export function FixtureCard({ fixture, getPick, onPick }: FixtureCardProps) {
                 </div>
             )}
 
-            <div className="matchup-pick">
+            <div className={`matchup-pick${locked ? " locked" : ""}`}>
+                {locked && <span className="pick-locked-label">Picks locked</span>}
                 <button
                     className={`pick-btn pick-home${pick === "home" ? " selected" : ""}`}
                     onClick={() => onPick(fixture.id, "home")}
+                    disabled={locked}
                 >
                     Home
                 </button>
                 <button
                     className={`pick-btn pick-tie${pick === "tie" ? " selected" : ""}`}
                     onClick={() => onPick(fixture.id, "tie")}
+                    disabled={locked}
                 >
                     Tie
                 </button>
                 <button
                     className={`pick-btn pick-away${pick === "away" ? " selected" : ""}`}
                     onClick={() => onPick(fixture.id, "away")}
+                    disabled={locked}
                 >
                     Away
                 </button>

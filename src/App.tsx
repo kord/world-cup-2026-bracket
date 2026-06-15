@@ -41,6 +41,7 @@ function NextMatches({
 function App() {
   const groups = getGroups();
   const [selectedGroup, setSelectedGroup] = useState<string | null>(null);
+  const [confirmClear, setConfirmClear] = useState(false);
   const { picks, getPick, togglePick } = useMatchPicks();
 
   // Compute pick completion per group
@@ -56,6 +57,15 @@ function App() {
 
   const activeGroup = groups.find((g) => g.name === selectedGroup) ?? null;
 
+  const handleClear = () => {
+    if (!confirmClear) {
+      setConfirmClear(true);
+      return;
+    }
+    localStorage.removeItem("wc2026-picks");
+    window.location.reload();
+  };
+
   return (
     <div className="app">
       <header className="app-header">
@@ -63,6 +73,13 @@ function App() {
         <p className="subtitle">
           48 teams &middot; 12 groups &middot; Pick your winners
         </p>
+        <button
+          className={`clear-picks-btn${confirmClear ? " confirm" : ""}`}
+          onClick={handleClear}
+          onBlur={() => setConfirmClear(false)}
+        >
+          {confirmClear ? "Click again to confirm" : "Clear all picks"}
+        </button>
       </header>
 
       <div className="app-body">

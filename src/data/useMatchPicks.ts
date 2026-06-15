@@ -2,27 +2,45 @@ import { useState, useCallback } from "react";
 
 export type PickSelection = "home" | "tie" | "away" | null;
 
+interface PickEntry {
+    selection: PickSelection;
+    timestamp: number;
+}
+
+type PicksStore = Record<string, PickEntry>;
+
 const STORAGE_KEY = "wc2026-picks";
 
-function loadPicks(): Record<string, PickSelection> {
+function loadPicks(): PicksStore {
     try {
         const raw = localStorage.getItem(STORAGE_KEY);
-        return raw ? JSON.parse(raw) : {};
+        if (!raw) return {};
+        const parsed = JSON.parse(raw);
+        // Migrate old format: "1":"home" → "1":{selection:"home",timestamp:0}
+        const result: PicksStore = {};
+        for (const [key, val] of Object.entries(parsed)) {
+            if (typeof val === "object" && val !== null && "selection" in val) {
+                result[key] = val as PickEntry;
+            } else if (typeof val === "string") {
+                result[key] = { selection: val as PickSelection, timestamp: 0 };
+            }
+        }
+        return result;
     } catch {
         return {};
     }
 }
 
-function savePicks(picks: Record<string, PickSelection>) {
+function savePicks(picks: PicksStore) {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(picks));
 }
 
 export function useMatchPicks() {
-    const [picks, setPicks] = useState<Record<string, PickSelection>>(loadPicks);
+    const [picks, setPicks] = useState<PicksStore>(loadPicks);
 
     const getPick = useCallback(
         (matchId: number): PickSelection => {
-            return picks[String(matchId)] ?? null;
+            return picks[String(matchId)]?.selection ?? null;
         },
         [picks],
     );
@@ -31,12 +49,12 @@ export function useMatchPicks() {
         (matchId: number, selection: PickSelection) => {
             setPicks((prev) => {
                 const key = String(matchId);
-                const current = prev[key] ?? null;
+                const current = prev[key]?.selection ?? null;
                 const next = { ...prev };
                 if (current === selection) {
                     delete next[key];
                 } else {
-                    next[key] = selection;
+                    next[key] = { selection, timestamp: Date.now() };
                 }
                 savePicks(next);
                 return next;
