@@ -138,7 +138,7 @@ export function GroupDetail({ group, getPick, onPick }: GroupDetailProps) {
                             </div>
                         )}
                         {m.eloPrediction && (
-                            <div className="matchup-prediction">
+                            <div className="matchup-prediction" title="Calculated using FIFA official ELO ratings">
                                 <div className="pred-col">
                                     <span className="pred-pct pred-home">
                                         {m.eloPrediction.homeWin}%
