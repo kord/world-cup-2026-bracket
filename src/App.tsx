@@ -44,19 +44,19 @@ function App() {
   const [confirmClear, setConfirmClear] = useState(false);
   const { picks, getPick, togglePick, fillAllHome, fillHome } = useMatchPicks();
 
-  // Compute pick completion per group
+  // Compute pick completion per group (only future matches count)
   const groupFixtureIds = useMemo(() => getGroupFixtureIds(), []);
+  const futureIds = useMemo(() => getFutureFixtureIds(), []);
+  const futureIdSet = useMemo(() => new Set(futureIds), [futureIds]);
   const groupPickCounts = useMemo(() => {
     const counts: Record<string, { picked: number; total: number }> = {};
     for (const [group, ids] of Object.entries(groupFixtureIds)) {
-      const picked = ids.filter((id) => picks[String(id)] != null).length;
-      counts[group] = { picked, total: ids.length };
+      const futureGroupIds = ids.filter((id) => futureIdSet.has(id));
+      const picked = futureGroupIds.filter((id) => picks[String(id)] != null).length;
+      counts[group] = { picked, total: futureGroupIds.length };
     }
     return counts;
-  }, [picks, groupFixtureIds]);
-
-  // Future fixture IDs for dev button
-  const futureIds = useMemo(() => getFutureFixtureIds(), []);
+  }, [picks, groupFixtureIds, futureIdSet]);
 
   const activeGroup = groups.find((g) => g.name === selectedGroup) ?? null;
 
