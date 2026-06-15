@@ -3,9 +3,12 @@ import { flagUrl } from "../data/countryCodes";
 import { findFixture } from "../data/fixtures";
 import { getMatchTimeInfo, parseET, type MatchStatus } from "../data/matchTime";
 import { predictByName, type EloPrediction } from "../data/eloRatings";
+import type { PickSelection } from "../data/useMatchPicks";
 
 interface GroupDetailProps {
     group: Group;
+    getPick: (matchId: number) => PickSelection;
+    onPick: (matchId: number, selection: PickSelection) => void;
 }
 
 /** A single pairing of two teams with its fixture info and time data */
@@ -24,6 +27,15 @@ function sortKey(f: MatchFixture | null): number {
     return parseET(f).getTime();
 }
 
+/** Normalize team names to match our canonical forms */
+const NAME_NORM: Record<string, string> = {
+    "Korea Republic": "South Korea",
+    "Türkiye": "Turkey",
+    "DR Congo": "Congo DR",
+    "Curaçao": "Curacao",
+};
+const norm = (n: string) => NAME_NORM[n] ?? n;
+
 /** Generate all 6 pairwise matchups, sorted chronologically by fixture date */
 function getMatchups(groupName: string, teams: TeamPercentages[]): Matchup[] {
     const pairs: Matchup[] = [];
@@ -31,13 +43,28 @@ function getMatchups(groupName: string, teams: TeamPercentages[]): Matchup[] {
         for (let j = i + 1; j < teams.length; j++) {
             const fixture = findFixture(groupName, teams[i].team, teams[j].team);
             const timeInfo = fixture ? getMatchTimeInfo(fixture) : null;
+
+            // Respect the fixture's home/away ordering
+            let home = teams[i];
+            let away = teams[j];
+            if (fixture) {
+                const fixtureHomeNorm = norm(fixture.home);
+                if (teams[i].team === fixtureHomeNorm) {
+                    home = teams[i];
+                    away = teams[j];
+                } else if (teams[j].team === fixtureHomeNorm) {
+                    home = teams[j];
+                    away = teams[i];
+                }
+            }
+
             pairs.push({
-                home: teams[i],
-                away: teams[j],
+                home,
+                away,
                 fixture,
                 localTime: timeInfo?.localTime ?? null,
                 status: timeInfo?.status ?? null,
-                eloPrediction: predictByName(teams[i].team, teams[j].team),
+                eloPrediction: predictByName(home.team, away.team),
             });
         }
     }
@@ -76,7 +103,7 @@ function StatusBadge({ status }: { status: MatchStatus }) {
     );
 }
 
-export function GroupDetail({ group }: GroupDetailProps) {
+export function GroupDetail({ group, getPick, onPick }: GroupDetailProps) {
     const matchups = getMatchups(group.name, group.teams);
 
     return (
@@ -116,26 +143,42 @@ export function GroupDetail({ group }: GroupDetailProps) {
                                     <span className="pred-pct pred-home">
                                         {m.eloPrediction.homeWin}%
                                     </span>
-                                    <span className="pred-label">Home</span>
                                 </div>
                                 <div className="pred-col">
                                     <span className="pred-pct pred-draw">
                                         {m.eloPrediction.draw}%
                                     </span>
-                                    <span className="pred-label">Draw</span>
                                 </div>
                                 <div className="pred-col">
                                     <span className="pred-pct pred-away">
                                         {m.eloPrediction.awayWin}%
                                     </span>
-                                    <span className="pred-label">Away</span>
                                 </div>
                             </div>
                         )}
                         <div className="matchup-pick">
-                            <button className="pick-btn pick-home">Home</button>
-                            <button className="pick-btn pick-tie">Tie</button>
-                            <button className="pick-btn pick-away">Away</button>
+                            {m.fixture && (
+                                <>
+                                    <button
+                                        className={`pick-btn pick-home${getPick(m.fixture.id) === "home" ? " selected" : ""}`}
+                                        onClick={() => onPick(m.fixture!.id, "home")}
+                                    >
+                                        Home
+                                    </button>
+                                    <button
+                                        className={`pick-btn pick-tie${getPick(m.fixture.id) === "tie" ? " selected" : ""}`}
+                                        onClick={() => onPick(m.fixture!.id, "tie")}
+                                    >
+                                        Tie
+                                    </button>
+                                    <button
+                                        className={`pick-btn pick-away${getPick(m.fixture.id) === "away" ? " selected" : ""}`}
+                                        onClick={() => onPick(m.fixture!.id, "away")}
+                                    >
+                                        Away
+                                    </button>
+                                </>
+                            )}
                         </div>
                     </div>
                 ))}

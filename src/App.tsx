@@ -2,11 +2,13 @@ import { useState } from "react";
 import { getGroups } from "./data/teams";
 import { GroupSidebar } from "./components/GroupSidebar";
 import { GroupDetail } from "./components/GroupDetail";
+import { useMatchPicks } from "./data/useMatchPicks";
 import "./App.css";
 
 function App() {
   const groups = getGroups();
   const [selectedGroup, setSelectedGroup] = useState<string | null>(null);
+  const { getPick, togglePick } = useMatchPicks();
 
   const activeGroup = groups.find((g) => g.name === selectedGroup) ?? null;
 
@@ -28,7 +30,11 @@ function App() {
         />
         <main className="main-content">
           {activeGroup ? (
-            <GroupDetail group={activeGroup} />
+            <GroupDetail
+              group={activeGroup}
+              getPick={getPick}
+              onPick={togglePick}
+            />
           ) : (
             <div className="placeholder">
               <p>Select a group from the left to view matchups</p>

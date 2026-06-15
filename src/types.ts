@@ -29,6 +29,7 @@ export interface Group {
 
 /** A scheduled match fixture with date, time, and venue */
 export interface MatchFixture {
+    id: number;
     date: string;
     time: string;
     home: string;

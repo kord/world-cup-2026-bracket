@@ -9,7 +9,6 @@ const NAME_NORMALIZE: Record<string, string> = {
     "Türkiye": "Turkey",
     "DR Congo": "Congo DR",
     "Curaçao": "Curacao",
-    "Bosnia and Herzegovina": "Bosnia+",
 };
 
 function norm(name: string): string {
@@ -17,7 +16,7 @@ function norm(name: string): string {
 }
 
 /** All 72 group-stage fixtures, parsed from worldcuppass.com */
-const FIXTURES: MatchFixture[] = [
+const _FIXTURES: Omit<MatchFixture, "id">[] = [
     // Group A
     { date: "Thu, Jun 11", time: "3:00 PM", home: "Mexico", away: "South Africa", venue: "Estadio Azteca, Mexico City", group: "A" },
     { date: "Thu, Jun 11", time: "10:00 PM", home: "Korea Republic", away: "Czechia", venue: "Estadio Akron, Guadalajara", group: "A" },
@@ -114,6 +113,9 @@ const FIXTURES: MatchFixture[] = [
     { date: "Sat, Jun 27", time: "5:00 PM", home: "Panama", away: "England", venue: "MetLife Stadium, East Rutherford", group: "L" },
     { date: "Sat, Jun 27", time: "5:00 PM", home: "Croatia", away: "Ghana", venue: "Lincoln Financial Field, Philadelphia", group: "L" },
 ];
+
+/** Fixtures with sequential match IDs assigned */
+const FIXTURES: MatchFixture[] = _FIXTURES.map((f, i) => ({ ...f, id: i + 1 }));
 
 /**
  * Look up the scheduled fixture for a matchup between two teams in a group.

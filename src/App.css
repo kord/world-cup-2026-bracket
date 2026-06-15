@@ -342,6 +342,12 @@
     outline: 2px solid var(--accent);
     outline-offset: 1px;
   }
+
+  &.selected {
+    background: var(--accent);
+    color: #fff;
+    border-color: var(--accent);
+  }
 }
 
 /* ===== Flag (shared) ===== */
