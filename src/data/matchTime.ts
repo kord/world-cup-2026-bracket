@@ -21,15 +21,15 @@ const MONTH_MAP: Record<string, number> = {
 };
 
 /**
- * Parse a fixture's date + time (in US Eastern Time) into a UTC timestamp.
+ * Convert an ET date + time string to a UTC timestamp (ms).
  * In June 2026 the Eastern US observes EDT (UTC-4).
  */
-export function parseET(fixture: MatchFixture): Date {
-    const parts = fixture.date.split(" ");
+export function etToUtcMs(dateStr: string, timeStr: string): number {
+    const parts = dateStr.split(" ");
     const month = MONTH_MAP[parts[1]] ?? 5;
     const day = parseInt(parts[2], 10);
 
-    const timeMatch = fixture.time.match(/(\d+):(\d+)\s*(AM|PM)/i);
+    const timeMatch = timeStr.match(/(\d+):(\d+)\s*(AM|PM)/i);
     let hours = 0;
     let minutes = 0;
     if (timeMatch) {
@@ -41,12 +41,12 @@ export function parseET(fixture: MatchFixture): Date {
     }
 
     // ET in June = EDT = UTC-4, so add 4 hours to get UTC
-    return new Date(Date.UTC(2026, month, day, hours + 4, minutes));
+    return Date.UTC(2026, month, day, hours + 4, minutes);
 }
 
-/** Format a date in the user's local timezone: "Thu, Jun 11, 3:00 PM" */
-function formatLocal(date: Date): string {
-    return date.toLocaleString(undefined, {
+/** Format a UTC timestamp in the user's local timezone: "Thu, Jun 11, 3:00 PM" */
+function formatLocal(utcMs: number): string {
+    return new Date(utcMs).toLocaleString(undefined, {
         weekday: "short",
         month: "short",
         day: "numeric",
@@ -57,13 +57,10 @@ function formatLocal(date: Date): string {
 
 /**
  * Determine match status and local display time for a fixture.
- * - past: match ended (kickoff + 2h is in the past)
- * - live: match is in progress
- * - future: match hasn't started yet
+ * Uses the pre-computed UTC kickoff timestamp.
  */
 export function getMatchTimeInfo(fixture: MatchFixture): MatchTimeInfo {
-    const kickoff = parseET(fixture);
-    const kickoffMs = kickoff.getTime();
+    const kickoffMs = fixture.kickoff;
     const endMs = kickoffMs + MATCH_DURATION_HOURS * 60 * 60 * 1000;
     const now = Date.now();
 
@@ -77,7 +74,7 @@ export function getMatchTimeInfo(fixture: MatchFixture): MatchTimeInfo {
     }
 
     return {
-        localTime: formatLocal(kickoff),
+        localTime: formatLocal(kickoffMs),
         status,
         kickoffMs,
     };

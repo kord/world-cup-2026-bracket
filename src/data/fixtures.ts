@@ -1,4 +1,5 @@
 import type { MatchFixture } from "../types";
+import { getMatchTimeInfo, etToUtcMs } from "./matchTime";
 
 /**
  * The website uses slightly different team names than our CSV.
@@ -16,7 +17,7 @@ function norm(name: string): string {
 }
 
 /** All 72 group-stage fixtures, parsed from worldcuppass.com */
-const _FIXTURES: Omit<MatchFixture, "id">[] = [
+const _FIXTURES: Omit<MatchFixture, "id" | "kickoff">[] = [
     // Group A
     { date: "Thu, Jun 11", time: "3:00 PM", home: "Mexico", away: "South Africa", venue: "Estadio Azteca, Mexico City", group: "A" },
     { date: "Thu, Jun 11", time: "10:00 PM", home: "Korea Republic", away: "Czechia", venue: "Estadio Akron, Guadalajara", group: "A" },
@@ -114,8 +115,12 @@ const _FIXTURES: Omit<MatchFixture, "id">[] = [
     { date: "Sat, Jun 27", time: "5:00 PM", home: "Croatia", away: "Ghana", venue: "Lincoln Financial Field, Philadelphia", group: "L" },
 ];
 
-/** Fixtures with sequential match IDs assigned */
-const FIXTURES: MatchFixture[] = _FIXTURES.map((f, i) => ({ ...f, id: i + 1 }));
+/** Fixtures with sequential match IDs and UTC kickoff timestamps assigned */
+const FIXTURES: MatchFixture[] = _FIXTURES.map((f, i) => ({
+    ...f,
+    id: i + 1,
+    kickoff: etToUtcMs(f.date, f.time),
+}));
 
 /**
  * Look up the scheduled fixture for a matchup between two teams in a group.
@@ -136,4 +141,24 @@ export function findFixture(
                     (norm(f.home) === b && norm(f.away) === a)),
         ) ?? null
     );
+}
+
+/**
+ * Return all fixtures that share the same kickoff timestamp as the
+ * earliest non-past fixture. Returns empty array if all matches are past.
+ */
+export function getNextFixtures(): MatchFixture[] {
+    let earliest: MatchFixture | null = null;
+    let earliestKickoff = Infinity;
+
+    for (const f of FIXTURES) {
+        const info = getMatchTimeInfo(f);
+        if (info.status !== "past" && f.kickoff < earliestKickoff) {
+            earliest = f;
+            earliestKickoff = f.kickoff;
+        }
+    }
+    if (!earliest) return [];
+
+    return FIXTURES.filter((f) => f.kickoff === earliest!.kickoff);
 }

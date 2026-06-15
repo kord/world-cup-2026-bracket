@@ -1,7 +1,7 @@
 import type { Group, TeamPercentages, MatchFixture } from "../types";
 import { flagUrl } from "../data/countryCodes";
 import { findFixture } from "../data/fixtures";
-import { getMatchTimeInfo, parseET, type MatchStatus } from "../data/matchTime";
+import { getMatchTimeInfo, type MatchStatus } from "../data/matchTime";
 import { predictByName, type EloPrediction } from "../data/eloRatings";
 import type { PickSelection } from "../data/useMatchPicks";
 
@@ -24,7 +24,7 @@ interface Matchup {
 /** Sort key: kickoff timestamp (null fixtures go last) */
 function sortKey(f: MatchFixture | null): number {
     if (!f) return Infinity;
-    return parseET(f).getTime();
+    return f.kickoff;
 }
 
 /** Normalize team names to match our canonical forms */

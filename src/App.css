@@ -17,6 +17,8 @@
     color: var(--text-h);
     font-size: 2rem;
     margin: 0 0 4px;
+    cursor: pointer;
+    user-select: none;
   }
 
   .subtitle {
@@ -104,15 +106,53 @@
 
 .placeholder {
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
-  height: 300px;
+  gap: 20px;
+  min-height: 300px;
   color: var(--text);
   font-size: 1rem;
   border: 2px dashed var(--border);
   border-radius: 10px;
   width: 100%;
   max-width: 700px;
+  padding: 32px 24px;
+}
+
+.placeholder p {
+  margin: 0;
+}
+
+/* ===== Next Match Preview ===== */
+.next-matches {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+}
+
+.next-match-label {
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--accent);
+  margin: 0;
+}
+
+.next-matches-grid {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 16px;
+  width: 100%;
+}
+
+.next-matches-grid .matchup-card {
+  flex: 1 1 280px;
+  max-width: 380px;
 }
 
 /* ===== Detail Pane ===== */

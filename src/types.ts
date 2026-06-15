@@ -32,6 +32,8 @@ export interface MatchFixture {
     id: number;
     date: string;
     time: string;
+    /** UTC timestamp (ms) of kickoff */
+    kickoff: number;
     home: string;
     away: string;
     venue: string;
