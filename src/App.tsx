@@ -19,12 +19,12 @@ function App() {
         </p>
       </header>
 
+      <GroupSidebar
+        groups={groups}
+        selected={selectedGroup}
+        onSelect={setSelectedGroup}
+      />
       <div className="app-body">
-        <GroupSidebar
-          groups={groups}
-          selected={selectedGroup}
-          onSelect={setSelectedGroup}
-        />
 
         <main className="main-content">
           {activeGroup ? (

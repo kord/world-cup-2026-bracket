@@ -33,7 +33,7 @@ export const COUNTRY_CODES: Record<string, string> = {
     "Canada": "ca",
     "Egypt": "eg",
     "Ghana": "gh",
-    "Bosnia and Herzegovina": "ba",
+    "Bosnia+": "ba",
     "Algeria": "dz",
     "Paraguay": "py",
     "Czechia": "cz",

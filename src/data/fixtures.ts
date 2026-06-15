@@ -26,12 +26,12 @@ const FIXTURES: MatchFixture[] = [
     { date: "Wed, Jun 24", time: "9:00 PM", home: "South Africa", away: "Korea Republic", venue: "Estadio BBVA, Monterrey", group: "A" },
 
     // Group B
-    { date: "Fri, Jun 12", time: "3:00 PM", home: "Canada", away: "Bosnia and Herzegovina", venue: "BMO Field, Toronto", group: "B" },
+    { date: "Fri, Jun 12", time: "3:00 PM", home: "Canada", away: "Bosnia+", venue: "BMO Field, Toronto", group: "B" },
     { date: "Sat, Jun 13", time: "3:00 PM", home: "Qatar", away: "Switzerland", venue: "Levi's Stadium, Santa Clara", group: "B" },
-    { date: "Thu, Jun 18", time: "3:00 PM", home: "Switzerland", away: "Bosnia and Herzegovina", venue: "SoFi Stadium, Inglewood", group: "B" },
+    { date: "Thu, Jun 18", time: "3:00 PM", home: "Switzerland", away: "Bosnia+", venue: "SoFi Stadium, Inglewood", group: "B" },
     { date: "Thu, Jun 18", time: "6:00 PM", home: "Canada", away: "Qatar", venue: "BC Place, Vancouver", group: "B" },
     { date: "Wed, Jun 24", time: "3:00 PM", home: "Switzerland", away: "Canada", venue: "BC Place, Vancouver", group: "B" },
-    { date: "Wed, Jun 24", time: "3:00 PM", home: "Bosnia and Herzegovina", away: "Qatar", venue: "Lumen Field, Seattle", group: "B" },
+    { date: "Wed, Jun 24", time: "3:00 PM", home: "Bosnia+", away: "Qatar", venue: "Lumen Field, Seattle", group: "B" },
 
     // Group C
     { date: "Sat, Jun 13", time: "6:00 PM", home: "Brazil", away: "Morocco", venue: "MetLife Stadium, East Rutherford", group: "C" },

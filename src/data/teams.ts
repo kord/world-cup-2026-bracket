@@ -154,8 +154,9 @@ function parseTeams(raw: string): Team[] {
 
 /** Convert a raw Team into a TeamPercentages with odds translated to percentages */
 function toPercentages(t: Team): TeamPercentages {
+    const name = t.team === "Bosnia and Herzegovina" ? "Bosnia+" : t.team;
     return {
-        team: t.team,
+        team: name,
         winPct: oddsToPct(t.win),
         finalsPct: oddsToPct(t.finals),
         semisPct: oddsToPct(t.semis),
@@ -185,7 +186,9 @@ function buildGroups(teams: Team[]): Group[] {
 
     return sortedGroups.map(([name, groupTeams]) => ({
         name,
-        teams: groupTeams.map(toPercentages),
+        teams: groupTeams
+            .map(toPercentages)
+            .sort((a, b) => (b.winPct ?? -1) - (a.winPct ?? -1)),
     }));
 }
 

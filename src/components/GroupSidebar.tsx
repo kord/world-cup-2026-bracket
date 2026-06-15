@@ -10,31 +10,27 @@ interface GroupSidebarProps {
 export function GroupSidebar({ groups, selected, onSelect }: GroupSidebarProps) {
     return (
         <nav className="sidebar">
-            <h2 className="sidebar-title">Groups</h2>
             {groups.map((g) => (
                 <button
                     key={g.name}
                     className={`sidebar-group${g.name === selected ? " active" : ""}`}
                     onClick={() => onSelect(g.name)}
+                    title={`Group ${g.name}: ${g.teams.map((t) => t.team).join(", ")}`}
                 >
-                    <span className="sidebar-group-letter">{g.name}</span>
-                    <span className="sidebar-teams">
+                    <span className="sidebar-group-letter">Group {g.name}</span>
+                    <span className="sidebar-flags">
                         {g.teams.map((t) => {
                             const flag = flagUrl(t.team);
-                            return (
-                                <span key={t.team} className="sidebar-team">
-                                    {flag && (
-                                        <img
-                                            className="flag flag-sm"
-                                            src={flag}
-                                            alt=""
-                                            width="18"
-                                            height="12"
-                                        />
-                                    )}
-                                    {t.team}
-                                </span>
-                            );
+                            return flag ? (
+                                <img
+                                    key={t.team}
+                                    className="flag flag-sq"
+                                    src={flag}
+                                    alt={t.team}
+                                    width="22"
+                                    height="15"
+                                />
+                            ) : null;
                         })}
                     </span>
                 </button>
