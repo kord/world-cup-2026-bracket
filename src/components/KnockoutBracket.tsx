@@ -1,5 +1,6 @@
 import { useState, useMemo } from "react";
 import { KNOCKOUT_FIXTURES, type KnockoutFixture } from "../data/knockoutFixtures";
+import { formatLocal, getStatusFromKickoff } from "../data/matchTime";
 
 function shortTeam(name: string): string {
     return name.replace("Winner ", "1").replace("Runner-up ", "2").replace("Best 3rd (", "3rd ").replace("Loser ", "L").replace(")", "");
@@ -7,38 +8,11 @@ function shortTeam(name: string): string {
 
 const ROUND_ORDER = ["Round of 32", "Round of 16", "Quarterfinal", "Semifinal", "Finals"];
 
+function chronoKey(f: KnockoutFixture): number { return f.kickoff; }
+
 function parseFeedRef(name: string): number | null {
     const m = name.match(/[WL](?:inner|oser)\s+M(\d+)/i);
     return m ? parseInt(m[1]) : null;
-}
-
-const MONTHS: Record<string, number> = { Jan: 0, Feb: 1, Mar: 2, Apr: 3, May: 4, Jun: 5, Jul: 6, Aug: 7, Sep: 8, Oct: 9, Nov: 10, Dec: 11 };
-
-function chronoKey(f: KnockoutFixture): number {
-    const p = f.date.split(" ");
-    const month = MONTHS[p[1]] ?? 5;
-    const day = parseInt(p[2]);
-    const tm = f.time.match(/(\d+):(\d+)\s*(AM|PM)/i)!;
-    let h = parseInt(tm[1]), m = parseInt(tm[2]);
-    if (tm[3].toUpperCase() === "PM" && h !== 12) h += 12;
-    if (tm[3].toUpperCase() === "AM" && h === 12) h = 0;
-    return month * 10000 + day * 100 + h + m / 100;
-}
-
-function getStatus(f: KnockoutFixture): "past" | "live" | "future" {
-    const p = f.date.split(" ");
-    const month = MONTHS[p[1]] ?? 5;
-    const day = parseInt(p[2]);
-    const tm = f.time.match(/(\d+):(\d+)\s*(AM|PM)/i)!;
-    let h = parseInt(tm[1]), m = parseInt(tm[2]);
-    if (tm[3].toUpperCase() === "PM" && h !== 12) h += 12;
-    if (tm[3].toUpperCase() === "AM" && h === 12) h = 0;
-    const kickoff = Date.UTC(2026, month, day, h + 4, m); // ET = UTC-4
-    const end = kickoff + 2 * 60 * 60 * 1000;
-    const now = Date.now();
-    if (now < kickoff) return "future";
-    if (now < end) return "live";
-    return "past";
 }
 
 /**
@@ -108,7 +82,7 @@ export function KnockoutBracket() {
     const nextMatchId = useMemo(() => {
         let earliest: KnockoutFixture | null = null;
         for (const f of KNOCKOUT_FIXTURES) {
-            if (getStatus(f) === "future" && (!earliest || chronoKey(f) < chronoKey(earliest))) {
+            if (getStatusFromKickoff(f.kickoff) === "future" && (!earliest || f.kickoff < earliest.kickoff)) {
                 earliest = f;
             }
         }
@@ -155,14 +129,21 @@ export function KnockoutBracket() {
                                             </div>
                                             <div className="bracket-info">
                                                 <span className="bracket-date">
-                                                    {(getStatus(f) !== "future" || f.id === nextMatchId) && (
-                                                        <span className={`status-badge status-${getStatus(f)}`}>
-                                                            {getStatus(f) === "past" ? "Played" : getStatus(f) === "live" ? "LIVE" : "Upcoming"}
+                                                    {(getStatusFromKickoff(f.kickoff) !== "future" || f.id === nextMatchId) && (
+                                                        <span className={`status-badge status-${getStatusFromKickoff(f.kickoff)}`}>
+                                                            {getStatusFromKickoff(f.kickoff) === "past" ? "Played" : getStatusFromKickoff(f.kickoff) === "live" ? "LIVE" : "Upcoming"}
                                                         </span>
                                                     )}
-                                                    {(getStatus(f) !== "future" || f.id === nextMatchId) && " "}#{f.id} · {f.date} · {f.time} ET
+                                                    {(getStatusFromKickoff(f.kickoff) !== "future" || f.id === nextMatchId) && " "}#{f.id} · {formatLocal(f.kickoff)}
                                                 </span>
-                                                <span className="bracket-venue">{f.venue}</span>
+                                                <a
+                                                    className="bracket-venue"
+                                                    href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(f.venue)}`}
+                                                    target="_blank"
+                                                    rel="noopener noreferrer"
+                                                >
+                                                    {f.venue}
+                                                </a>
                                             </div>
                                         </div>
                                     );

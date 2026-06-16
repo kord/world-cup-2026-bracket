@@ -45,7 +45,7 @@ export function etToUtcMs(dateStr: string, timeStr: string): number {
 }
 
 /** Format a UTC timestamp in the user's local timezone: "Thu, Jun 11, 3:00 PM" */
-function formatLocal(utcMs: number): string {
+export function formatLocal(utcMs: number): string {
     return new Date(utcMs).toLocaleString(undefined, {
         weekday: "short",
         month: "short",
@@ -53,6 +53,15 @@ function formatLocal(utcMs: number): string {
         hour: "numeric",
         minute: "2-digit",
     });
+}
+
+/** Determine match status from a UTC kickoff timestamp */
+export function getStatusFromKickoff(kickoffMs: number): MatchStatus {
+    const endMs = kickoffMs + MATCH_DURATION_HOURS * 60 * 60 * 1000;
+    const now = Date.now();
+    if (now < kickoffMs) return "future";
+    if (now < endMs) return "live";
+    return "past";
 }
 
 /**
