@@ -3,8 +3,8 @@ import { getGroups } from "./data/teams";
 import { GroupSidebar } from "./components/GroupSidebar";
 import { GroupDetail } from "./components/GroupDetail";
 import { FixtureCard } from "./components/FixtureCard";
-import { ImportPicks } from "./components/ImportPicks";
 import { SharePicks } from "./components/SharePicks";
+import { ManageFriends } from "./components/ManageFriends";
 import { useMatchPicks } from "./data/useMatchPicks";
 import { useImportedPicks } from "./data/useImportedPicks";
 import { getNextFixtures, getUpcomingFixtures, getGroupFixtureIds, getFutureFixtureIds } from "./data/fixtures";
@@ -74,9 +74,9 @@ function App() {
   const [selectedGroup, setSelectedGroup] = useState<string | null>(null);
   const [confirmClear, setConfirmClear] = useState(false);
   const [showShare, setShowShare] = useState(false);
-  const [showImport, setShowImport] = useState(false);
+  const [showManage, setShowManage] = useState(false);
   const { picks, getPick, togglePick, fillAllHome, fillHome } = useMatchPicks();
-  const { addImported } = useImportedPicks();
+  const { imported, addImported, removeImported } = useImportedPicks();
 
   // Compute pick completion per group (only future matches count)
   const groupFixtureIds = useMemo(() => getGroupFixtureIds(), []);
@@ -130,8 +130,8 @@ function App() {
             Share picks
           </button>
         )}
-        <button className="import-picks-btn" onClick={() => setShowImport(true)}>
-          Import picks
+        <button className="import-picks-btn" onClick={() => setShowManage(true)}>
+          Manage friends
         </button>
         {import.meta.env.DEV && (
           <>
@@ -175,10 +175,12 @@ function App() {
           onClose={() => setShowShare(false)}
         />
       )}
-      {showImport && (
-        <ImportPicks
+      {showManage && (
+        <ManageFriends
+          imported={imported}
           onImport={addImported}
-          onClose={() => setShowImport(false)}
+          onRemove={removeImported}
+          onClose={() => setShowManage(false)}
         />
       )}
     </div>
