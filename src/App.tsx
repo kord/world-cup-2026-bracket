@@ -3,7 +3,10 @@ import { getGroups } from "./data/teams";
 import { GroupSidebar } from "./components/GroupSidebar";
 import { GroupDetail } from "./components/GroupDetail";
 import { FixtureCard } from "./components/FixtureCard";
+import { ImportPicks } from "./components/ImportPicks";
+import { SharePicks } from "./components/SharePicks";
 import { useMatchPicks } from "./data/useMatchPicks";
+import { useImportedPicks } from "./data/useImportedPicks";
 import { getNextFixtures, getUpcomingFixtures, getGroupFixtureIds, getFutureFixtureIds } from "./data/fixtures";
 import { encodePicks } from "./data/pickEncoding";
 import "./App.css";
@@ -70,8 +73,10 @@ function App() {
   const groups = getGroups();
   const [selectedGroup, setSelectedGroup] = useState<string | null>(null);
   const [confirmClear, setConfirmClear] = useState(false);
-  const [shareMsg, setShareMsg] = useState<string | null>(null);
+  const [showShare, setShowShare] = useState(false);
+  const [showImport, setShowImport] = useState(false);
   const { picks, getPick, togglePick, fillAllHome, fillHome } = useMatchPicks();
+  const { addImported } = useImportedPicks();
 
   // Compute pick completion per group (only future matches count)
   const groupFixtureIds = useMemo(() => getGroupFixtureIds(), []);
@@ -93,12 +98,8 @@ function App() {
     return futureIds.length > 0 && futureIds.every((id) => picks[String(id)] != null);
   }, [futureIds, picks]);
 
-  const handleShare = () => {
-    const encoded = encodePicks(picks);
-    navigator.clipboard.writeText(encoded).then(() => {
-      setShareMsg("Copied!");
-      setTimeout(() => setShareMsg(null), 2000);
-    });
+  const handleShare = (name: string): string => {
+    return encodePicks(name, picks);
   };
 
   const handleClear = () => {
@@ -125,10 +126,13 @@ function App() {
           {confirmClear ? "Click again to confirm" : "Clear all picks"}
         </button>
         {allFuturePicked && (
-          <button className="share-btn" onClick={handleShare}>
-            {shareMsg ?? "Share picks"}
+          <button className="share-btn" onClick={() => setShowShare(true)}>
+            Share picks
           </button>
         )}
+        <button className="import-picks-btn" onClick={() => setShowImport(true)}>
+          Import picks
+        </button>
         {import.meta.env.DEV && (
           <>
             <button className="clear-picks-btn dev-btn" onClick={fillAllHome}>
@@ -164,6 +168,19 @@ function App() {
           )}
         </main>
       </div>
+
+      {showShare && (
+        <SharePicks
+          onShare={handleShare}
+          onClose={() => setShowShare(false)}
+        />
+      )}
+      {showImport && (
+        <ImportPicks
+          onImport={addImported}
+          onClose={() => setShowImport(false)}
+        />
+      )}
     </div>
   );
 }

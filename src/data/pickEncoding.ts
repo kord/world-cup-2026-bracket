@@ -1,40 +1,69 @@
 import type { PicksStore } from "./useMatchPicks";
 
+const XOR_KEY = [0x57, 0x43, 0x32, 0x30, 0x32, 0x36]; // "WC2026"
+
+function xor(bytes: number[]): number[] {
+    return bytes.map((b, i) => b ^ XOR_KEY[i % XOR_KEY.length]);
+}
+
 /**
- * Encode all picks into a compact shareable string.
- * Each match gets 2 bits: 00=home, 01=tie, 10=away, 11=no pick.
- * 72 matches × 2 bits = 144 bits = 18 bytes → 24 base64 chars.
+ * Encode name + picks into an obfuscated shareable string.
+ * Format: [nameLen:u8] [name:UTF-8] [18 pick bytes], XOR'd, then base64.
  */
-export function encodePicks(picks: PicksStore): string {
-    const bytes: number[] = [];
+export function encodePicks(name: string, picks: PicksStore): string {
+    const encoder = new TextEncoder();
+    const nameBytes = Array.from(encoder.encode(name));
+    if (nameBytes.length > 255) throw new Error("Name too long");
+
+    const bytes: number[] = [nameBytes.length, ...nameBytes];
+
+    // Pack 72 matches into 18 bytes (4 matches per byte, 2 bits each)
+    const pickBytes: number[] = Array(18).fill(0);
     for (let i = 1; i <= 72; i++) {
         const pick = picks[String(i)]?.selection;
         const bits = pick === "home" ? 0 : pick === "tie" ? 1 : pick === "away" ? 2 : 3;
-        // Pack 4 matches per byte (2 bits each)
         const byteIdx = Math.floor((i - 1) / 4);
         const shift = 6 - ((i - 1) % 4) * 2;
-        if (!bytes[byteIdx]) bytes[byteIdx] = 0;
-        bytes[byteIdx] |= bits << shift;
+        pickBytes[byteIdx] |= bits << shift;
     }
-    // Convert to base64
-    const binary = String.fromCharCode(...bytes);
+
+    bytes.push(...pickBytes);
+
+    const obfuscated = xor(bytes);
+    const binary = String.fromCharCode(...obfuscated);
     return btoa(binary);
 }
 
 /**
- * Decode a share string back into a picks record.
+ * Decode an obfuscated share string back into { name, picks }.
+ * Returns null if the string is invalid.
  */
-export function decodePicks(encoded: string): PicksStore {
-    const binary = atob(encoded);
-    const picks: PicksStore = {};
-    for (let i = 1; i <= 72; i++) {
-        const byteIdx = Math.floor((i - 1) / 4);
-        const shift = 6 - ((i - 1) % 4) * 2;
-        const bits = (binary.charCodeAt(byteIdx) >> shift) & 3;
-        if (bits === 0) picks[String(i)] = { selection: "home", timestamp: 0 };
-        else if (bits === 1) picks[String(i)] = { selection: "tie", timestamp: 0 };
-        else if (bits === 2) picks[String(i)] = { selection: "away", timestamp: 0 };
-        // bits === 3 → no pick, skip
+export function decodePicks(encoded: string): { name: string; picks: PicksStore } | null {
+    try {
+        const binary = atob(encoded.trim());
+        const bytes = Array.from(binary, c => c.charCodeAt(0));
+        const deobfuscated = xor(bytes);
+
+        const nameLen = deobfuscated[0];
+        if (nameLen < 0 || nameLen > 255) return null;
+        if (deobfuscated.length < 1 + nameLen + 18) return null;
+
+        const nameBytes = deobfuscated.slice(1, 1 + nameLen);
+        const decoder = new TextDecoder();
+        const name = decoder.decode(new Uint8Array(nameBytes));
+
+        const pickBytes = deobfuscated.slice(1 + nameLen, 1 + nameLen + 18);
+        const picks: PicksStore = {};
+        for (let i = 1; i <= 72; i++) {
+            const byteIdx = Math.floor((i - 1) / 4);
+            const shift = 6 - ((i - 1) % 4) * 2;
+            const bits = (pickBytes[byteIdx] >> shift) & 3;
+            if (bits === 0) picks[String(i)] = { selection: "home", timestamp: 0 };
+            else if (bits === 1) picks[String(i)] = { selection: "tie", timestamp: 0 };
+            else if (bits === 2) picks[String(i)] = { selection: "away", timestamp: 0 };
+        }
+        return { name, picks };
+    } catch {
+        return null;
     }
-    return picks;
 }
