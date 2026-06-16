@@ -56,22 +56,7 @@ function App() {
   return (
     <div className="app">
       <header className="app-header">
-        {import.meta.env.DEV && (
-          <div className="phase-toggle">
-            <button
-              className={`phase-btn${phase === "group" ? " active" : ""}`}
-              onClick={() => setPhase("group")}
-            >
-              Group Stage
-            </button>
-            <button
-              className={`phase-btn${phase === "knockout" ? " active" : ""}`}
-              onClick={() => setPhase("knockout")}
-            >
-              Knockout
-            </button>
-          </div>
-        )}
+
         <h1 onClick={() => setSelectedGroup(null)}>
           World Cup 2026 — {phase === "group" ? "Group Stage" : "Knockout Phase"}
         </h1>
@@ -95,17 +80,32 @@ function App() {
         <button className="import-picks-btn" onClick={() => setShowManage(true)}>
           Manage friends
         </button>
-        {import.meta.env.DEV && (
-          <>
-            <button className="clear-picks-btn dev-btn" onClick={fillAllHome}>
-              Fill all home wins
-            </button>
-            <button className="clear-picks-btn dev-btn" onClick={() => fillHome(futureIds)}>
-              Fill future home wins
-            </button>
-          </>
-        )}
       </header>
+
+      {import.meta.env.DEV && (
+        <div className="dev-toolbar">
+          <div className="phase-toggle">
+            <button
+              className={`phase-btn${phase === "group" ? " active" : ""}`}
+              onClick={() => setPhase("group")}
+            >
+              Group Stage
+            </button>
+            <button
+              className={`phase-btn${phase === "knockout" ? " active" : ""}`}
+              onClick={() => setPhase("knockout")}
+            >
+              Knockout
+            </button>
+          </div>
+          <button className="clear-picks-btn dev-btn" onClick={fillAllHome}>
+            Fill all home
+          </button>
+          <button className="clear-picks-btn dev-btn" onClick={() => fillHome(futureIds)}>
+            Fill future home
+          </button>
+        </div>
+      )}
 
       <div className="app-body">
         {phase === "group" && (
