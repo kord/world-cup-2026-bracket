@@ -44,7 +44,7 @@ export function KnockoutBracket() {
                                             <span className="bracket-team">{shortTeam(f.away)}</span>
                                         </div>
                                         <div className="bracket-info">
-                                            <span className="bracket-date">{f.date} · {f.time} ET</span>
+                                            <span className="bracket-date">#{f.id} · {f.date} · {f.time} ET</span>
                                             <span className="bracket-venue">{f.venue}</span>
                                         </div>
                                     </div>
