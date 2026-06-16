@@ -238,7 +238,6 @@
   border-radius: 10px;
   padding: 24px;
   width: 100%;
-  max-width: 700px;
 }
 
 .detail-heading {
@@ -251,6 +250,53 @@
   margin: 0 0 20px;
   font-size: 0.85rem;
   color: var(--text);
+}
+
+/* ===== Standings Table ===== */
+.standings-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 20px;
+  font-size: 0.78rem;
+}
+
+.standings-table th {
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  font-size: 0.65rem;
+  color: var(--text);
+  padding: 6px 4px;
+  border-bottom: 2px solid var(--border);
+  text-align: center;
+}
+
+.standings-table th:nth-child(2) {
+  text-align: left;
+}
+
+.standings-table td {
+  padding: 5px 4px;
+  border-bottom: 1px solid var(--border);
+  text-align: center;
+  color: var(--text-h);
+}
+
+.standings-rank {
+  font-weight: 700;
+  color: var(--text);
+  font-size: 0.7rem;
+}
+
+.standings-team {
+  text-align: left !important;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.standings-pts {
+  font-weight: 800;
+  color: var(--accent);
 }
 
 /* ===== Matchups Grid ===== */

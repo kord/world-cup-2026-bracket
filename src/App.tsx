@@ -7,7 +7,7 @@ import { SharePicks } from "./components/SharePicks";
 import { ManageFriends } from "./components/ManageFriends";
 import { useMatchPicks } from "./data/useMatchPicks";
 import { useImportedPicks } from "./data/useImportedPicks";
-import { getNextFixtures, getUpcomingFixtures, getGroupFixtureIds, getFutureFixtureIds } from "./data/fixtures";
+import { getLiveFixtures, getUpcomingFixtures, getGroupFixtureIds, getFutureFixtureIds } from "./data/fixtures";
 import { encodePicks } from "./data/pickEncoding";
 import "./App.css";
 
@@ -24,7 +24,7 @@ function NextMatches({
   imported: Record<string, import("./data/useImportedPicks").ImportedPickSet>;
   getImportedPick: (id: string, matchId: number) => import("./data/useMatchPicks").PickSelection;
 }) {
-  const liveFixtures = useMemo(() => getNextFixtures(), []);
+  const liveFixtures = useMemo(() => getLiveFixtures(), []);
   const upcomingFixtures = useMemo(() => getUpcomingFixtures(), []);
 
   // Dedupe: upcoming should exclude any fixture already shown in live

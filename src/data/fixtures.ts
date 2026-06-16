@@ -122,6 +122,11 @@ const FIXTURES: MatchFixture[] = _FIXTURES.map((f, i) => ({
     kickoff: etToUtcMs(f.date, f.time),
 }));
 
+/** All 72 fixtures as an array */
+export function getAllFixtures(): MatchFixture[] {
+    return FIXTURES;
+}
+
 /**
  * Look up the scheduled fixture for a matchup between two teams in a group.
  * Matches regardless of which team is listed as home/away.
@@ -144,8 +149,17 @@ export function findFixture(
 }
 
 /**
- * Return all fixtures that share the same kickoff timestamp as the
- * earliest non-past fixture. Returns empty array if all matches are past.
+ * Return all fixtures currently in progress (status === "live").
+ * Returns empty array if no matches are live.
+ */
+export function getLiveFixtures(): MatchFixture[] {
+    return FIXTURES.filter((f) => getMatchTimeInfo(f).status === "live");
+}
+
+/**
+ * Return all fixtures at the earliest non-past kickoff time.
+ * Used to show live matches even if they're not yet marked "live" by the clock.
+ * Returns empty array if all matches are past.
  */
 export function getNextFixtures(): MatchFixture[] {
     let earliest: MatchFixture | null = null;

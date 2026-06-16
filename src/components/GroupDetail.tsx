@@ -6,6 +6,7 @@ import { predictByName, type EloPrediction } from "../data/eloRatings";
 import type { PickSelection } from "../data/useMatchPicks";
 import type { ImportedPickSet } from "../data/useImportedPicks";
 import { getScrapeResult, isPickCorrect } from "../data/matchResults";
+import { getStandings } from "../data/standings";
 
 interface GroupDetailProps {
     group: Group;
@@ -91,13 +92,51 @@ function StatusBadge({ status }: { status: MatchStatus }) {
 
 export function GroupDetail({ group, getPick, onPick, imported, getImportedPick }: GroupDetailProps) {
     const matchups = getMatchups(group.name, group.teams);
+    const allStandings = getStandings();
+    const standings = allStandings[group.name] ?? [];
 
     return (
         <div className="detail-pane">
-            <h2 className="detail-heading">Group {group.name} — Matchups</h2>
+            <h2 className="detail-heading">Group {group.name} — Results</h2>
             <p className="detail-subtitle">
                 Pick a winner (or tie) for each match &middot; times shown in your local time
             </p>
+
+            {standings.length > 0 && (
+                <table className="standings-table">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Team</th>
+                            <th>P</th>
+                            <th>W</th>
+                            <th>D</th>
+                            <th>L</th>
+                            <th>GF</th>
+                            <th>GA</th>
+                            <th>GD</th>
+                            <th>Pts</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {standings.map((s, i) => (
+                            <tr key={s.team}>
+                                <td className="standings-rank">{i + 1}</td>
+                                <td className="standings-team">{s.team}</td>
+                                <td>{s.played}</td>
+                                <td>{s.wins}</td>
+                                <td>{s.draws}</td>
+                                <td>{s.losses}</td>
+                                <td>{s.goalsFor}</td>
+                                <td>{s.goalsAgainst}</td>
+                                <td>{s.goalDiff > 0 ? `+${s.goalDiff}` : s.goalDiff}</td>
+                                <td className="standings-pts">{s.points}</td>
+                            </tr>
+                        ))}
+                    </tbody>
+                </table>
+            )}
+            <h2 className="detail-heading">Matchups</h2>
 
             <div className="matchups-grid">
                 {matchups.map((m, i) => {
