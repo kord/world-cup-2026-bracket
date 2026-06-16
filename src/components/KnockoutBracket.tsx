@@ -5,7 +5,7 @@ function shortTeam(name: string): string {
     return name.replace("Winner ", "1").replace("Runner-up ", "2").replace("Best 3rd (", "3rd ").replace("Loser ", "L").replace(")", "");
 }
 
-const ROUND_ORDER = ["Round of 32", "Round of 16", "Quarterfinal", "Semifinal", "Third Place", "Final"];
+const ROUND_ORDER = ["Round of 32", "Round of 16", "Quarterfinal", "Semifinal", "Finals"];
 
 function parseFeedRef(name: string): number | null {
     const m = name.match(/[WL](?:inner|oser)\s+M(\d+)/i);
@@ -73,10 +73,14 @@ function bracketOrder(): KnockoutFixture[] {
 function groupByRound(ordered: KnockoutFixture[]): Map<string, KnockoutFixture[]> {
     const map = new Map<string, KnockoutFixture[]>();
     for (const f of ordered) {
-        const list = map.get(f.round) ?? [];
+        const round = f.round === "Third Place" || f.round === "Final" ? "Finals" : f.round;
+        const list = map.get(round) ?? [];
         list.push(f);
-        map.set(f.round, list);
+        map.set(round, list);
     }
+    // Sort Finals chronologically
+    const finals = map.get("Finals");
+    if (finals) finals.sort((a, b) => chronoKey(a) - chronoKey(b));
     return map;
 }
 

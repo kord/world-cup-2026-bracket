@@ -33,19 +33,19 @@
 .bracket-matches {
     display: flex;
     flex-direction: column;
-    gap: 4px;
+    gap: 2px;
     justify-content: space-around;
     flex: 1;
 }
 
 .bracket-match {
     border: 1px solid var(--border);
-    border-radius: 5px;
-    padding: 5px 6px;
+    border-radius: 4px;
+    padding: 3px 5px;
     background: var(--bg);
     display: flex;
     flex-direction: column;
-    gap: 2px;
+    gap: 1px;
     justify-content: center;
     cursor: default;
     transition: border-color 0.15s, box-shadow 0.15s, background 0.15s;
@@ -65,27 +65,40 @@
     position: relative;
 }
 
-display: flex;
-flex-direction: column;
-gap: 3px;
-}
-
 .bracket-teams {
     display: flex;
     align-items: center;
-    gap: 3px;
+    gap: 2px;
     justify-content: center;
 }
 
 .bracket-team {
     font-weight: 600;
-    font-size: 0.62rem;
+    font-size: 0.55rem;
     color: var(--text-h);
     flex: 1;
     text-align: center;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+}
+
+.bracket-vs {
+    font-size: 0.44rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: var(--text);
+    flex-shrink: 0;
+}
+
+.bracket-info {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0;
+    font-size: 0.44rem;
+    color: var(--text);
+    line-height: 1.2;
 }
 
 .bracket-vs {
