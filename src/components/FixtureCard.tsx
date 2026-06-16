@@ -72,7 +72,14 @@ export function FixtureCard({ fixture, getPick, onPick, imported, getImportedPic
                     {timeInfo.localTime}
                     <StatusBadge status={timeInfo.status} />
                 </span>
-                <span className="fixture-venue">{fixture.venue}</span>
+                <a
+                    className="fixture-venue"
+                    href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(fixture.venue)}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                >
+                    {fixture.venue}
+                </a>
             </div>
 
             {prediction && !hasResult && (

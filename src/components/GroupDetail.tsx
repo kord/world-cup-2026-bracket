@@ -141,9 +141,14 @@ export function GroupDetail({ group, getPick, onPick, imported, getImportedPick 
                                             <StatusBadge status={m.status} />
                                         )}
                                     </span>
-                                    <span className="fixture-venue">
+                                    <a
+                                        className="fixture-venue"
+                                        href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(m.fixture.venue)}`}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                    >
                                         {m.fixture.venue}
-                                    </span>
+                                    </a>
                                 </div>
                             )}
                             {m.eloPrediction && !hasResult && (
