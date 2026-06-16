@@ -184,6 +184,7 @@ function App() {
       {showManage && (
         <ManageFriends
           imported={imported}
+          myPicks={picks}
           onImport={addImported}
           onRemove={removeImported}
           onClose={() => setShowManage(false)}

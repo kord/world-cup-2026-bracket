@@ -1,5 +1,7 @@
 import { useState, useCallback } from "react";
 import type { PicksStore, PickSelection } from "./useMatchPicks";
+
+export type { PicksStore };
 import { decodePicks } from "./pickEncoding";
 
 export interface ImportedPickSet {
