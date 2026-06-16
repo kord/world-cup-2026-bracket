@@ -45,7 +45,29 @@
     background: var(--bg);
     display: flex;
     flex-direction: column;
-    gap: 3px;
+    gap: 2px;
+    justify-content: center;
+    cursor: default;
+    transition: border-color 0.15s, box-shadow 0.15s, background 0.15s;
+}
+
+.bracket-feeder {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 1px var(--accent-border);
+    background: var(--accent-bg);
+}
+
+.bracket-hovered {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 2px var(--accent), 0 0 10px var(--accent-border);
+    background: var(--accent-bg);
+    z-index: 2;
+    position: relative;
+}
+
+display: flex;
+flex-direction: column;
+gap: 3px;
 }
 
 .bracket-teams {

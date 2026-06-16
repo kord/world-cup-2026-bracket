@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useState, useMemo } from "react";
 import { KNOCKOUT_FIXTURES, type KnockoutFixture } from "../data/knockoutFixtures";
 
 function shortTeam(name: string): string {
@@ -81,7 +81,21 @@ function groupByRound(ordered: KnockoutFixture[]): Map<string, KnockoutFixture[]
 }
 
 export function KnockoutBracket() {
+    const [hovered, setHovered] = useState<number | null>(null);
     const grouped = useMemo(() => groupByRound(bracketOrder()), []);
+
+    // Build feeder lookup: matchId → [feederId, feederId]
+    const feederIds = useMemo(() => {
+        const map = new Map<number, number[]>();
+        for (const f of KNOCKOUT_FIXTURES) {
+            const a = parseFeedRef(f.home);
+            const b = parseFeedRef(f.away);
+            if (a != null && b != null) map.set(f.id, [a, b]);
+        }
+        return map;
+    }, []);
+
+    const highlightedFeeders = hovered != null ? (feederIds.get(hovered) ?? []) : [];
 
     return (
         <div className="bracket">
@@ -93,19 +107,28 @@ export function KnockoutBracket() {
                         <div key={round} className="bracket-round">
                             <h3 className="bracket-round-title">{round}</h3>
                             <div className="bracket-matches">
-                                {fixtures.map(f => (
-                                    <div key={f.id} className="bracket-match">
-                                        <div className="bracket-teams">
-                                            <span className="bracket-team">{shortTeam(f.home)}</span>
-                                            <span className="bracket-vs">vs</span>
-                                            <span className="bracket-team">{shortTeam(f.away)}</span>
+                                {fixtures.map(f => {
+                                    const isHovered = hovered === f.id;
+                                    const isFeeder = highlightedFeeders.includes(f.id);
+                                    return (
+                                        <div
+                                            key={f.id}
+                                            className={`bracket-match${isHovered ? " bracket-hovered" : ""}${isFeeder ? " bracket-feeder" : ""}`}
+                                            onMouseEnter={() => setHovered(f.id)}
+                                            onMouseLeave={() => setHovered(null)}
+                                        >
+                                            <div className="bracket-teams">
+                                                <span className="bracket-team">{shortTeam(f.home)}</span>
+                                                <span className="bracket-vs">vs</span>
+                                                <span className="bracket-team">{shortTeam(f.away)}</span>
+                                            </div>
+                                            <div className="bracket-info">
+                                                <span className="bracket-date">#{f.id} · {f.date} · {f.time} ET</span>
+                                                <span className="bracket-venue">{f.venue}</span>
+                                            </div>
                                         </div>
-                                        <div className="bracket-info">
-                                            <span className="bracket-date">#{f.id} · {f.date} · {f.time} ET</span>
-                                            <span className="bracket-venue">{f.venue}</span>
-                                        </div>
-                                    </div>
-                                ))}
+                                    );
+                                })}
                             </div>
                         </div>
                     );
