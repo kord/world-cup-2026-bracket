@@ -108,6 +108,7 @@ export function GroupDetail({ group, getPick, onPick, imported, getImportedPick 
                         <tr>
                             <th>#</th>
                             <th>Team</th>
+                            <th>Pts</th>
                             <th>P</th>
                             <th>W</th>
                             <th>D</th>
@@ -115,7 +116,6 @@ export function GroupDetail({ group, getPick, onPick, imported, getImportedPick 
                             <th>GF</th>
                             <th>GA</th>
                             <th>GD</th>
-                            <th>Pts</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -123,6 +123,7 @@ export function GroupDetail({ group, getPick, onPick, imported, getImportedPick 
                             <tr key={s.team}>
                                 <td className="standings-rank">{i + 1}</td>
                                 <td className="standings-team">{s.team}</td>
+                                <td className="standings-pts">{s.points}</td>
                                 <td>{s.played}</td>
                                 <td>{s.wins}</td>
                                 <td>{s.draws}</td>
@@ -130,7 +131,6 @@ export function GroupDetail({ group, getPick, onPick, imported, getImportedPick 
                                 <td>{s.goalsFor}</td>
                                 <td>{s.goalsAgainst}</td>
                                 <td>{s.goalDiff > 0 ? `+${s.goalDiff}` : s.goalDiff}</td>
-                                <td className="standings-pts">{s.points}</td>
                             </tr>
                         ))}
                     </tbody>
