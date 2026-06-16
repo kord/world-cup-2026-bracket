@@ -156,12 +156,12 @@ function App() {
           onSelect={setSelectedGroup}
           pickCounts={groupPickCounts}
         />
+
         <main className="main-content">
           {activeGroup ? (
             <GroupDetail
               group={activeGroup}
-              getPick={getPick}
-              onPick={togglePick}
+              getPick={getPick} onPick={togglePick}
               imported={imported}
               getImportedPick={getImportedPick}
             />
