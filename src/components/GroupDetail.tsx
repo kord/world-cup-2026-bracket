@@ -4,12 +4,15 @@ import { findFixture } from "../data/fixtures";
 import { getMatchTimeInfo, type MatchStatus } from "../data/matchTime";
 import { predictByName, type EloPrediction } from "../data/eloRatings";
 import type { PickSelection } from "../data/useMatchPicks";
+import type { ImportedPickSet } from "../data/useImportedPicks";
 import { getScrapeResult, isPickCorrect } from "../data/matchResults";
 
 interface GroupDetailProps {
     group: Group;
     getPick: (matchId: number) => PickSelection;
     onPick: (matchId: number, selection: PickSelection) => void;
+    imported: Record<string, ImportedPickSet>;
+    getImportedPick: (id: string, matchId: number) => PickSelection;
 }
 
 /** A single pairing of two teams with its fixture info and time data */
@@ -86,7 +89,7 @@ function StatusBadge({ status }: { status: MatchStatus }) {
     );
 }
 
-export function GroupDetail({ group, getPick, onPick }: GroupDetailProps) {
+export function GroupDetail({ group, getPick, onPick, imported, getImportedPick }: GroupDetailProps) {
     const matchups = getMatchups(group.name, group.teams);
 
     return (
@@ -195,6 +198,21 @@ export function GroupDetail({ group, getPick, onPick }: GroupDetailProps) {
                                     </>
                                 )}
                             </div>
+                            {matchId != null && (() => {
+                                const friendPicks = Object.values(imported)
+                                    .map(f => ({ name: f.name, pick: getImportedPick(f.id, matchId) }))
+                                    .filter(f => f.pick !== null);
+                                if (friendPicks.length === 0) return null;
+                                return (
+                                    <div className="friend-picks">
+                                        {friendPicks.map((fp, i) => (
+                                            <span key={i} className={`friend-pick fp-${fp.pick}`}>
+                                                {fp.name}: {fp.pick === "home" ? "H" : fp.pick === "away" ? "A" : "T"}
+                                            </span>
+                                        ))}
+                                    </div>
+                                );
+                            })()}
                         </div>
                     );
                 })}

@@ -15,10 +15,14 @@ function NextMatches({
   getPick,
   onPick,
   onSelectGroup,
+  imported,
+  getImportedPick,
 }: {
   getPick: (id: number) => import("./data/useMatchPicks").PickSelection;
   onPick: (id: number, sel: import("./data/useMatchPicks").PickSelection) => void;
   onSelectGroup: (name: string) => void;
+  imported: Record<string, import("./data/useImportedPicks").ImportedPickSet>;
+  getImportedPick: (id: string, matchId: number) => import("./data/useMatchPicks").PickSelection;
 }) {
   const liveFixtures = useMemo(() => getNextFixtures(), []);
   const upcomingFixtures = useMemo(() => getUpcomingFixtures(), []);
@@ -44,7 +48,7 @@ function NextMatches({
           </p>
           <div className="next-matches-grid">
             {liveFixtures.map((f) => (
-              <FixtureCard key={f.id} fixture={f} getPick={getPick} onPick={onPick} />
+              <FixtureCard key={f.id} fixture={f} getPick={getPick} onPick={onPick} imported={imported} getImportedPick={getImportedPick} />
             ))}
           </div>
         </>
@@ -60,7 +64,7 @@ function NextMatches({
           </p>
           <div className="next-matches-grid">
             {upcomingFiltered.map((f) => (
-              <FixtureCard key={f.id} fixture={f} getPick={getPick} onPick={onPick} />
+              <FixtureCard key={f.id} fixture={f} getPick={getPick} onPick={onPick} imported={imported} getImportedPick={getImportedPick} />
             ))}
           </div>
         </>
@@ -76,7 +80,7 @@ function App() {
   const [showShare, setShowShare] = useState(false);
   const [showManage, setShowManage] = useState(false);
   const { picks, getPick, togglePick, fillAllHome, fillHome } = useMatchPicks();
-  const { imported, addImported, removeImported } = useImportedPicks();
+  const { imported, addImported, removeImported, getImportedPick } = useImportedPicks();
 
   // Compute pick completion per group (only future matches count)
   const groupFixtureIds = useMemo(() => getGroupFixtureIds(), []);
@@ -159,10 +163,12 @@ function App() {
               group={activeGroup}
               getPick={getPick}
               onPick={togglePick}
+              imported={imported}
+              getImportedPick={getImportedPick}
             />
           ) : (
             <div className="placeholder">
-              <NextMatches getPick={getPick} onPick={togglePick} onSelectGroup={setSelectedGroup} />
+              <NextMatches getPick={getPick} onPick={togglePick} onSelectGroup={setSelectedGroup} imported={imported} getImportedPick={getImportedPick} />
               <p>Select a group from the left to view matchups</p>
             </div>
           )}

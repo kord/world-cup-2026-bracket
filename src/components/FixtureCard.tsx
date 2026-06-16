@@ -1,5 +1,6 @@
 import type { MatchFixture } from "../types";
 import type { PickSelection } from "../data/useMatchPicks";
+import type { ImportedPickSet } from "../data/useImportedPicks";
 import { flagUrl } from "../data/countryCodes";
 import { getMatchTimeInfo } from "../data/matchTime";
 import { predictByName } from "../data/eloRatings";
@@ -9,6 +10,8 @@ interface FixtureCardProps {
     fixture: MatchFixture;
     getPick: (matchId: number) => PickSelection;
     onPick: (matchId: number, selection: PickSelection) => void;
+    imported: Record<string, ImportedPickSet>;
+    getImportedPick: (id: string, matchId: number) => PickSelection;
 }
 
 function StatusBadge({ status }: { status: string }) {
@@ -24,7 +27,7 @@ function StatusBadge({ status }: { status: string }) {
     );
 }
 
-export function FixtureCard({ fixture, getPick, onPick }: FixtureCardProps) {
+export function FixtureCard({ fixture, getPick, onPick, imported, getImportedPick }: FixtureCardProps) {
     const timeInfo = getMatchTimeInfo(fixture);
     const prediction = predictByName(fixture.home, fixture.away);
     const homeFlag = flagUrl(fixture.home);
@@ -34,6 +37,11 @@ export function FixtureCard({ fixture, getPick, onPick }: FixtureCardProps) {
     const scrapeResult = getScrapeResult(fixture.id);
     const hasResult = scrapeResult !== null;
     const pickCorrect = hasResult ? isPickCorrect(fixture.id, pick) : null;
+
+    // Gather friend picks for this match
+    const friendPicks = Object.values(imported)
+        .map(f => ({ name: f.name, pick: getImportedPick(f.id, fixture.id) }))
+        .filter(f => f.pick !== null);
 
     return (
         <div className={`matchup-card match-${timeInfo.status}${hasResult ? " has-result" : ""}`}>
@@ -110,6 +118,16 @@ export function FixtureCard({ fixture, getPick, onPick }: FixtureCardProps) {
                     Away
                 </button>
             </div>
+
+            {friendPicks.length > 0 && (
+                <div className="friend-picks">
+                    {friendPicks.map((fp, i) => (
+                        <span key={i} className={`friend-pick fp-${fp.pick}`}>
+                            {fp.name}: {fp.pick === "home" ? "H" : fp.pick === "away" ? "A" : "T"}
+                        </span>
+                    ))}
+                </div>
+            )}
         </div>
     );
 }
