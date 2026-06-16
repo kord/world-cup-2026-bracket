@@ -1,8 +1,8 @@
 /* Main content */
 .main-content {
-    flex: 1;
+    /* flex: 1; */
     min-width: 0;
-    display: flex;
+    /* display: flex; */
     justify-content: center;
     padding: 0 24px;
 }
