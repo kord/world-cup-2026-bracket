@@ -8,6 +8,7 @@ import './css/standings.css'
 import './css/matchup.css'
 import './css/modals.css'
 import './css/responsive.css'
+import './css/bracket.css'
 import App from './App.tsx'
 
 createRoot(document.getElementById('root')!).render(

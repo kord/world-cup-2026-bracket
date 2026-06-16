@@ -3,6 +3,7 @@ import { getGroups } from "./data/teams";
 import { GroupSidebar } from "./components/GroupSidebar";
 import { GroupDetail } from "./components/GroupDetail";
 import { NextMatches } from "./components/NextMatches";
+import { KnockoutBracket } from "./components/KnockoutBracket";
 import { SharePicks } from "./components/SharePicks";
 import { ManageFriends } from "./components/ManageFriends";
 import { useMatchPicks } from "./data/useMatchPicks";
@@ -119,9 +120,7 @@ function App() {
 
         <main className="main-content">
           {phase === "knockout" ? (
-            <div className="placeholder">
-              <p>Knockout phase bracket coming soon.</p>
-            </div>
+            <KnockoutBracket />
           ) : activeGroup ? (
             <GroupDetail
               group={activeGroup}
