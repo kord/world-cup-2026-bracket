@@ -244,14 +244,22 @@ export function GroupDetail({ group, getPick, onPick, imported, getImportedPick 
                             </div>
                             {matchId != null && (() => {
                                 const friendPicks = Object.values(imported)
-                                    .map(f => ({ name: f.name, pick: getImportedPick(f.id, matchId) }))
+                                    .map(f => {
+                                        const pick = getImportedPick(f.id, matchId);
+                                        const correct = hasResult ? isPickCorrect(matchId, pick) : null;
+                                        return { name: f.name, pick, correct };
+                                    })
                                     .filter(f => f.pick !== null);
                                 if (friendPicks.length === 0) return null;
                                 return (
                                     <div className="friend-picks">
                                         {friendPicks.map((fp, i) => (
-                                            <span key={i} className={`friend-pick fp-${fp.pick}`}>
+                                            <span
+                                                key={i}
+                                                className={`friend-pick fp-${fp.pick}${fp.correct === true ? " fp-correct" : ""}${fp.correct === false ? " fp-incorrect" : ""}`}
+                                            >
                                                 {fp.name}: {fp.pick === "home" ? "H" : fp.pick === "away" ? "A" : "T"}
+                                                {fp.correct === true ? " ✓" : fp.correct === false ? " ✗" : ""}
                                             </span>
                                         ))}
                                     </div>

@@ -63,6 +63,18 @@
   box-sizing: border-box;
 }
 
+@media (max-width: 900px) {
+  #root {
+    min-height: auto;
+    height: auto;
+    border-inline: none;
+  }
+
+  body {
+    overflow-y: auto;
+  }
+}
+
 body {
   margin: 0;
 }

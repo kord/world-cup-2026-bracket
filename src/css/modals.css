@@ -1,0 +1,191 @@
+/* Modals — shared overlay + modal shell */
+.import-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 100;
+}
+
+.import-modal {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 24px;
+    width: 90%;
+    max-width: 400px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+
+    h3 {
+        margin: 0;
+        font-size: 1.1rem;
+        color: var(--text-h);
+    }
+}
+
+.import-success {
+    text-align: center;
+    color: #38a169;
+    font-weight: 600;
+    margin: 8px 0;
+}
+
+.import-error {
+    font-size: 0.75rem;
+    color: #c0392b;
+    margin: 0;
+}
+
+.import-label {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: var(--text);
+}
+
+.import-input,
+.import-textarea {
+    font: inherit;
+    font-size: 0.85rem;
+    padding: 8px 10px;
+    border: 1px solid var(--border);
+    border-radius: 5px;
+    background: var(--code-bg);
+    color: var(--text-h);
+    outline: none;
+    transition: border-color 0.15s;
+
+    &:focus {
+        border-color: var(--accent);
+        box-shadow: 0 0 0 2px var(--accent-border);
+    }
+
+    &::placeholder {
+        color: var(--text);
+        opacity: 0.6;
+    }
+}
+
+.import-textarea {
+    resize: vertical;
+    min-height: 60px;
+}
+
+.import-actions {
+    display: flex;
+    gap: 8px;
+    justify-content: flex-end;
+}
+
+.import-btn {
+    font: inherit;
+    font-size: 0.78rem;
+    font-weight: 600;
+    padding: 7px 16px;
+    border-radius: 5px;
+    border: 1px solid var(--border);
+    cursor: pointer;
+    transition: background 0.15s, border-color 0.15s;
+}
+
+.import-btn-primary {
+    background: var(--accent);
+    color: #fff;
+    border-color: var(--accent);
+
+    &:hover {
+        opacity: 0.9;
+    }
+}
+
+.import-btn-cancel {
+    background: var(--bg);
+    color: var(--text);
+
+    &:hover {
+        border-color: var(--accent-border);
+    }
+}
+
+/* Manage friends */
+.manage-modal {
+    max-width: 360px;
+}
+
+.manage-empty {
+    text-align: center;
+    color: var(--text);
+    font-size: 0.85rem;
+    margin: 4px 0;
+}
+
+.manage-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    max-height: 240px;
+    overflow-y: auto;
+}
+
+.manage-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 10px;
+    background: var(--code-bg);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+}
+
+.manage-you {
+    border-color: var(--accent);
+    background: var(--accent-bg);
+}
+
+.manage-you .manage-name {
+    color: var(--accent);
+}
+
+.manage-name {
+    flex: 1;
+    font-weight: 600;
+    font-size: 0.85rem;
+    color: var(--text-h);
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.manage-rate {
+    font-size: 0.72rem;
+    font-weight: 600;
+    color: var(--accent);
+    flex-shrink: 0;
+}
+
+.manage-remove {
+    background: none;
+    border: none;
+    font-size: 0.85rem;
+    color: var(--text);
+    cursor: pointer;
+    padding: 2px 6px;
+    border-radius: 4px;
+    line-height: 1;
+    transition: color 0.15s, background 0.15s;
+
+    &:hover {
+        color: #e53e3e;
+        background: rgba(229, 62, 62, 0.1);
+    }
+}

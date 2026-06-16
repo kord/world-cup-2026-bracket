@@ -1,0 +1,69 @@
+/* Desktop sidebar */
+.sidebar {
+    width: 180px;
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding-left: 8px;
+}
+
+.sidebar-group {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 5px 8px;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    cursor: pointer;
+    font: inherit;
+    color: var(--text);
+    transition: border-color 0.15s, box-shadow 0.15s;
+
+    &:hover {
+        border-color: var(--accent-border);
+        box-shadow: 0 0 0 1px var(--accent-border);
+    }
+
+    &.active {
+        border-color: var(--accent);
+        box-shadow: 0 0 0 2px var(--accent-border);
+        background: var(--accent-bg);
+    }
+
+    &.pick-all {
+        border-left: 3px solid #38a169;
+    }
+
+    &.pick-some {
+        border-left: 3px solid #d69e2e;
+    }
+}
+
+.sidebar-group-letter {
+    font-weight: 700;
+    font-size: 0.72rem;
+    color: var(--accent);
+    white-space: nowrap;
+    flex-shrink: 0;
+    min-width: 50px;
+}
+
+.sidebar-flags {
+    display: flex;
+    gap: 2px;
+    line-height: 0;
+    flex-shrink: 0;
+}
+
+.flag-sq {
+    border-radius: 2px;
+    box-shadow: 0 0 0 1px var(--border);
+    display: block;
+}
+
+/* Mobile dropdown */
+.sidebar-mobile {
+    display: none;
+}

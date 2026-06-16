@@ -1,0 +1,46 @@
+/* Standings table */
+.standings-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+    font-size: 0.78rem;
+
+    th {
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        font-size: 0.65rem;
+        color: var(--text);
+        padding: 6px 4px;
+        border-bottom: 2px solid var(--border);
+        text-align: center;
+
+        &:nth-child(2) {
+            text-align: left;
+        }
+    }
+
+    td {
+        padding: 5px 4px;
+        border-bottom: 1px solid var(--border);
+        text-align: center;
+        color: var(--text-h);
+    }
+}
+
+.standings-rank {
+    font-weight: 700;
+    color: var(--text);
+    font-size: 0.7rem;
+}
+
+.standings-team {
+    text-align: left !important;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.standings-pts {
+    font-weight: 800;
+    color: var(--accent);
+}

@@ -1,0 +1,99 @@
+/* Main content */
+.main-content {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    justify-content: center;
+    padding: 0 24px;
+}
+
+.placeholder {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
+    min-height: 300px;
+    color: var(--text);
+    font-size: 1rem;
+    border: 2px dashed var(--border);
+    border-radius: 10px;
+    width: 100%;
+    max-width: 700px;
+    padding: 32px 24px;
+
+    p {
+        margin: 0;
+    }
+}
+
+/* Next matches */
+.next-matches {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    width: 100%;
+}
+
+.next-match-label {
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--text);
+    margin: 0;
+}
+
+.next-match-group-link {
+    font: inherit;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--accent);
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+
+    &:hover {
+        color: var(--text-h);
+    }
+}
+
+.next-matches-grid {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 16px;
+    width: 100%;
+
+    .matchup-card {
+        flex: 1 1 280px;
+        max-width: 380px;
+    }
+}
+
+/* Detail pane */
+.detail-pane {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 24px;
+    width: 100%;
+}
+
+.detail-heading {
+    margin: 0 0 4px;
+    font-size: 1.3rem;
+    color: var(--text-h);
+}
+
+.detail-subtitle {
+    margin: 0 0 20px;
+    font-size: 0.85rem;
+    color: var(--text);
+}

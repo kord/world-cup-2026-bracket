@@ -9,7 +9,6 @@ import { useMatchPicks } from "./data/useMatchPicks";
 import { useImportedPicks } from "./data/useImportedPicks";
 import { getLiveFixtures, getUpcomingFixtures, getGroupFixtureIds, getFutureFixtureIds } from "./data/fixtures";
 import { encodePicks } from "./data/pickEncoding";
-import "./App.css";
 
 function NextMatches({
   getPick,

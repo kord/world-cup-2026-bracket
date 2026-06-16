@@ -1,4 +1,4 @@
-/* ===== App Layout ===== */
+/* ===== Layout ===== */
 .app {
   max-width: 1400px;
   margin: 0 auto;
@@ -11,7 +11,6 @@
 .app-header {
   text-align: center;
   margin-bottom: 24px;
-  padding-left: 212px;
 
   h1 {
     color: var(--text-h);
@@ -26,6 +25,25 @@
     font-size: 0.95rem;
     margin: 0;
   }
+}
+
+.app-body {
+  display: flex;
+  gap: 0;
+  flex: 1;
+  align-items: flex-start;
+}
+
+/* ===== Header Buttons ===== */
+.header-btn {
+  margin-top: 10px;
+  margin-left: 8px;
+  font: inherit;
+  font-size: 0.72rem;
+  padding: 4px 14px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s, color 0.15s, opacity 0.15s;
 }
 
 .clear-picks-btn {
@@ -68,21 +86,31 @@
   background: #38a169;
   color: #fff;
   cursor: pointer;
-  transition: opacity 0.15s;
   min-width: 100px;
   white-space: nowrap;
+  transition: opacity 0.15s;
 
   &:hover {
     opacity: 0.85;
   }
 }
 
-/* ===== Two-column body ===== */
-.app-body {
-  display: flex;
-  gap: 0;
-  flex: 1;
-  align-items: flex-start;
+.import-picks-btn {
+  margin-top: 10px;
+  margin-left: 8px;
+  font: inherit;
+  font-size: 0.72rem;
+  padding: 4px 14px;
+  border: 1px solid var(--accent);
+  border-radius: 5px;
+  background: var(--bg);
+  color: var(--accent);
+  cursor: pointer;
+  transition: background 0.15s;
+
+  &:hover {
+    background: var(--accent-bg);
+  }
 }
 
 /* ===== Sidebar ===== */
@@ -95,9 +123,12 @@
   padding-left: 8px;
 }
 
+.sidebar-mobile {
+  display: none;
+}
+
 .sidebar-group {
   display: flex;
-  flex-direction: row;
   align-items: center;
   gap: 6px;
   padding: 5px 8px;
@@ -140,7 +171,6 @@
 
 .sidebar-flags {
   display: flex;
-  flex-direction: row;
   gap: 2px;
   line-height: 0;
   flex-shrink: 0;
@@ -175,13 +205,13 @@
   width: 100%;
   max-width: 700px;
   padding: 32px 24px;
+
+  p {
+    margin: 0;
+  }
 }
 
-.placeholder p {
-  margin: 0;
-}
-
-/* ===== Next Match Preview ===== */
+/* ===== Next Matches ===== */
 .next-matches {
   display: flex;
   flex-direction: column;
@@ -224,11 +254,11 @@
   justify-content: center;
   gap: 16px;
   width: 100%;
-}
 
-.next-matches-grid .matchup-card {
-  flex: 1 1 280px;
-  max-width: 380px;
+  .matchup-card {
+    flex: 1 1 280px;
+    max-width: 380px;
+  }
 }
 
 /* ===== Detail Pane ===== */
@@ -258,28 +288,28 @@
   border-collapse: collapse;
   margin-bottom: 20px;
   font-size: 0.78rem;
-}
 
-.standings-table th {
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-  font-size: 0.65rem;
-  color: var(--text);
-  padding: 6px 4px;
-  border-bottom: 2px solid var(--border);
-  text-align: center;
-}
+  th {
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    font-size: 0.65rem;
+    color: var(--text);
+    padding: 6px 4px;
+    border-bottom: 2px solid var(--border);
+    text-align: center;
 
-.standings-table th:nth-child(2) {
-  text-align: left;
-}
+    &:nth-child(2) {
+      text-align: left;
+    }
+  }
 
-.standings-table td {
-  padding: 5px 4px;
-  border-bottom: 1px solid var(--border);
-  text-align: center;
-  color: var(--text-h);
+  td {
+    padding: 5px 4px;
+    border-bottom: 1px solid var(--border);
+    text-align: center;
+    color: var(--text-h);
+  }
 }
 
 .standings-rank {
@@ -299,15 +329,11 @@
   color: var(--accent);
 }
 
-/* ===== Matchups Grid ===== */
+/* ===== Match Card ===== */
 .matchups-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: 16px;
-
-  @media (max-width: 900px) {
-    grid-template-columns: 1fr;
-  }
 }
 
 .matchup-card {
@@ -315,6 +341,26 @@
   border-radius: 8px;
   padding: 16px;
   background: var(--code-bg);
+
+  &.match-past {
+    opacity: 0.65;
+    background: var(--bg);
+  }
+
+  &.match-past.has-result {
+    opacity: 1;
+  }
+
+  &.match-live {
+    border-color: #e53e3e;
+    box-shadow: 0 0 0 1px rgba(229, 62, 62, 0.3);
+    background: var(--bg);
+  }
+
+  &.match-future {
+    border-color: var(--accent-border);
+    background: var(--bg);
+  }
 }
 
 .matchup-row {
@@ -331,6 +377,11 @@
   gap: 6px;
   flex: 1;
   min-width: 0;
+
+  &.winner .matchup-team-name {
+    color: #1a7a2e;
+    font-weight: 800;
+  }
 }
 
 .matchup-team-name {
@@ -345,6 +396,14 @@
   font-weight: 700;
   text-transform: uppercase;
   color: var(--text);
+  flex-shrink: 0;
+}
+
+.matchup-score {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--text-h);
+  letter-spacing: 1px;
   flex-shrink: 0;
 }
 
@@ -381,7 +440,7 @@
   }
 }
 
-/* ===== ELO Prediction Bar ===== */
+/* ===== ELO Predictions ===== */
 .matchup-prediction {
   display: flex;
   gap: 6px;
@@ -420,7 +479,7 @@
   color: #c05621;
 }
 
-/* ===== Status Badge ===== */
+/* ===== Status Badges ===== */
 .status-badge {
   display: inline-block;
   font-size: 0.65rem;
@@ -460,86 +519,14 @@
   }
 }
 
-/* ===== Match State Cards ===== */
-.matchup-card.match-past {
-  opacity: 0.65;
-  background: var(--bg);
-}
-
-.matchup-card.match-past.has-result {
-  opacity: 1;
-  background: var(--bg);
-}
-
-.matchup-card.match-live {
-  border-color: #e53e3e;
-  box-shadow: 0 0 0 1px rgba(229, 62, 62, 0.3);
-  background: var(--bg);
-}
-
-.matchup-card.match-future {
-  border-color: var(--accent-border);
-  background: var(--bg);
-}
-
-/* ===== Match Score (past results) ===== */
-.matchup-score {
-  font-size: 1.1rem;
-  font-weight: 700;
-  color: var(--text-h);
-  letter-spacing: 1px;
-  flex-shrink: 0;
-}
-
-/* ===== Winner Highlight ===== */
-.matchup-team.winner .matchup-team-name {
-  color: #1a7a2e;
-  font-weight: 800;
-}
-
-/* ===== Pick Result Badge ===== */
-.pick-result-badge {
-  width: 100%;
-  font-size: 0.6rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  text-align: center;
-  margin-bottom: 2px;
-  padding: 2px 6px;
-  border-radius: 4px;
-}
-
-.pick-result-badge.correct {
-  background: #d4edda;
-  color: #1a7a2e;
-}
-
-.pick-result-badge.incorrect {
-  background: #fce4e4;
-  color: #c0392b;
-}
-
-/* ===== Result Button Highlight ===== */
-.pick-btn.was-correct {
-  border-color: #38a169;
-  background: #d4edda;
-  color: #1a7a2e;
-}
-
-.pick-btn.was-correct.selected {
-  background: #38a169;
-  color: #fff;
-  border-color: #38a169;
-}
-
+/* ===== Pick Buttons ===== */
 .matchup-pick {
   display: flex;
   gap: 6px;
-}
 
-.matchup-pick.locked {
-  flex-wrap: wrap;
+  &.locked {
+    flex-wrap: wrap;
+  }
 }
 
 .pick-locked-label {
@@ -551,12 +538,6 @@
   color: #c05621;
   text-align: center;
   margin-bottom: 2px;
-}
-
-.pick-btn:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-  pointer-events: none;
 }
 
 .pick-btn {
@@ -582,14 +563,96 @@
     outline-offset: 1px;
   }
 
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    pointer-events: none;
+  }
+
   &.selected {
     background: var(--accent);
     color: #fff;
     border-color: var(--accent);
   }
+
+  &.was-correct {
+    border-color: #38a169;
+    background: #d4edda;
+    color: #1a7a2e;
+  }
+
+  &.was-correct.selected {
+    background: #38a169;
+    color: #fff;
+    border-color: #38a169;
+  }
 }
 
-/* ===== Flag (shared) ===== */
+.pick-result-badge {
+  width: 100%;
+  font-size: 0.6rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  text-align: center;
+  margin-bottom: 2px;
+  padding: 2px 6px;
+  border-radius: 4px;
+
+  &.correct {
+    background: #d4edda;
+    color: #1a7a2e;
+  }
+
+  &.incorrect {
+    background: #fce4e4;
+    color: #c0392b;
+  }
+}
+
+/* ===== Friend Picks ===== */
+.friend-picks {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px solid var(--border);
+}
+
+.friend-pick {
+  font-size: 0.65rem;
+  font-weight: 600;
+  padding: 1px 6px;
+  border-radius: 4px;
+  white-space: nowrap;
+
+  &.fp-home {
+    background: #dbeafe;
+    color: #1e40af;
+  }
+
+  &.fp-tie {
+    background: #f3f4f6;
+    color: #6b7280;
+  }
+
+  &.fp-away {
+    background: #fef3c7;
+    color: #92400e;
+  }
+
+  &.fp-correct {
+    background: #d4edda;
+    color: #1a7a2e;
+  }
+
+  &.fp-incorrect {
+    opacity: 0.55;
+  }
+}
+
+/* ===== Flags ===== */
 .flag {
   vertical-align: middle;
   margin-right: 6px;
@@ -598,56 +661,7 @@
   flex-shrink: 0;
 }
 
-/* ===== Responsive sidebar collapse ===== */
-@media (max-width: 700px) {
-  .app {
-    padding: 16px;
-  }
-
-  .app-header {
-    padding-left: 0;
-  }
-
-  .app-body {
-    flex-direction: column;
-  }
-
-  .sidebar {
-    width: 100%;
-    flex-direction: row;
-    flex-wrap: wrap;
-    gap: 6px;
-    overflow-x: auto;
-    padding-left: 0;
-  }
-
-  .sidebar-group {
-    flex: 0 0 auto;
-    flex-direction: row;
-    gap: 6px;
-    min-width: unset;
-    padding: 6px 10px;
-  }
-
-  .main-content {
-    padding: 0;
-  }
-
-  .detail-pane {
-    max-width: none;
-  }
-
-  .sidebar-flags {
-    display: flex;
-    gap: 2px;
-  }
-
-  .matchups-grid {
-    grid-template-columns: 1fr;
-  }
-}
-
-/* ===== Import Modal ===== */
+/* ===== Modals ===== */
 .import-overlay {
   position: fixed;
   inset: 0;
@@ -668,12 +682,12 @@
   display: flex;
   flex-direction: column;
   gap: 14px;
-}
 
-.import-modal h3 {
-  margin: 0;
-  font-size: 1.1rem;
-  color: var(--text-h);
+  h3 {
+    margin: 0;
+    font-size: 1.1rem;
+    color: var(--text-h);
+  }
 }
 
 .import-success {
@@ -681,6 +695,12 @@
   color: #38a169;
   font-weight: 600;
   margin: 8px 0;
+}
+
+.import-error {
+  font-size: 0.75rem;
+  color: #c0392b;
+  margin: 0;
 }
 
 .import-label {
@@ -720,12 +740,6 @@
   min-height: 60px;
 }
 
-.import-error {
-  font-size: 0.75rem;
-  color: #c0392b;
-  margin: 0;
-}
-
 .import-actions {
   display: flex;
   gap: 8px;
@@ -762,24 +776,6 @@
   }
 }
 
-.import-picks-btn {
-  margin-top: 10px;
-  margin-left: 8px;
-  font: inherit;
-  font-size: 0.72rem;
-  padding: 4px 14px;
-  border: 1px solid var(--accent);
-  border-radius: 5px;
-  background: var(--bg);
-  color: var(--accent);
-  cursor: pointer;
-  transition: background 0.15s;
-
-  &:hover {
-    background: var(--accent-bg);
-  }
-}
-
 /* ===== Manage Friends ===== */
 .manage-modal {
   max-width: 360px;
@@ -813,6 +809,15 @@
   border-radius: 6px;
 }
 
+.manage-you {
+  border-color: var(--accent);
+  background: var(--accent-bg);
+}
+
+.manage-you .manage-name {
+  color: var(--accent);
+}
+
 .manage-name {
   flex: 1;
   font-weight: 600;
@@ -828,21 +833,6 @@
   font-size: 0.72rem;
   font-weight: 600;
   color: var(--accent);
-  flex-shrink: 0;
-}
-
-.manage-you {
-  border-color: var(--accent);
-  background: var(--accent-bg);
-}
-
-.manage-you .manage-name {
-  color: var(--accent);
-}
-
-.manage-date {
-  font-size: 0.7rem;
-  color: var(--text);
   flex-shrink: 0;
 }
 
@@ -863,35 +853,254 @@
   }
 }
 
-/* ===== Friend Picks ===== */
-.friend-picks {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 4px;
-  margin-top: 8px;
-  padding-top: 8px;
-  border-top: 1px solid var(--border);
+/* ===== Responsive: ≤900px ===== */
+@media (max-width: 900px) {
+  .app {
+    padding: 12px 10px;
+    min-height: auto;
+    height: auto;
+    display: block;
+  }
+
+  .app-header {
+    padding-left: 0;
+    margin-bottom: 12px;
+
+    h1 {
+      font-size: 1.3rem;
+      margin-bottom: 2px;
+    }
+
+    .subtitle {
+      font-size: 0.78rem;
+      margin: 0;
+    }
+  }
+
+  .app-body {
+    flex-direction: column;
+    position: relative;
+    flex: none;
+  }
+
+  /* Mobile sidebar dropdown */
+  .sidebar {
+    display: none;
+  }
+
+  .sidebar-mobile {
+    display: block;
+    position: relative;
+    margin-bottom: 12px;
+  }
+
+  .sidebar-mobile-trigger {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+    padding: 10px 14px;
+    font: inherit;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--text-h);
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    cursor: pointer;
+    transition: border-color 0.15s;
+    -webkit-appearance: none;
+
+    &:hover {
+      border-color: var(--accent);
+    }
+  }
+
+  .sidebar-mobile-label {
+    flex: 1;
+    text-align: left;
+  }
+
+  .sidebar-mobile-flags {
+    display: flex;
+    gap: 2px;
+  }
+
+  .sidebar-mobile-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.3);
+    z-index: 50;
+  }
+
+  .sidebar-mobile-dropdown {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    z-index: 51;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+    max-height: 60vh;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    padding: 4px;
+  }
+
+  .sidebar-mobile-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 10px;
+    font: inherit;
+    font-size: 0.8rem;
+    color: var(--text);
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    cursor: pointer;
+    text-align: left;
+    transition: border-color 0.15s;
+
+    &:hover,
+    &.active {
+      border-color: var(--accent);
+      background: var(--accent-bg);
+    }
+
+    &.pick-all {
+      border-left: 3px solid #38a169;
+    }
+
+    &.pick-some {
+      border-left: 3px solid #d69e2e;
+    }
+  }
+
+  /* Content */
+  .main-content {
+    padding: 0;
+    align-items: flex-start;
+  }
+
+  .placeholder {
+    padding: 20px 12px;
+    min-height: auto;
+    font-size: 0.85rem;
+    border-width: 1px;
+    max-width: none;
+  }
+
+  .detail-pane {
+    max-width: none;
+    padding: 14px;
+  }
+
+  .detail-heading {
+    font-size: 1rem;
+    margin-bottom: 2px;
+  }
+
+  .detail-subtitle {
+    margin-bottom: 12px;
+    font-size: 0.75rem;
+  }
+
+  .matchups-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .matchup-card {
+    padding: 12px;
+  }
+
+  .matchup-team-name {
+    font-size: 0.78rem;
+  }
+
+  .matchup-vs,
+  .matchup-score {
+    font-size: 0.9rem;
+  }
+
+  .next-matches-grid {
+    gap: 10px;
+
+    .matchup-card {
+      flex: 1 1 100%;
+      max-width: none;
+    }
+  }
+
+  /* Standings scroll */
+  .standings-table {
+    display: block;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    white-space: nowrap;
+
+    th,
+    td {
+      font-size: 0.7rem;
+      padding: 4px 3px;
+    }
+  }
+
+  /* Buttons */
+  .clear-picks-btn,
+  .share-btn,
+  .import-picks-btn {
+    font-size: 0.68rem;
+    padding: 4px 10px;
+    margin-top: 6px;
+  }
+
+  /* Modals */
+  .import-modal {
+    width: 95%;
+    max-width: none;
+    padding: 20px;
+  }
 }
 
-.friend-pick {
-  font-size: 0.65rem;
-  font-weight: 600;
-  padding: 1px 6px;
-  border-radius: 4px;
-  white-space: nowrap;
-}
+/* ===== Responsive: ≤480px ===== */
+@media (max-width: 480px) {
+  .app {
+    padding: 10px 6px;
+  }
 
-.friend-pick.fp-home {
-  background: #dbeafe;
-  color: #1e40af;
-}
+  .app-header h1 {
+    font-size: 1.2rem;
+  }
 
-.friend-pick.fp-tie {
-  background: #f3f4f6;
-  color: #6b7280;
-}
+  .matchup-card {
+    padding: 10px;
+  }
 
-.friend-pick.fp-away {
-  background: #fef3c7;
-  color: #92400e;
+  .matchup-row {
+    gap: 6px;
+  }
+
+  .matchup-team-name {
+    font-size: 0.72rem;
+  }
+
+  .flag {
+    width: 22px;
+    height: 15px;
+    margin-right: 3px;
+  }
+
+  .pick-btn {
+    font-size: 0.7rem;
+    padding: 5px 0;
+  }
+
+  .pred-pct {
+    font-size: 0.7rem;
+  }
 }
