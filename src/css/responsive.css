@@ -200,6 +200,11 @@
         margin-top: 6px;
     }
 
+    .phase-btn {
+        font-size: 0.62rem;
+        padding: 3px 8px;
+    }
+
     .import-modal {
         width: 95%;
         max-width: none;
