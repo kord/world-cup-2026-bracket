@@ -25,6 +25,22 @@ function chronoKey(f: KnockoutFixture): number {
     return month * 10000 + day * 100 + h + m / 100;
 }
 
+function getStatus(f: KnockoutFixture): "past" | "live" | "future" {
+    const p = f.date.split(" ");
+    const month = MONTHS[p[1]] ?? 5;
+    const day = parseInt(p[2]);
+    const tm = f.time.match(/(\d+):(\d+)\s*(AM|PM)/i)!;
+    let h = parseInt(tm[1]), m = parseInt(tm[2]);
+    if (tm[3].toUpperCase() === "PM" && h !== 12) h += 12;
+    if (tm[3].toUpperCase() === "AM" && h === 12) h = 0;
+    const kickoff = Date.UTC(2026, month, day, h + 4, m); // ET = UTC-4
+    const end = kickoff + 2 * 60 * 60 * 1000;
+    const now = Date.now();
+    if (now < kickoff) return "future";
+    if (now < end) return "live";
+    return "past";
+}
+
 /**
  * Order matches bracket-style: start from the final, for each match sort its
  * feeder pair chronologically, then recursively process feeders in that order.
@@ -88,6 +104,17 @@ export function KnockoutBracket() {
     const [hovered, setHovered] = useState<number | null>(null);
     const grouped = useMemo(() => groupByRound(bracketOrder()), []);
 
+    // Find the single next upcoming match
+    const nextMatchId = useMemo(() => {
+        let earliest: KnockoutFixture | null = null;
+        for (const f of KNOCKOUT_FIXTURES) {
+            if (getStatus(f) === "future" && (!earliest || chronoKey(f) < chronoKey(earliest))) {
+                earliest = f;
+            }
+        }
+        return earliest?.id ?? null;
+    }, []);
+
     // Build feeder lookup: matchId → [feederId, feederId]
     const feederIds = useMemo(() => {
         const map = new Map<number, number[]>();
@@ -127,7 +154,14 @@ export function KnockoutBracket() {
                                                 <span className="bracket-team">{shortTeam(f.away)}</span>
                                             </div>
                                             <div className="bracket-info">
-                                                <span className="bracket-date">#{f.id} · {f.date} · {f.time} ET</span>
+                                                <span className="bracket-date">
+                                                    {(getStatus(f) !== "future" || f.id === nextMatchId) && (
+                                                        <span className={`status-badge status-${getStatus(f)}`}>
+                                                            {getStatus(f) === "past" ? "Played" : getStatus(f) === "live" ? "LIVE" : "Upcoming"}
+                                                        </span>
+                                                    )}
+                                                    {(getStatus(f) !== "future" || f.id === nextMatchId) && " "}#{f.id} · {f.date} · {f.time} ET
+                                                </span>
                                                 <span className="bracket-venue">{f.venue}</span>
                                             </div>
                                         </div>
