@@ -15,28 +15,37 @@ interface LeaderboardProps {
 export function Leaderboard({ groups, groupFixtureIds, myPicks, imported, onSelectGroup }: LeaderboardProps) {
     const friends = useMemo(() => Object.values(imported), [imported]);
 
-    // Compute per-group stats for all people
+    // Compute per-group stats for all people (each has their own denominator)
     const groupStats = useMemo(() => {
         return groups.map((group) => {
             const ids = groupFixtureIds[group.name] ?? [];
             const completedIds = ids.filter((id) => getScrapeResult(id) != null);
-            const total = completedIds.length;
 
-            const myCorrect = completedIds.filter(
-                (id) => isPickCorrect(id, myPicks[String(id)]?.selection ?? null) === true,
+            // "You" — only matches where you made a pick
+            const myEligible = completedIds.filter((id) => myPicks[String(id)]?.selection != null);
+            const myTotal = myEligible.length;
+            const myCorrect = myEligible.filter(
+                (id) => isPickCorrect(id, myPicks[String(id)]!.selection) === true,
             ).length;
 
+            // Each friend — only matches where that friend made a pick
             const friendStats = friends.map((friend) => {
-                const correct = completedIds.filter(
-                    (id) => isPickCorrect(id, friend.picks[String(id)]?.selection ?? null) === true,
+                const friendEligible = completedIds.filter((id) => friend.picks[String(id)]?.selection != null);
+                const fTotal = friendEligible.length;
+                const correct = friendEligible.filter(
+                    (id) => isPickCorrect(id, friend.picks[String(id)]!.selection) === true,
                 ).length;
-                return correct;
+                return { correct, total: fTotal };
             });
 
-            // Best score across all columns (you + friends)
-            const best = Math.max(myCorrect, ...friendStats);
+            // Best ratio for highlighting (only among those with picks)
+            const ratios = [myTotal > 0 ? myCorrect / myTotal : -1];
+            for (const fs of friendStats) {
+                ratios.push(fs.total > 0 ? fs.correct / fs.total : -1);
+            }
+            const bestRatio = Math.max(...ratios);
 
-            return { group: group.name, total, myCorrect, friendStats, best };
+            return { group: group.name, myTotal, myCorrect, friendStats, bestRatio };
         });
     }, [groups, groupFixtureIds, myPicks, friends]);
 
@@ -46,11 +55,12 @@ export function Leaderboard({ groups, groupFixtureIds, myPicks, imported, onSele
         return <div className="leaderboard"><p>No data available.</p></div>;
     }
 
-    const scoreClass = (correct: number, total: number, isBest: boolean): string => {
+    const scoreClass = (correct: number, total: number, bestRatio: number): string => {
         if (total === 0) return "lb-score";
         const pct = correct / total;
         const cls = pct >= 0.7 ? "lb-high" : pct >= 0.4 ? "lb-mid" : "lb-low";
-        return `lb-score ${cls}${isBest ? " lb-best" : ""}`;
+        const best = pct === bestRatio && bestRatio >= 0 ? " lb-best" : "";
+        return `lb-score ${cls}${best}`;
     };
 
     return (
@@ -73,34 +83,41 @@ export function Leaderboard({ groups, groupFixtureIds, myPicks, imported, onSele
                                     Group {gs.group}
                                 </button>
                             </td>
-                            <td className={scoreClass(gs.myCorrect, gs.total, gs.myCorrect === gs.best)}>
-                                {gs.total > 0 ? `${gs.myCorrect}/${gs.total}` : "—"}
+                            <td className={scoreClass(gs.myCorrect, gs.myTotal, gs.bestRatio)}>
+                                {gs.myTotal > 0 ? `${gs.myCorrect}/${gs.myTotal}` : "—"}
                             </td>
-                            {gs.friendStats.map((correct, i) => (
-                                <td key={i} className={scoreClass(correct, gs.total, correct === gs.best)}>
-                                    {gs.total > 0 ? `${correct}/${gs.total}` : "—"}
+                            {gs.friendStats.map((fs, i) => (
+                                <td key={i} className={scoreClass(fs.correct, fs.total, gs.bestRatio)}>
+                                    {fs.total > 0 ? `${fs.correct}/${fs.total}` : "—"}
                                 </td>
                             ))}
                         </tr>
                     ))}
                 </tbody>
                 {hasFriends && (() => {
-                    const totalCompleted = groupStats.reduce((s, gs) => s + gs.total, 0);
-                    const myTotal = groupStats.reduce((s, gs) => s + gs.myCorrect, 0);
-                    const friendTotals = friends.map((_, i) =>
-                        groupStats.reduce((s, gs) => s + gs.friendStats[i], 0),
+                    const myTotalAll = groupStats.reduce((s, gs) => s + gs.myTotal, 0);
+                    const myCorrectAll = groupStats.reduce((s, gs) => s + gs.myCorrect, 0);
+                    const friendTotalsAll = friends.map((_, i) =>
+                        groupStats.reduce((s, gs) => s + gs.friendStats[i].total, 0),
                     );
-                    const bestTotal = Math.max(myTotal, ...friendTotals);
+                    const friendCorrectsAll = friends.map((_, i) =>
+                        groupStats.reduce((s, gs) => s + gs.friendStats[i].correct, 0),
+                    );
+                    const myRatio = myTotalAll > 0 ? myCorrectAll / myTotalAll : -1;
+                    const bestRatioAll = Math.max(
+                        myRatio,
+                        ...friendTotalsAll.map((t, i) => t > 0 ? friendCorrectsAll[i] / t : -1),
+                    );
                     return (
                         <tfoot>
                             <tr>
                                 <td className="lb-group">Total</td>
-                                <td className={scoreClass(myTotal, totalCompleted, myTotal === bestTotal)}>
-                                    {totalCompleted > 0 ? `${myTotal}/${totalCompleted}` : "—"}
+                                <td className={scoreClass(myCorrectAll, myTotalAll, bestRatioAll)}>
+                                    {myTotalAll > 0 ? `${myCorrectAll}/${myTotalAll}` : "—"}
                                 </td>
-                                {friendTotals.map((ft, i) => (
-                                    <td key={i} className={scoreClass(ft, totalCompleted, ft === bestTotal)}>
-                                        {totalCompleted > 0 ? `${ft}/${totalCompleted}` : "—"}
+                                {friendTotalsAll.map((ft, i) => (
+                                    <td key={i} className={scoreClass(friendCorrectsAll[i], ft, bestRatioAll)}>
+                                        {ft > 0 ? `${friendCorrectsAll[i]}/${ft}` : "—"}
                                     </td>
                                 ))}
                             </tr>
