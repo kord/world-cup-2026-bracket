@@ -73,11 +73,13 @@ function App() {
         >
           {confirmClear ? "Click again to confirm" : "Clear all picks"}
         </button>
-        {allFuturePicked && (
-          <button className="share-btn" onClick={() => setShowShare(true)}>
-            Share picks
-          </button>
-        )}
+        <button
+          className={`share-btn${!allFuturePicked ? " share-disabled" : ""}`}
+          onClick={() => allFuturePicked && setShowShare(true)}
+          title={allFuturePicked ? "Share your picks" : "You need to finish your picks before sharing."}
+        >
+          Share picks
+        </button>
         <button className="import-picks-btn" onClick={() => setShowManage(true)}>
           Manage friends
         </button>
