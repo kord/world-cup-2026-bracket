@@ -6,6 +6,7 @@ import { NextMatches } from "./components/NextMatches";
 import { KnockoutBracket } from "./components/KnockoutBracket";
 import { SharePicks } from "./components/SharePicks";
 import { ManageFriends } from "./components/ManageFriends";
+import { Leaderboard } from "./components/Leaderboard";
 import { Toolbar } from "./components/Toolbar";
 import { useMatchPicks } from "./data/useMatchPicks";
 import { useImportedPicks } from "./data/useImportedPicks";
@@ -18,7 +19,7 @@ function App() {
   const [confirmClear, setConfirmClear] = useState(false);
   const [showShare, setShowShare] = useState(false);
   const [showManage, setShowManage] = useState(false);
-  const [phase, setPhase] = useState<"group" | "knockout">("group");
+  const [view, setView] = useState<"group" | "knockout" | "leaderboard">("group");
   const { picks, getPick, togglePick, fillAllHome, fillHome } = useMatchPicks();
   const { imported, addImported, removeImported, getImportedPick } = useImportedPicks();
 
@@ -60,12 +61,14 @@ function App() {
       <header className="app-header">
 
         <h1 onClick={() => setSelectedGroup(null)}>
-          World Cup 2026 — {phase === "group" ? "Group Stage" : "Knockout Phase"}
+          World Cup 2026 — {view === "group" ? "Group Stage" : view === "knockout" ? "Knockout Phase" : "Leaderboard"}
         </h1>
         <p className="subtitle">
-          {phase === "group"
+          {view === "group"
             ? "48 teams · 12 groups · Pick your winners"
-            : "Round of 32 → Final · Coming soon"}
+            : view === "knockout"
+              ? "Round of 32 → Final · Coming soon"
+              : "Track your picks against friends"}
         </p>
         <Toolbar
           allFuturePicked={allFuturePicked}
@@ -74,8 +77,8 @@ function App() {
           onClearBlur={() => setConfirmClear(false)}
           onShare={() => setShowShare(true)}
           onManageFriends={() => setShowManage(true)}
-          phase={phase}
-          onPhaseChange={setPhase}
+          view={view}
+          onViewChange={setView}
         />
       </header>
 
@@ -91,7 +94,7 @@ function App() {
       )}
 
       <div className="app-body">
-        {phase === "group" && (
+        {view === "group" && (
           <GroupSidebar
             groups={groups}
             selected={selectedGroup}
@@ -101,7 +104,15 @@ function App() {
         )}
 
         <main className="main-content">
-          {phase === "knockout" ? (
+          {view === "leaderboard" ? (
+            <Leaderboard
+              groups={groups}
+              groupFixtureIds={groupFixtureIds}
+              myPicks={picks}
+              imported={imported}
+              onSelectGroup={(group) => { setSelectedGroup(group); setView("group"); }}
+            />
+          ) : view === "knockout" ? (
             <KnockoutBracket />
           ) : activeGroup ? (
             <GroupDetail

@@ -97,3 +97,89 @@
     font-size: 0.85rem;
     color: var(--text);
 }
+
+/* Leaderboard */
+.leaderboard {
+    width: 100%;
+    overflow-x: auto;
+}
+
+.leaderboard-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.85rem;
+    color: var(--text);
+
+    th,
+    td {
+        padding: 8px 14px;
+        text-align: center;
+        border-bottom: 1px solid var(--border);
+    }
+
+    th {
+        font-weight: 700;
+        font-size: 0.78rem;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        color: var(--text-h);
+        background: var(--code-bg);
+        position: sticky;
+        top: 0;
+    }
+
+    .lb-group {
+        text-align: left;
+        font-weight: 600;
+        white-space: nowrap;
+    }
+
+    .lb-group-link {
+        font: inherit;
+        font-weight: 600;
+        color: var(--accent);
+        background: none;
+        border: none;
+        cursor: pointer;
+        padding: 0;
+        text-decoration: underline;
+        text-underline-offset: 2px;
+
+        &:hover {
+            color: var(--text-h);
+        }
+    }
+
+    .lb-score {
+        font-variant-numeric: tabular-nums;
+        white-space: nowrap;
+    }
+
+    .lb-high {
+        color: #16a34a;
+        font-weight: 600;
+    }
+
+    .lb-mid {
+        color: #ca8a04;
+    }
+
+    .lb-low {
+        color: #dc2626;
+    }
+
+    .lb-best {
+        font-weight: 800;
+        text-decoration: underline;
+        text-underline-offset: 3px;
+    }
+
+    tbody tr:hover {
+        background: var(--accent-bg);
+    }
+
+    tfoot {
+        font-weight: 700;
+        border-top: 2px solid var(--text-h);
+    }
+}

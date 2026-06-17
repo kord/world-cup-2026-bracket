@@ -27,14 +27,14 @@
     }
 }
 
-/* Phase toggle */
-.phase-toggle {
+/* View toggle */
+.view-toggle {
     display: flex;
     gap: 0;
     margin-top: 10px;
 }
 
-.phase-btn {
+.view-btn {
     font: inherit;
     font-size: 0.72rem;
     padding: 4px 14px;
@@ -167,7 +167,7 @@
     flex-wrap: wrap;
 }
 
-.dev-toolbar .phase-toggle {
+.dev-toolbar .view-toggle {
     margin-bottom: 0;
     margin-right: 8px;
 }
