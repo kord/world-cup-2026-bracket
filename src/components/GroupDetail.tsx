@@ -99,7 +99,7 @@ export function GroupDetail({ group, getPick, onPick, imported, getImportedPick 
         <div className="detail-pane">
             <h2 className="detail-heading">Group {group.name} — Results</h2>
             <p className="detail-subtitle">
-                Pick a winner (or tie) for each match &middot; times shown in your local time
+                Pick a winner (or tie) for each match
             </p>
 
             {standings.length > 0 && (
