@@ -49,6 +49,6 @@ export const groupPhaseScrapeResults: Record<number, ScrapeResult> = {
   "49": {"result":"home","homeScore":3,"awayScore":1,"home":"France","away":"Senegal","date":"Tue, Jun 16","time":"3:00 PM"},
   // Iraq 1–4 Norway — Tue, Jun 16, 6:00 PM ET
   "50": {"result":"away","homeScore":1,"awayScore":4,"home":"Iraq","away":"Norway","date":"Tue, Jun 16","time":"6:00 PM"},
-  // Argentina 1–0 Algeria — Tue, Jun 16, 9:00 PM ET
-  "55": {"result":"home","homeScore":1,"awayScore":0,"home":"Argentina","away":"Algeria","date":"Tue, Jun 16","time":"9:00 PM"},
+  // Argentina 3–0 Algeria — Tue, Jun 16, 9:00 PM ET
+  "55": {"result":"home","homeScore":3,"awayScore":0,"home":"Argentina","away":"Algeria","date":"Tue, Jun 16","time":"9:00 PM"},
 };
