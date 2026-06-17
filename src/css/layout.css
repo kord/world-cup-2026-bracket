@@ -30,16 +30,14 @@
 /* Phase toggle */
 .phase-toggle {
     display: flex;
-    justify-content: flex-end;
     gap: 0;
-    margin-bottom: 8px;
+    margin-top: 10px;
 }
 
 .phase-btn {
     font: inherit;
-    font-size: 0.68rem;
-    font-weight: 600;
-    padding: 4px 12px;
+    font-size: 0.72rem;
+    padding: 4px 14px;
     border: 1px solid var(--border);
     background: var(--bg);
     color: var(--text);
@@ -73,6 +71,14 @@
 }
 
 /* Header buttons */
+.toolbar {
+    display: inline-flex;
+    align-items: center;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 8px;
+}
+
 .clear-picks-btn {
     margin-top: 10px;
     font: inherit;
@@ -97,14 +103,12 @@
     }
 
     &.dev-btn {
-        margin-left: 8px;
         border-style: dashed;
     }
 }
 
 .share-btn {
     margin-top: 10px;
-    margin-left: 8px;
     font: inherit;
     font-size: 0.72rem;
     padding: 4px 14px;
@@ -134,7 +138,6 @@
 
 .import-picks-btn {
     margin-top: 10px;
-    margin-left: 8px;
     font: inherit;
     font-size: 0.72rem;
     padding: 4px 14px;

@@ -6,6 +6,7 @@ import { NextMatches } from "./components/NextMatches";
 import { KnockoutBracket } from "./components/KnockoutBracket";
 import { SharePicks } from "./components/SharePicks";
 import { ManageFriends } from "./components/ManageFriends";
+import { Toolbar } from "./components/Toolbar";
 import { useMatchPicks } from "./data/useMatchPicks";
 import { useImportedPicks } from "./data/useImportedPicks";
 import { getGroupFixtureIds, getFutureFixtureIds } from "./data/fixtures";
@@ -66,46 +67,25 @@ function App() {
             ? "48 teams · 12 groups · Pick your winners"
             : "Round of 32 → Final · Coming soon"}
         </p>
-        <button
-          className={`clear-picks-btn${confirmClear ? " confirm" : ""}`}
-          onClick={handleClear}
-          onBlur={() => setConfirmClear(false)}
-        >
-          {confirmClear ? "Click again to confirm" : "Clear all picks"}
-        </button>
-        <button
-          className={`share-btn${!allFuturePicked ? " share-disabled" : ""}`}
-          onClick={() => allFuturePicked && setShowShare(true)}
-          title={allFuturePicked ? "Share your picks" : "You need to finish your picks before sharing."}
-        >
-          Share picks
-        </button>
-        <button className="import-picks-btn" onClick={() => setShowManage(true)}>
-          Manage friends
-        </button>
+        <Toolbar
+          allFuturePicked={allFuturePicked}
+          confirmClear={confirmClear}
+          onClear={handleClear}
+          onClearBlur={() => setConfirmClear(false)}
+          onShare={() => setShowShare(true)}
+          onManageFriends={() => setShowManage(true)}
+          phase={phase}
+          onPhaseChange={setPhase}
+        />
       </header>
 
       {import.meta.env.DEV && (
         <div className="dev-toolbar">
-          <div className="phase-toggle">
-            <button
-              className={`phase-btn${phase === "group" ? " active" : ""}`}
-              onClick={() => setPhase("group")}
-            >
-              Group Stage
-            </button>
-            <button
-              className={`phase-btn${phase === "knockout" ? " active" : ""}`}
-              onClick={() => setPhase("knockout")}
-            >
-              Knockout
-            </button>
-          </div>
-          <button className="clear-picks-btn dev-btn" onClick={fillAllHome}>
-            Fill all home
-          </button>
           <button className="clear-picks-btn dev-btn" onClick={() => fillHome(futureIds)}>
             Fill future home
+          </button>
+          <button className="clear-picks-btn dev-btn" onClick={() => fillAllHome()}>
+            Fill all home
           </button>
         </div>
       )}
