@@ -20,7 +20,7 @@ function App() {
   const [showShare, setShowShare] = useState(false);
   const [showManage, setShowManage] = useState(false);
   const [view, setView] = useState<"group" | "knockout" | "leaderboard">("group");
-  const { picks, getPick, togglePick, fillAllHome, fillHome } = useMatchPicks();
+  const { picks, getPick, togglePick, fillAllHome, fillHome, fillAllAway } = useMatchPicks();
   const { imported, addImported, removeImported, getImportedPick } = useImportedPicks();
 
   // Compute pick completion per group (only future matches count)
@@ -89,6 +89,9 @@ function App() {
           </button>
           <button className="clear-picks-btn dev-btn" onClick={() => fillAllHome()}>
             Fill all home
+          </button>
+          <button className="clear-picks-btn dev-btn" onClick={() => fillAllAway()}>
+            Fill all away
           </button>
         </div>
       )}

@@ -74,6 +74,17 @@ export function useMatchPicks() {
         });
     }, []);
 
+    const fillAllAway = useCallback(() => {
+        setPicks(() => {
+            const next: PicksStore = {};
+            for (let i = 1; i <= 72; i++) {
+                next[String(i)] = { selection: "away", timestamp: Date.now() };
+            }
+            savePicks(next);
+            return next;
+        });
+    }, []);
+
     const fillHome = useCallback((ids: number[]) => {
         setPicks((prev) => {
             const next = { ...prev };
@@ -86,5 +97,5 @@ export function useMatchPicks() {
         });
     }, []);
 
-    return { picks, getPick, togglePick, fillAllHome, fillHome };
+    return { picks, getPick, togglePick, fillAllHome, fillHome, fillAllAway };
 }
