@@ -62,7 +62,7 @@ const _FIXTURES: Omit<MatchFixture, "id" | "kickoff">[] = [
     { date: "Sun, Jun 14", time: "4:00 PM", home: "Netherlands", away: "Japan", venue: "AT&T Stadium, Arlington", group: "F" },
     { date: "Sun, Jun 14", time: "10:00 PM", home: "Sweden", away: "Tunisia", venue: "Estadio BBVA, Monterrey", group: "F" },
     { date: "Sat, Jun 20", time: "1:00 PM", home: "Netherlands", away: "Sweden", venue: "NRG Stadium, Houston", group: "F" },
-    { date: "Sat, Jun 20", time: "12:00 AM", home: "Tunisia", away: "Japan", venue: "Estadio BBVA, Monterrey", group: "F" },
+    { date: "Sat, Jun 21", time: "12:00 AM", home: "Tunisia", away: "Japan", venue: "Estadio BBVA, Monterrey", group: "F" },
     { date: "Thu, Jun 25", time: "7:00 PM", home: "Japan", away: "Sweden", venue: "AT&T Stadium, Arlington", group: "F" },
     { date: "Thu, Jun 25", time: "7:00 PM", home: "Tunisia", away: "Netherlands", venue: "Arrowhead Stadium, Kansas City", group: "F" },
 
@@ -92,7 +92,7 @@ const _FIXTURES: Omit<MatchFixture, "id" | "kickoff">[] = [
 
     // Group J
     { date: "Tue, Jun 16", time: "9:00 PM", home: "Argentina", away: "Algeria", venue: "Arrowhead Stadium, Kansas City", group: "J" },
-    { date: "Tue, Jun 16", time: "12:00 AM", home: "Austria", away: "Jordan", venue: "Levi's Stadium, Santa Clara", group: "J" },
+    { date: "Tue, Jun 17", time: "12:00 AM", home: "Austria", away: "Jordan", venue: "Levi's Stadium, Santa Clara", group: "J" },
     { date: "Mon, Jun 22", time: "1:00 PM", home: "Argentina", away: "Austria", venue: "AT&T Stadium, Arlington", group: "J" },
     { date: "Mon, Jun 22", time: "11:00 PM", home: "Jordan", away: "Algeria", venue: "Levi's Stadium, Santa Clara", group: "J" },
     { date: "Sat, Jun 27", time: "10:00 PM", home: "Jordan", away: "Argentina", venue: "AT&T Stadium, Arlington", group: "J" },

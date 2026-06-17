@@ -112,7 +112,7 @@ export function FixtureCard({ fixture, getPick, onPick, imported, getImportedPic
                     onClick={() => onPick(fixture.id, "home")}
                     disabled={locked}
                 >
-                    Home
+                    {fixture.home}
                 </button>
                 <button
                     className={`pick-btn pick-tie${pick === "tie" ? " selected" : ""}${hasResult && scrapeResult!.result === "tie" ? " was-correct" : ""}`}
@@ -126,7 +126,7 @@ export function FixtureCard({ fixture, getPick, onPick, imported, getImportedPic
                     onClick={() => onPick(fixture.id, "away")}
                     disabled={locked}
                 >
-                    Away
+                    {fixture.away}
                 </button>
             </div>
 

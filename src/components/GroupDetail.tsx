@@ -223,7 +223,7 @@ export function GroupDetail({ group, getPick, onPick, imported, getImportedPick 
                                             onClick={() => onPick(m.fixture!.id, "home")}
                                             disabled={m.status !== "future"}
                                         >
-                                            Home
+                                            {m.home.team}
                                         </button>
                                         <button
                                             className={`pick-btn pick-tie${getPick(m.fixture.id) === "tie" ? " selected" : ""}${hasResult && scrapeResult!.result === "tie" ? " was-correct" : ""}`}
@@ -237,7 +237,7 @@ export function GroupDetail({ group, getPick, onPick, imported, getImportedPick 
                                             onClick={() => onPick(m.fixture!.id, "away")}
                                             disabled={m.status !== "future"}
                                         >
-                                            Away
+                                            {m.away.team}
                                         </button>
                                     </>
                                 )}
