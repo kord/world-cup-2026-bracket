@@ -27,7 +27,7 @@ export function Toolbar({
 }: ToolbarProps) {
     return (
         <div className="toolbar">
-            {phase && onPhaseChange && (
+            {phase && import.meta.env.DEV && onPhaseChange && (
                 <div className="phase-toggle">
                     <button
                         className={`phase-btn${phase === "group" ? " active" : ""}`}
