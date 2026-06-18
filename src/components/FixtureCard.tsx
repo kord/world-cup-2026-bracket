@@ -38,14 +38,16 @@ export function FixtureCard({ fixture, getPick, onPick, imported, getImportedPic
     const hasResult = scrapeResult !== null;
     const pickCorrect = hasResult ? isPickCorrect(fixture.id, pick) : null;
 
-    // Gather friend picks for this match
-    const friendPicks = Object.values(imported)
-        .map(f => {
-            const pick = getImportedPick(f.id, fixture.id);
-            const correct = hasResult ? isPickCorrect(fixture.id, pick) : null;
-            return { name: f.name, pick, correct };
-        })
-        .filter(f => f.pick !== null);
+    // Gather friend picks for this match, grouped by result
+    const friendPicksByResult: Record<string, { name: string; correct: boolean | null }[]> = {};
+    for (const f of Object.values(imported)) {
+        const pick = getImportedPick(f.id, fixture.id);
+        if (pick === null) continue;
+        const correct = hasResult ? isPickCorrect(fixture.id, pick) : null;
+        (friendPicksByResult[pick] ??= []).push({ name: f.name, correct });
+    }
+    const friendPickGroups = Object.entries(friendPicksByResult);
+    const hasFriendPicks = friendPickGroups.length > 0;
 
     return (
         <div className={`matchup-card match-${timeInfo.status}${hasResult ? " has-result" : ""}`}>
@@ -130,17 +132,23 @@ export function FixtureCard({ fixture, getPick, onPick, imported, getImportedPic
                 </button>
             </div>
 
-            {friendPicks.length > 0 && (
+            {hasFriendPicks && (
                 <div className="friend-picks">
-                    {friendPicks.map((fp, i) => (
-                        <span
-                            key={i}
-                            className={`friend-pick fp-${fp.pick}${fp.correct === true ? " fp-correct" : ""}${fp.correct === false ? " fp-incorrect" : ""}`}
-                        >
-                            {fp.name}: {fp.pick === "home" ? "H" : fp.pick === "away" ? "A" : "T"}
-                            {fp.correct === true ? " ✓" : fp.correct === false ? " ✗" : ""}
-                        </span>
-                    ))}
+                    {friendPickGroups.map(([result, people]) => {
+                        const label = result === "home" ? fixture.home : result === "away" ? fixture.away : "Draw";
+                        const correct = people[0]?.correct;
+                        return (
+                            <span key={result} className={`friend-pick fp-${result}${correct === true ? " fp-correct" : correct === false ? " fp-incorrect" : " fp-unknown"}`}>
+                                {label}:{" "}
+                                {people.map((p, i) => (
+                                    <span key={p.name}>
+                                        {p.name}{p.correct === true ? " ✓" : p.correct === false ? " ✗" : ""}
+                                        {i < people.length - 1 ? ", " : ""}
+                                    </span>
+                                ))}
+                            </span>
+                        );
+                    })}
                 </div>
             )}
         </div>

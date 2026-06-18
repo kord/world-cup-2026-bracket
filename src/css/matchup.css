@@ -294,27 +294,30 @@
     white-space: nowrap;
 
     &.fp-home {
-        background: #dbeafe;
-        color: #1e40af;
+        /* background: #dbeafe; */
+        /* color: #1e40af; */
     }
 
     &.fp-draw {
-        background: #f3f4f6;
-        color: #6b7280;
+        /* background: #f3f4f6; */
+        /* color: #6b7280; */
     }
 
     &.fp-away {
-        background: #fef3c7;
-        color: #92400e;
+        /* background: #fef3c7; */
+        /* color: #92400e; */
     }
 
     &.fp-correct {
-        background: #d4edda;
-        color: #1a7a2e;
+        border: 2px solid #38a169;
     }
 
     &.fp-incorrect {
-        opacity: 0.55;
+        border: 2px solid #e53e3e;
+    }
+
+    &.fp-unknown {
+        border: 1px solid #ffffff;
     }
 }
 
