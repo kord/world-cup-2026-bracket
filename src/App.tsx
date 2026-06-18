@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, type SetStateAction } from "react";
 import { getGroups } from "./data/teams";
 import { GroupSidebar } from "./components/GroupSidebar";
 import { GroupDetail } from "./components/GroupDetail";
@@ -113,7 +113,7 @@ function App() {
               groupFixtureIds={groupFixtureIds}
               myPicks={picks}
               imported={imported}
-              onSelectGroup={(group) => { setSelectedGroup(group); setView("group"); }}
+              onSelectGroup={(group: SetStateAction<string | null>) => { setSelectedGroup(group); setView("group"); }}
             />
           ) : view === "knockout" ? (
             <KnockoutBracket />
