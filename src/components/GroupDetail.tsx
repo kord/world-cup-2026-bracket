@@ -6,6 +6,7 @@ import { predictByName, type EloPrediction } from "../data/eloRatings";
 import type { PickSelection } from "../data/useMatchPicks";
 import type { ImportedPickSet } from "../data/useImportedPicks";
 import { getScrapeResult, isPickCorrect } from "../data/matchResults";
+import { RESULT_DELAY_MS } from "../data/constants";
 import { getStandings } from "../data/standings";
 
 interface GroupDetailProps {
@@ -141,7 +142,6 @@ export function GroupDetail({ group, getPick, onPick, imported, getImportedPick 
             <div className="matchups-grid">
                 {matchups.map((m, i) => {
                     const matchId = m.fixture?.id;
-                    const RESULT_DELAY_MS = 2 * 60 * 60 * 1000;
                     const scrapeResult = matchId != null ? getScrapeResult(matchId) : null;
                     const hasResult = scrapeResult !== null && m.fixture != null && Date.now() >= m.fixture.kickoff + RESULT_DELAY_MS;
                     const pick = matchId != null ? getPick(matchId) : null;

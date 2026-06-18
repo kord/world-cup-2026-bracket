@@ -5,6 +5,7 @@ import { flagUrl } from "../data/countryCodes";
 import { getMatchTimeInfo } from "../data/matchTime";
 import { predictByName } from "../data/eloRatings";
 import { getScrapeResult, isPickCorrect } from "../data/matchResults";
+import { RESULT_DELAY_MS } from "../data/constants";
 
 interface FixtureCardProps {
     fixture: MatchFixture;
@@ -34,7 +35,6 @@ export function FixtureCard({ fixture, getPick, onPick, imported, getImportedPic
     const awayFlag = flagUrl(fixture.away);
     const pick = getPick(fixture.id);
     const locked = timeInfo.status !== "future";
-    const RESULT_DELAY_MS = 2 * 60 * 60 * 1000;
     const scrapeResult = getScrapeResult(fixture.id);
     const hasResult = scrapeResult !== null && Date.now() >= fixture.kickoff + RESULT_DELAY_MS;
     const pickCorrect = hasResult ? isPickCorrect(fixture.id, pick) : null;
