@@ -246,13 +246,10 @@
 
     &.was-correct {
         border-color: #38a169;
-        background: #d4edda;
-        color: #1a7a2e;
+        border-width: 2px;
     }
 
     &.was-correct.selected {
-        background: #38a169;
-        color: #fff;
         border-color: #38a169;
     }
 }
