@@ -112,7 +112,7 @@
 
     th,
     td {
-        padding: 8px 14px;
+        padding: 4px 18px;
         text-align: center;
         border-bottom: 1px solid var(--border);
     }
