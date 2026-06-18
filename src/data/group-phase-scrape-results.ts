@@ -3,7 +3,7 @@
 // 25 group-stage match results scraped from worldcupstats.football
 //
 export interface ScrapeResult {
-  result: "home" | "away" | "tie";
+  result: "home" | "away" | "draw";
   homeScore: number;
   awayScore: number;
   home: string;
@@ -18,13 +18,13 @@ export const groupPhaseScrapeResults: Record<number, ScrapeResult> = {
   // Korea Republic 2–1 Czechia — Thu, Jun 11, 10:00 PM ET
   "2": {"result":"home","homeScore":2,"awayScore":1,"home":"Korea Republic","away":"Czechia","date":"Thu, Jun 11","time":"10:00 PM"},
   // Czechia 1–1 South Africa — Thu, Jun 18, 12:00 PM ET
-  "3": {"result":"tie","homeScore":1,"awayScore":1,"home":"Czechia","away":"South Africa","date":"Thu, Jun 18","time":"12:00 PM"},
+  "3": {"result":"draw","homeScore":1,"awayScore":1,"home":"Czechia","away":"South Africa","date":"Thu, Jun 18","time":"12:00 PM"},
   // Canada 1–1 Bosnia and Herzegovina — Fri, Jun 12, 3:00 PM ET
-  "7": {"result":"tie","homeScore":1,"awayScore":1,"home":"Canada","away":"Bosnia and Herzegovina","date":"Fri, Jun 12","time":"3:00 PM"},
+  "7": {"result":"draw","homeScore":1,"awayScore":1,"home":"Canada","away":"Bosnia and Herzegovina","date":"Fri, Jun 12","time":"3:00 PM"},
   // Qatar 1–1 Switzerland — Sat, Jun 13, 3:00 PM ET
-  "8": {"result":"tie","homeScore":1,"awayScore":1,"home":"Qatar","away":"Switzerland","date":"Sat, Jun 13","time":"3:00 PM"},
+  "8": {"result":"draw","homeScore":1,"awayScore":1,"home":"Qatar","away":"Switzerland","date":"Sat, Jun 13","time":"3:00 PM"},
   // Brazil 1–1 Morocco — Sat, Jun 13, 6:00 PM ET
-  "13": {"result":"tie","homeScore":1,"awayScore":1,"home":"Brazil","away":"Morocco","date":"Sat, Jun 13","time":"6:00 PM"},
+  "13": {"result":"draw","homeScore":1,"awayScore":1,"home":"Brazil","away":"Morocco","date":"Sat, Jun 13","time":"6:00 PM"},
   // Haiti 0–1 Scotland — Sat, Jun 13, 9:00 PM ET
   "14": {"result":"away","homeScore":0,"awayScore":1,"home":"Haiti","away":"Scotland","date":"Sat, Jun 13","time":"9:00 PM"},
   // United States 4–1 Paraguay — Fri, Jun 12, 9:00 PM ET
@@ -36,17 +36,17 @@ export const groupPhaseScrapeResults: Record<number, ScrapeResult> = {
   // Ivory Coast 1–0 Ecuador — Sun, Jun 14, 7:00 PM ET
   "26": {"result":"home","homeScore":1,"awayScore":0,"home":"Ivory Coast","away":"Ecuador","date":"Sun, Jun 14","time":"7:00 PM"},
   // Netherlands 2–2 Japan — Sun, Jun 14, 4:00 PM ET
-  "31": {"result":"tie","homeScore":2,"awayScore":2,"home":"Netherlands","away":"Japan","date":"Sun, Jun 14","time":"4:00 PM"},
+  "31": {"result":"draw","homeScore":2,"awayScore":2,"home":"Netherlands","away":"Japan","date":"Sun, Jun 14","time":"4:00 PM"},
   // Sweden 5–1 Tunisia — Sun, Jun 14, 10:00 PM ET
   "32": {"result":"home","homeScore":5,"awayScore":1,"home":"Sweden","away":"Tunisia","date":"Sun, Jun 14","time":"10:00 PM"},
   // Belgium 1–1 Egypt — Mon, Jun 15, 3:00 PM ET
-  "37": {"result":"tie","homeScore":1,"awayScore":1,"home":"Belgium","away":"Egypt","date":"Mon, Jun 15","time":"3:00 PM"},
+  "37": {"result":"draw","homeScore":1,"awayScore":1,"home":"Belgium","away":"Egypt","date":"Mon, Jun 15","time":"3:00 PM"},
   // Iran 2–2 New Zealand — Mon, Jun 15, 9:00 PM ET
-  "38": {"result":"tie","homeScore":2,"awayScore":2,"home":"Iran","away":"New Zealand","date":"Mon, Jun 15","time":"9:00 PM"},
+  "38": {"result":"draw","homeScore":2,"awayScore":2,"home":"Iran","away":"New Zealand","date":"Mon, Jun 15","time":"9:00 PM"},
   // Spain 0–0 Cape Verde — Mon, Jun 15, 12:00 PM ET
-  "43": {"result":"tie","homeScore":0,"awayScore":0,"home":"Spain","away":"Cape Verde","date":"Mon, Jun 15","time":"12:00 PM"},
+  "43": {"result":"draw","homeScore":0,"awayScore":0,"home":"Spain","away":"Cape Verde","date":"Mon, Jun 15","time":"12:00 PM"},
   // Saudi Arabia 1–1 Uruguay — Mon, Jun 15, 6:00 PM ET
-  "44": {"result":"tie","homeScore":1,"awayScore":1,"home":"Saudi Arabia","away":"Uruguay","date":"Mon, Jun 15","time":"6:00 PM"},
+  "44": {"result":"draw","homeScore":1,"awayScore":1,"home":"Saudi Arabia","away":"Uruguay","date":"Mon, Jun 15","time":"6:00 PM"},
   // France 3–1 Senegal — Tue, Jun 16, 3:00 PM ET
   "49": {"result":"home","homeScore":3,"awayScore":1,"home":"France","away":"Senegal","date":"Tue, Jun 16","time":"3:00 PM"},
   // Iraq 1–4 Norway — Tue, Jun 16, 6:00 PM ET
@@ -56,7 +56,7 @@ export const groupPhaseScrapeResults: Record<number, ScrapeResult> = {
   // Austria 3–1 Jordan — Tue, Jun 16, 12:00 AM ET
   "56": {"result":"home","homeScore":3,"awayScore":1,"home":"Austria","away":"Jordan","date":"Tue, Jun 16","time":"12:00 AM"},
   // Portugal 1–1 DR Congo — Wed, Jun 17, 1:00 PM ET
-  "61": {"result":"tie","homeScore":1,"awayScore":1,"home":"Portugal","away":"DR Congo","date":"Wed, Jun 17","time":"1:00 PM"},
+  "61": {"result":"draw","homeScore":1,"awayScore":1,"home":"Portugal","away":"DR Congo","date":"Wed, Jun 17","time":"1:00 PM"},
   // Uzbekistan 1–3 Colombia — Wed, Jun 17, 10:00 PM ET
   "62": {"result":"away","homeScore":1,"awayScore":3,"home":"Uzbekistan","away":"Colombia","date":"Wed, Jun 17","time":"10:00 PM"},
   // England 4–2 Croatia — Wed, Jun 17, 4:00 PM ET

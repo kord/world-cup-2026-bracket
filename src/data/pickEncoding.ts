@@ -21,7 +21,7 @@ export function encodePicks(name: string, picks: PicksStore): string {
     const pickBytes: number[] = Array(18).fill(0);
     for (let i = 1; i <= 72; i++) {
         const pick = picks[String(i)]?.selection;
-        const bits = pick === "home" ? 0 : pick === "tie" ? 1 : pick === "away" ? 2 : 3;
+        const bits = pick === "home" ? 0 : pick === "draw" ? 1 : pick === "away" ? 2 : 3;
         const byteIdx = Math.floor((i - 1) / 4);
         const shift = 6 - ((i - 1) % 4) * 2;
         pickBytes[byteIdx] |= bits << shift;
@@ -59,7 +59,7 @@ export function decodePicks(encoded: string): { name: string; picks: PicksStore 
             const shift = 6 - ((i - 1) % 4) * 2;
             const bits = (pickBytes[byteIdx] >> shift) & 3;
             if (bits === 0) picks[String(i)] = { selection: "home", timestamp: 0 };
-            else if (bits === 1) picks[String(i)] = { selection: "tie", timestamp: 0 };
+            else if (bits === 1) picks[String(i)] = { selection: "draw", timestamp: 0 };
             else if (bits === 2) picks[String(i)] = { selection: "away", timestamp: 0 };
         }
         return { name, picks };

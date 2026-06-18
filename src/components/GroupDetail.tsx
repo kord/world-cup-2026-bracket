@@ -99,7 +99,7 @@ export function GroupDetail({ group, getPick, onPick, imported, getImportedPick 
         <div className="detail-pane">
             <h2 className="detail-heading">Group {group.name} — Results</h2>
             <p className="detail-subtitle">
-                Pick a winner (or tie) for each match
+                Pick a winner (or draw) for each match
             </p>
 
             {standings.length > 0 && (
@@ -226,11 +226,11 @@ export function GroupDetail({ group, getPick, onPick, imported, getImportedPick 
                                             {m.home.team}
                                         </button>
                                         <button
-                                            className={`pick-btn pick-tie${getPick(m.fixture.id) === "tie" ? " selected" : ""}${hasResult && scrapeResult!.result === "tie" ? " was-correct" : ""}`}
-                                            onClick={() => onPick(m.fixture!.id, "tie")}
+                                            className={`pick-btn pick-draw${getPick(m.fixture.id) === "draw" ? " selected" : ""}${hasResult && scrapeResult!.result === "draw" ? " was-correct" : ""}`}
+                                            onClick={() => onPick(m.fixture!.id, "draw")}
                                             disabled={m.status !== "future"}
                                         >
-                                            Tie
+                                            Draw
                                         </button>
                                         <button
                                             className={`pick-btn pick-away${getPick(m.fixture.id) === "away" ? " selected" : ""}${hasResult && scrapeResult!.result === "away" ? " was-correct" : ""}`}

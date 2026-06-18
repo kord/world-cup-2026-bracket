@@ -1,6 +1,6 @@
 import { useState, useCallback } from "react";
 
-export type PickSelection = "home" | "tie" | "away" | null;
+export type PickSelection = "home" | "draw" | "away" | null;
 
 interface PickEntry {
     selection: PickSelection;
