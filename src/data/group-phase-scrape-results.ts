@@ -23,8 +23,8 @@ export const groupPhaseScrapeResults: Record<number, ScrapeResult> = {
   "7": {"result":"draw","homeScore":1,"awayScore":1,"home":"Canada","away":"Bosnia and Herzegovina","date":"Fri, Jun 12","time":"3:00 PM"},
   // Qatar 1–1 Switzerland — Sat, Jun 13, 3:00 PM ET
   "8": {"result":"draw","homeScore":1,"awayScore":1,"home":"Qatar","away":"Switzerland","date":"Sat, Jun 13","time":"3:00 PM"},
-  // Switzerland 1–0 Bosnia and Herzegovina — Thu, Jun 18, 3:00 PM ET
-  "9": {"result":"home","homeScore":1,"awayScore":0,"home":"Switzerland","away":"Bosnia and Herzegovina","date":"Thu, Jun 18","time":"3:00 PM"},
+  // Switzerland 4–1 Bosnia and Herzegovina — Thu, Jun 18, 3:00 PM ET
+  "9": {"result":"home","homeScore":4,"awayScore":1,"home":"Switzerland","away":"Bosnia and Herzegovina","date":"Thu, Jun 18","time":"3:00 PM"},
   // Brazil 1–1 Morocco — Sat, Jun 13, 6:00 PM ET
   "13": {"result":"draw","homeScore":1,"awayScore":1,"home":"Brazil","away":"Morocco","date":"Sat, Jun 13","time":"6:00 PM"},
   // Haiti 0–1 Scotland — Sat, Jun 13, 9:00 PM ET

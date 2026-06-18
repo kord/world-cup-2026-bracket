@@ -27,3 +27,4 @@ dist-ssr
 firebase.json
 .firebase/hosting.cHVibGlj.cache
 /.firebase
+src/data/group-phase-scrape-results.ts
