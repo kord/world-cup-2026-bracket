@@ -1,7 +1,5 @@
 import type { MatchFixture } from "../types";
-
-/** Match duration in hours — used to determine "live" status */
-const MATCH_DURATION_HOURS = 2;
+import { RESULT_DELAY_MS } from "./constants";
 
 export type MatchStatus = "past" | "live" | "future";
 
@@ -57,7 +55,7 @@ export function formatLocal(utcMs: number): string {
 
 /** Determine match status from a UTC kickoff timestamp */
 export function getStatusFromKickoff(kickoffMs: number): MatchStatus {
-    const endMs = kickoffMs + MATCH_DURATION_HOURS * 60 * 60 * 1000;
+    const endMs = kickoffMs + RESULT_DELAY_MS;
     const now = Date.now();
     if (now < kickoffMs) return "future";
     if (now < endMs) return "live";
@@ -70,7 +68,7 @@ export function getStatusFromKickoff(kickoffMs: number): MatchStatus {
  */
 export function getMatchTimeInfo(fixture: MatchFixture): MatchTimeInfo {
     const kickoffMs = fixture.kickoff;
-    const endMs = kickoffMs + MATCH_DURATION_HOURS * 60 * 60 * 1000;
+    const endMs = kickoffMs + RESULT_DELAY_MS;
     const now = Date.now();
 
     let status: MatchStatus;
