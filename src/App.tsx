@@ -4,7 +4,6 @@ import { GroupSidebar } from "./components/GroupSidebar";
 import { GroupDetail } from "./components/GroupDetail";
 import { NextMatches } from "./components/NextMatches";
 import { KnockoutBracket } from "./components/KnockoutBracket";
-import { SharePicks } from "./components/SharePicks";
 import { ManageFriends } from "./components/ManageFriends";
 import { Leaderboard } from "./components/Leaderboard";
 import { Toolbar } from "./components/Toolbar";
@@ -17,7 +16,6 @@ function App() {
   const groups = getGroups();
   const [selectedGroup, setSelectedGroup] = useState<string | null>(null);
   const [confirmClear, setConfirmClear] = useState(false);
-  const [showShare, setShowShare] = useState(false);
   const [showManage, setShowManage] = useState(false);
   const [view, setView] = useState<"group" | "knockout" | "leaderboard">("group");
   const { picks, getPick, togglePick, fillAllHome, fillHome, fillAllAway } = useMatchPicks();
@@ -71,11 +69,9 @@ function App() {
               : "Track your picks against friends"}
         </p>
         <Toolbar
-          allFuturePicked={allFuturePicked}
           confirmClear={confirmClear}
           onClear={handleClear}
           onClearBlur={() => setConfirmClear(false)}
-          onShare={() => setShowShare(true)}
           onManageFriends={() => setShowManage(true)}
           view={view}
           onViewChange={setView}
@@ -133,17 +129,13 @@ function App() {
         </main>
       </div>
 
-      {showShare && (
-        <SharePicks
-          onShare={handleShare}
-          onClose={() => setShowShare(false)}
-        />
-      )}
       {showManage && (
         <ManageFriends
           imported={imported}
           myPicks={picks}
+          allFuturePicked={allFuturePicked}
           onImport={addImported}
+          onShare={handleShare}
           onRemove={removeImported}
           onClose={() => setShowManage(false)}
         />

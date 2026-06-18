@@ -1,11 +1,9 @@
 import type { ReactNode } from "react";
 
 interface ToolbarProps {
-    allFuturePicked: boolean;
     confirmClear: boolean;
     onClear: () => void;
     onClearBlur: () => void;
-    onShare: () => void;
     onManageFriends: () => void;
     clearLabel?: string;
     view?: "group" | "knockout" | "leaderboard";
@@ -14,11 +12,9 @@ interface ToolbarProps {
 }
 
 export function Toolbar({
-    allFuturePicked,
     confirmClear,
     onClear,
     onClearBlur,
-    onShare,
     onManageFriends,
     clearLabel,
     view,
@@ -55,17 +51,6 @@ export function Toolbar({
                 onBlur={onClearBlur}
             >
                 {confirmClear ? "Click again to confirm" : (clearLabel ?? "Clear all picks")}
-            </button>
-            <button
-                className={`share-btn${!allFuturePicked ? " share-disabled" : ""}`}
-                onClick={() => allFuturePicked && onShare()}
-                title={
-                    allFuturePicked
-                        ? "Share your picks"
-                        : "You need to finish your picks before sharing."
-                }
-            >
-                Share picks
             </button>
             <button className="import-picks-btn" onClick={onManageFriends}>
                 Manage friends
