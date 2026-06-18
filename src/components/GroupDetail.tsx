@@ -141,8 +141,9 @@ export function GroupDetail({ group, getPick, onPick, imported, getImportedPick 
             <div className="matchups-grid">
                 {matchups.map((m, i) => {
                     const matchId = m.fixture?.id;
+                    const RESULT_DELAY_MS = 2 * 60 * 60 * 1000;
                     const scrapeResult = matchId != null ? getScrapeResult(matchId) : null;
-                    const hasResult = scrapeResult !== null;
+                    const hasResult = scrapeResult !== null && m.fixture != null && Date.now() >= m.fixture.kickoff + RESULT_DELAY_MS;
                     const pick = matchId != null ? getPick(matchId) : null;
                     const pickCorrect = matchId != null ? isPickCorrect(matchId, pick) : null;
 

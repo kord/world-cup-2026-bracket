@@ -141,10 +141,10 @@ async function scrapeGroup(group: string): Promise<ParsedResult[]> {
     return results;
 }
 
-function resultToString(_home: string, _away: string, h: number, a: number): "home" | "away" | "tie" {
+function resultToString(_home: string, _away: string, h: number, a: number): "home" | "away" | "draw" {
     if (h > a) return "home";
     if (a > h) return "away";
-    return "tie";
+    return "draw";
 }
 
 async function main() {
@@ -200,7 +200,7 @@ async function main() {
         `// ${items.length} group-stage match results scraped from worldcupstats.football`,
         "//",
         "export interface ScrapeResult {",
-        '  result: "home" | "away" | "tie";',
+        '  result: "home" | "away" | "draw";',
         "  homeScore: number;",
         "  awayScore: number;",
         "  home: string;",
