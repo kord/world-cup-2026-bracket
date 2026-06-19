@@ -95,7 +95,7 @@ function App() {
     <div className="app">
       <header className="app-header">
 
-        <h1 onClick={() => setSelectedGroup(null)}>
+        <h1 onClick={() => { setSelectedGroup(null); setView("group"); }}>
           World Cup 2026 — {view === "group" ? "Group Stage" : view === "knockout" ? "Knockout Phase" : "Leaderboard"}
         </h1>
         <p className="subtitle">
