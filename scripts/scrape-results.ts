@@ -5,6 +5,8 @@
  *
  * Usage: npx tsx scripts/scrape-results.ts
  */
+// Suppress missing Node type definitions in projects without @types/node
+// @ts-ignore
 import { writeFileSync } from "fs";
 
 const OUT = "src/data/group-phase-scrape-results.ts";
