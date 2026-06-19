@@ -1,4 +1,4 @@
-import { useState, useMemo, type SetStateAction } from "react";
+import { useState, useMemo, useEffect, useRef, type SetStateAction } from "react";
 import { getGroups } from "./data/teams";
 import { GroupSidebar } from "./components/GroupSidebar";
 import { GroupDetail } from "./components/GroupDetail";
@@ -10,13 +10,15 @@ import { Toolbar } from "./components/Toolbar";
 import { useMatchPicks } from "./data/useMatchPicks";
 import { useImportedPicks } from "./data/useImportedPicks";
 import { getGroupFixtureIds, getFutureFixtureIds } from "./data/fixtures";
-import { encodePicks } from "./data/pickEncoding";
+import { encodePicks, decodePicks } from "./data/pickEncoding";
 
 function App() {
   const groups = getGroups();
   const [selectedGroup, setSelectedGroup] = useState<string | null>(null);
   const [confirmClear, setConfirmClear] = useState(false);
   const [showManage, setShowManage] = useState(false);
+  const [addedFriendName, setAddedFriendName] = useState<string | null>(null);
+  const urlProcessed = useRef(false);
   const [view, setView] = useState<"group" | "knockout" | "leaderboard">("group");
   const { picks, getPick, togglePick, fillAllHome, fillHome, fillAllAway } = useMatchPicks();
   const { imported, addImported, removeImported, getImportedPick } = useImportedPicks();
@@ -44,6 +46,41 @@ function App() {
   const handleShare = (name: string): string => {
     return encodePicks(name, picks);
   };
+
+  // Handle ?add=xyz URL parameter on first load
+  useEffect(() => {
+    if (urlProcessed.current) return;
+    const params = new URLSearchParams(window.location.search);
+    const addCode = params.get("add");
+    if (!addCode) return;
+    urlProcessed.current = true;
+
+    // Decode first to get the name
+    const decoded = decodePicks(addCode);
+    if (!decoded) return;
+
+    // Check if a friend with this name is already imported
+    const stored = localStorage.getItem("wc2026-imported-picks");
+    const existing: Record<string, { name: string }> = stored ? JSON.parse(stored) : {};
+    const alreadyExists = Object.values(existing).some((f) => f.name === decoded.name);
+    if (alreadyExists) {
+      // Still clean the URL
+      const url = new URL(window.location.href);
+      url.searchParams.delete("add");
+      window.history.replaceState({}, "", url);
+      return;
+    }
+
+    const result = addImported(addCode);
+    if (result) {
+      setAddedFriendName(result.name);
+    }
+
+    // Clean the URL
+    const url = new URL(window.location.href);
+    url.searchParams.delete("add");
+    window.history.replaceState({}, "", url);
+  }, [addImported]);
 
   const handleClear = () => {
     if (!confirmClear) {
@@ -139,6 +176,20 @@ function App() {
           onRemove={removeImported}
           onClose={() => setShowManage(false)}
         />
+      )}
+
+      {addedFriendName && (
+        <div className="import-overlay" onClick={() => setAddedFriendName(null)}>
+          <div className="import-modal" onClick={e => e.stopPropagation()}>
+            <h3>Friend added</h3>
+            <p className="import-success">{addedFriendName} has been added to your friends.</p>
+            <div className="import-actions">
+              <button className="import-btn import-btn-primary" onClick={() => setAddedFriendName(null)}>
+                OK
+              </button>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );
