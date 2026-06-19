@@ -16,14 +16,22 @@ export function SharePicks({ onShare, onClose }: SharePicksProps) {
     const [error, setError] = useState<string | null>(null);
     const inputRef = useRef<HTMLInputElement>(null);
 
-    const handleGenerate = () => {
+    const handleGenerate = async () => {
         setError(null);
         if (!name.trim()) {
             setError("Enter your name");
             return;
         }
         const encoded = onShare(name.trim());
-        setShareUrl(`${BASE_URL}?add=${encodeURIComponent(encoded)}`);
+        const url = `${BASE_URL}?add=${encodeURIComponent(encoded)}`;
+        setShareUrl(url);
+        try {
+            await navigator.clipboard.writeText(url);
+            setCopied(true);
+            setTimeout(() => setCopied(false), 2000);
+        } catch {
+            // clipboard unavailable — user can still copy manually
+        }
     };
 
     const handleCopy = async () => {
