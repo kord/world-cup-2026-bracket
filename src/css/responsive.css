@@ -12,7 +12,8 @@
         margin-bottom: 12px;
 
         .header-icon {
-            font-size: 1.8rem;
+            width: 32px;
+            height: 32px;
         }
 
         h1 {
@@ -225,7 +226,8 @@
         padding: 10px 10px 10px;
 
         .header-icon {
-            font-size: 1.5rem;
+            width: 28px;
+            height: 28px;
         }
 
         h1 {

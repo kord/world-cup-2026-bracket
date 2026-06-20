@@ -95,7 +95,7 @@ function App() {
     <div className="app">
       <header className="app-header">
         <div className="header-title" onClick={() => { setSelectedGroup(null); setView("group"); }}>
-          <span className="header-icon">🏆</span>
+          <img className="header-icon" src="/football.svg" alt="" />
           <div>
             <h1>World Cup 2026</h1>
             <p className="subtitle">
