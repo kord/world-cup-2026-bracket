@@ -25,9 +25,11 @@ export const COUNTRY_CODES: Record<string, string> = {
     "Ecuador": "ec",
     "Senegal": "sn",
     "Turkey": "tr",
+    "Türkiye": "tr",
     "Austria": "at",
     "Ivory Coast": "ci",
     "South Korea": "kr",
+    "Korea Republic": "kr",
     "Australia": "au",
     "Scotland": "gb-sct",
     "Canada": "ca",
@@ -40,6 +42,7 @@ export const COUNTRY_CODES: Record<string, string> = {
     "Tunisia": "tn",
     "Iran": "ir",
     "Congo DR": "cd",
+    "DR Congo": "cd",
     "Saudi Arabia": "sa",
     "Panama": "pa",
     "Qatar": "qa",
@@ -50,6 +53,7 @@ export const COUNTRY_CODES: Record<string, string> = {
     "South Africa": "za",
     "Jordan": "jo",
     "Curacao": "cw",
+    "Curaçao": "cw",
     "Haiti": "ht",
 };
 
