@@ -178,23 +178,28 @@ export function getNextFixtures(): MatchFixture[] {
 }
 
 /**
- * Return all fixtures at the earliest strictly-future kickoff time.
+ * Return all fixtures at the earliest strictly-future kickoff time(s),
+ * ensuring at least `minCount` matches are returned (default 2).
  * Ignores live/past matches. Returns empty if no future matches remain.
  */
-export function getUpcomingFixtures(): MatchFixture[] {
-    let earliest: MatchFixture | null = null;
-    let earliestKickoff = Infinity;
+export function getUpcomingFixtures(minCount: number = 2): MatchFixture[] {
+    // Sort future fixtures by kickoff ascending
+    const future = FIXTURES
+        .filter((f) => getMatchTimeInfo(f).status === "future")
+        .sort((a, b) => a.kickoff - b.kickoff);
 
-    for (const f of FIXTURES) {
-        const info = getMatchTimeInfo(f);
-        if (info.status === "future" && f.kickoff < earliestKickoff) {
-            earliest = f;
-            earliestKickoff = f.kickoff;
-        }
+    if (future.length === 0) return [];
+
+    // Collect complete kickoff groups until we have at least minCount
+    const result: MatchFixture[] = [];
+    let lastKickoff = -1;
+    for (const f of future) {
+        if (f.kickoff !== lastKickoff && result.length >= minCount) break;
+        result.push(f);
+        lastKickoff = f.kickoff;
     }
-    if (!earliest) return [];
 
-    return FIXTURES.filter((f) => f.kickoff === earliest!.kickoff);
+    return result;
 }
 
 /** Return all 72 fixture IDs */
