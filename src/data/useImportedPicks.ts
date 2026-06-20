@@ -57,7 +57,10 @@ export function useImportedPicks() {
 
     const getImportedPick = useCallback(
         (id: string, matchId: number): PickSelection => {
-            return imported[id]?.picks[String(matchId)]?.selection ?? null;
+            const sel = imported[id]?.picks[String(matchId)]?.selection ?? null;
+            // Normalize legacy "tie" → "draw"
+            if ((sel as string) === "tie") return "draw";
+            return sel;
         },
         [imported],
     );

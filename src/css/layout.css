@@ -9,26 +9,14 @@
 }
 
 .app-header {
-    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
     margin-bottom: 24px;
     padding: 20px 24px 16px;
     background: linear-gradient(135deg, var(--accent-bg) 0%, transparent 60%);
     border: 1px solid var(--border);
     border-radius: 12px;
-    position: relative;
-
-    &::after {
-        content: '';
-        position: absolute;
-        bottom: 0;
-        left: 50%;
-        transform: translateX(-50%);
-        width: 60px;
-        height: 3px;
-        background: var(--accent);
-        border-radius: 2px;
-        opacity: 0.6;
-    }
 }
 
 .header-title {

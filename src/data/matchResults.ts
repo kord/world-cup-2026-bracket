@@ -10,7 +10,9 @@ export function getScrapeResult(matchId: number): ScrapeResult | null {
 export function isPickCorrect(matchId: number, pick: string | null): boolean | null {
     const result = getScrapeResult(matchId);
     if (!result || !pick) return null;
-    return pick === result.result;
+    // Normalize legacy "tie" → "draw"
+    const normalized = pick === "tie" ? "draw" : pick;
+    return normalized === result.result;
 }
 
 /** Calculate success rate: correct picks / total picks for matches with results */

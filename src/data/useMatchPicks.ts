@@ -11,18 +11,29 @@ export type PicksStore = Record<string, PickEntry>;
 
 const STORAGE_KEY = "wc2026-picks";
 
+function normalizePick(s: string): PickSelection {
+    if (s === "tie") return "draw";
+    if (s === "home" || s === "draw" || s === "away") return s;
+    return null;
+}
+
 function loadPicks(): PicksStore {
     try {
         const raw = localStorage.getItem(STORAGE_KEY);
         if (!raw) return {};
         const parsed = JSON.parse(raw);
-        // Migrate old format: "1":"home" → "1":{selection:"home",timestamp:0}
         const result: PicksStore = {};
         for (const [key, val] of Object.entries(parsed)) {
             if (typeof val === "object" && val !== null && "selection" in val) {
-                result[key] = val as PickEntry;
+                const entry = val as PickEntry;
+                // Normalize legacy "tie" → "draw"
+                if (typeof entry.selection === "string") {
+                    entry.selection = normalizePick(entry.selection);
+                }
+                result[key] = entry;
             } else if (typeof val === "string") {
-                result[key] = { selection: val as PickSelection, timestamp: 0 };
+                // Migrate old format: "1":"home" → "1":{selection:"home",timestamp:0}
+                result[key] = { selection: normalizePick(val), timestamp: 0 };
             }
         }
         return result;
