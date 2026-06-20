@@ -94,17 +94,19 @@ function App() {
   return (
     <div className="app">
       <header className="app-header">
-
-        <h1 onClick={() => { setSelectedGroup(null); setView("group"); }}>
-          World Cup 2026 — {view === "group" ? "Group Stage" : view === "knockout" ? "Knockout Phase" : "Leaderboard"}
-        </h1>
-        <p className="subtitle">
-          {view === "group"
-            ? "48 teams · 12 groups · Pick your winners"
-            : view === "knockout"
-              ? "Round of 32 → Final · Coming soon"
-              : "Track your picks against friends"}
-        </p>
+        <div className="header-title" onClick={() => { setSelectedGroup(null); setView("group"); }}>
+          <span className="header-icon">🏆</span>
+          <div>
+            <h1>World Cup 2026</h1>
+            <p className="subtitle">
+              {view === "group"
+                ? "Group Stage — 48 teams · 12 groups · Pick your winners"
+                : view === "knockout"
+                  ? "Knockout Phase — Round of 32 → Final"
+                  : "Leaderboard — Track your picks against friends"}
+            </p>
+          </div>
+        </div>
         <Toolbar
           confirmClear={confirmClear}
           onClear={handleClear}
