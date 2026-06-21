@@ -161,7 +161,7 @@ export function KnockoutBracket() {
                                                             {getStatusFromKickoff(f.kickoff) === "past" ? "Played" : getStatusFromKickoff(f.kickoff) === "live" ? "LIVE" : "Upcoming"}
                                                         </span>
                                                     )}
-                                                    {(getStatusFromKickoff(f.kickoff) !== "future" || f.id === nextMatchId) && " "}#{f.id} · {formatLocal(f.kickoff)}
+                                                    {(getStatusFromKickoff(f.kickoff) !== "future" || f.id === nextMatchId) && " "}{formatLocal(f.kickoff)}
                                                 </span>
                                                 <a
                                                     className="bracket-venue"

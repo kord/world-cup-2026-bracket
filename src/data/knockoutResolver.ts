@@ -4,6 +4,8 @@
  * Determines which teams are locked into knockout positions (winner, runner-up,
  * 3rd place) based on completed group-stage results, using the official FIFA
  * tie-breaking criteria.
+ * 
+ * Resolution logic from https://www.fifa.com/en/tournaments/mens/worldcup/canadamexicousa2026/articles/groups-how-teams-qualify-tie-breakers
  */
 import { getStandings, type TeamStanding } from "./standings";
 import { getAllFixtures } from "./fixtures";
