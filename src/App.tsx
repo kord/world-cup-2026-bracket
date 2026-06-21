@@ -14,12 +14,23 @@ import { encodePicks, decodePicks } from "./data/pickEncoding";
 
 function App() {
   const groups = getGroups();
-  const [selectedGroup, setSelectedGroup] = useState<string | null>(null);
+  const [selectedGroup, setSelectedGroup] = useState<string | null>(() => {
+    // Read initial group from URL (only valid for group view)
+    const p = new URLSearchParams(window.location.search);
+    const g = p.get("group");
+    if (g && /^[A-L]$/i.test(g)) return g.toUpperCase();
+    return null;
+  });
   const [confirmClear, setConfirmClear] = useState(false);
   const [showManage, setShowManage] = useState(false);
   const [addedFriendName, setAddedFriendName] = useState<string | null>(null);
   const urlProcessed = useRef(false);
-  const [view, setView] = useState<"group" | "knockout" | "leaderboard">("group");
+  const [view, setView] = useState<"group" | "knockout" | "leaderboard">(() => {
+    // Read initial view from URL
+    const p = new URLSearchParams(window.location.search).get("view");
+    if (p === "knockout" || p === "leaderboard") return p;
+    return "group";
+  });
   const { picks, getPick, togglePick, fillAllHome, fillHome, fillAllAway } = useMatchPicks();
   const { imported, addImported, removeImported, getImportedPick } = useImportedPicks();
 
@@ -50,6 +61,7 @@ function App() {
   // Handle ?add=xyz URL parameter on first load
   useEffect(() => {
     if (urlProcessed.current) return;
+    urlProcessed.current = true;
     const params = new URLSearchParams(window.location.search);
     const addCode = params.get("add");
     if (!addCode) return;
@@ -81,6 +93,23 @@ function App() {
     url.searchParams.delete("add");
     window.history.replaceState({}, "", url);
   }, [addImported]);
+
+  // Sync view + selected group to URL so links are shareable
+  useEffect(() => {
+    const url = new URL(window.location.href);
+    if (view === "group") {
+      url.searchParams.delete("view");
+    } else {
+      url.searchParams.set("view", view);
+      url.searchParams.delete("group");
+    }
+    if (view === "group" && selectedGroup) {
+      url.searchParams.set("group", selectedGroup);
+    } else {
+      url.searchParams.delete("group");
+    }
+    window.history.replaceState(null, "", url);
+  }, [view, selectedGroup]);
 
   const handleClear = () => {
     if (!confirmClear) {
