@@ -11,7 +11,7 @@ Written with much assistance from Deepseek.
 - **Group stage picks** — choose home win, draw, or away win for each match
 - **Knockout bracket** — full Round of 32 → Final bracket with automatic slot resolution from completed group results
 - **Leaderboard** — track your picks against friends; shareable encoded pick URLs
-- **Live results** — past matches show actual scores, hide predictions, and highlight pick correctness
+- **Regularly Updated results** — past matches show actual scores, hide predictions, and highlight pick correctness
 - **ELO predictions** — win/draw/loss probabilities from official ELO ratings (worldfootballrankings.com)
 - **Standings tables** — live group standings with points, GD, GF, GA, and tiebreaker-aware sorting
 - **Next matches** — always shows at least 2 upcoming fixtures
