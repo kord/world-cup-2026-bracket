@@ -107,16 +107,16 @@ export function GroupDetail({ group, getPick, onPick, imported, getImportedPick 
                 <table className="standings-table">
                     <thead>
                         <tr>
-                            <th>#</th>
+                            <th>Rank</th>
                             <th>Team</th>
-                            <th>Pts</th>
-                            <th>P</th>
-                            <th>W</th>
-                            <th>D</th>
-                            <th>L</th>
-                            <th>GF</th>
-                            <th>GA</th>
-                            <th>GD</th>
+                            <th title="Points">Pts</th>
+                            <th title="Played">P</th>
+                            <th title="Wins">W</th>
+                            <th title="Draws">D</th>
+                            <th title="Losses">L</th>
+                            <th title="Goals For">GF</th>
+                            <th title="Goals Against">GA</th>
+                            <th title="Goal Difference">GD</th>
                         </tr>
                     </thead>
                     <tbody>
