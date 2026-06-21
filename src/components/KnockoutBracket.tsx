@@ -136,6 +136,7 @@ export function KnockoutBracket() {
                                     const awayResolved = !isPlaceholder(r.away);
                                     const homeFlag = homeResolved ? flagUrl(r.home) : null;
                                     const awayFlag = awayResolved ? flagUrl(r.away) : null;
+                                    const roundLabel = f.round === "Final" ? "F" : f.round === "Third Place" ? "3rd" : null;
                                     return (
                                         <div
                                             key={f.id}
@@ -143,14 +144,14 @@ export function KnockoutBracket() {
                                             onMouseEnter={() => setHovered(f.id)}
                                             onMouseLeave={() => setHovered(null)}
                                         >
+                                            {roundLabel && <span className="bracket-round-label">{roundLabel}</span>}
                                             <div className="bracket-teams">
                                                 <span className={`bracket-team${homeResolved ? " bracket-resolved" : ""}`} title={homeResolved ? r.home : f.home}>
-                                                    {homeFlag && <img className="flag" src={homeFlag} alt="" width="20" height="13" />}
+                                                    {homeFlag && <img className="flag" src={homeFlag} alt="" width="22" height="14" />}
                                                     {homeResolved ? r.home : shortTeam(f.home)}
                                                 </span>
-                                                <span className="bracket-vs">vs</span>
                                                 <span className={`bracket-team${awayResolved ? " bracket-resolved" : ""}`} title={awayResolved ? r.away : f.away}>
-                                                    {awayFlag && <img className="flag" src={awayFlag} alt="" width="20" height="13" />}
+                                                    {awayFlag && <img className="flag" src={awayFlag} alt="" width="22" height="14" />}
                                                     {awayResolved ? r.away : shortTeam(f.away)}
                                                 </span>
                                             </div>
