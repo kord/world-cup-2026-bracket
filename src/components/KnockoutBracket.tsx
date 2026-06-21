@@ -1,9 +1,16 @@
 import { useState, useMemo } from "react";
 import { KNOCKOUT_FIXTURES, type KnockoutFixture } from "../data/knockoutFixtures";
 import { formatLocal, getStatusFromKickoff } from "../data/matchTime";
+import { resolveFixture } from "../data/knockoutResolver";
+import { flagUrl } from "../data/countryCodes";
 
 function shortTeam(name: string): string {
     return name.replace("Winner ", "1").replace("Runner-up ", "2").replace("Best 3rd (", "3rd ").replace("Loser ", "L").replace(")", "");
+}
+
+/** Check if a name is still a placeholder (not a real team) */
+function isPlaceholder(name: string): boolean {
+    return /^(Winner|Runner-up|Best 3rd|Loser)\b/.test(name);
 }
 
 const ROUND_ORDER = ["Round of 32", "Round of 16", "Quarterfinal", "Semifinal", "Finals"];
@@ -78,6 +85,15 @@ export function KnockoutBracket() {
     const [hovered, setHovered] = useState<number | null>(null);
     const grouped = useMemo(() => groupByRound(bracketOrder()), []);
 
+    // Resolve knockout slots from group-stage results
+    const resolved = useMemo(() => {
+        const map = new Map<number, { home: string; away: string }>();
+        for (const f of KNOCKOUT_FIXTURES) {
+            map.set(f.id, resolveFixture(f.home, f.away));
+        }
+        return map;
+    }, []);
+
     // Find the single next upcoming match
     const nextMatchId = useMemo(() => {
         let earliest: KnockoutFixture | null = null;
@@ -115,6 +131,11 @@ export function KnockoutBracket() {
                                 {fixtures.map(f => {
                                     const isHovered = hovered === f.id;
                                     const isFeeder = highlightedFeeders.includes(f.id);
+                                    const r = resolved.get(f.id)!;
+                                    const homeResolved = !isPlaceholder(r.home);
+                                    const awayResolved = !isPlaceholder(r.away);
+                                    const homeFlag = homeResolved ? flagUrl(r.home) : null;
+                                    const awayFlag = awayResolved ? flagUrl(r.away) : null;
                                     return (
                                         <div
                                             key={f.id}
@@ -123,9 +144,15 @@ export function KnockoutBracket() {
                                             onMouseLeave={() => setHovered(null)}
                                         >
                                             <div className="bracket-teams">
-                                                <span className="bracket-team">{shortTeam(f.home)}</span>
+                                                <span className={`bracket-team${homeResolved ? " bracket-resolved" : ""}`} title={homeResolved ? r.home : f.home}>
+                                                    {homeFlag && <img className="flag" src={homeFlag} alt="" width="20" height="13" />}
+                                                    {homeResolved ? r.home : shortTeam(f.home)}
+                                                </span>
                                                 <span className="bracket-vs">vs</span>
-                                                <span className="bracket-team">{shortTeam(f.away)}</span>
+                                                <span className={`bracket-team${awayResolved ? " bracket-resolved" : ""}`} title={awayResolved ? r.away : f.away}>
+                                                    {awayFlag && <img className="flag" src={awayFlag} alt="" width="20" height="13" />}
+                                                    {awayResolved ? r.away : shortTeam(f.away)}
+                                                </span>
                                             </div>
                                             <div className="bracket-info">
                                                 <span className="bracket-date">
