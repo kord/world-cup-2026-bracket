@@ -7,7 +7,7 @@
  */
 // Suppress missing Node type definitions in projects without @types/node
 // @ts-ignore
-import { writeFileSync } from "fs";
+import { writeFileSync, readFileSync, existsSync } from "fs";
 
 const OUT = "src/data/group-phase-scrape-results.ts";
 
@@ -150,6 +150,19 @@ function resultToString(_home: string, _away: string, h: number, a: number): "ho
 }
 
 async function main() {
+    // ── Early exit: skip scrape if all results are in and group stage is 24h old ──
+    const LAST_MATCH_ET = new Date("2026-06-27T22:00:00-04:00"); // June 27, 10 PM ET
+    const SCRAPE_CUTOFF = LAST_MATCH_ET.getTime() + 24 * 60 * 60 * 1000;
+
+    if (existsSync(OUT) && Date.now() > SCRAPE_CUTOFF) {
+        const existing = readFileSync(OUT, "utf-8");
+        const resultCount = (existing.match(/"\d+":\s*\{/g) ?? []).length;
+        if (resultCount >= 72) {
+            console.log(`All 72 results already in ${OUT}. Skipping scrape (group stage finished >24h ago).`);
+            return;
+        }
+    }
+
     const groups = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L"];
     console.log(`Scraping ${groups.length} group pages from worldcupstats.football...\n`);
 
