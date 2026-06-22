@@ -10,7 +10,8 @@
     "lint": "eslint .",
     "preview": "vite preview",
     "scrape": "npx tsx scripts/scrape-results.ts",
-    "prebuild": "npm run scrape"
+    "test": "npx tsx scripts/test-encoding.ts",
+    "prebuild": "npm run scrape && npm run test"
   },
   "dependencies": {
     "react": "^19.2.6",
