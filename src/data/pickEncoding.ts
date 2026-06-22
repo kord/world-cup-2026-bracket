@@ -23,7 +23,7 @@ export function encodePicks(name: string, picks: PicksStore): string {
         for (let i = 1; i <= 72; i++) {
             const raw = picks[String(i)]?.selection;
             // Normalize legacy "tie" → "draw"
-            const pick = raw === "tie" ? "draw" : raw;
+            const pick = (raw as string) === "tie" ? "draw" : raw;
             const bits = pick === "home" ? 0 : pick === "draw" ? 1 : pick === "away" ? 2 : 3;
             const byteIdx = Math.floor((i - 1) / 4);
             const shift = 6 - ((i - 1) % 4) * 2;

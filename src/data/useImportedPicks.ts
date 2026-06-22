@@ -3,6 +3,7 @@ import type { PicksStore, PickSelection } from "./useMatchPicks";
 
 export type { PicksStore };
 import { decodePicks } from "./pickEncoding";
+import { normalizePicksStore } from "./pickStore";
 
 export interface ImportedPickSet {
     id: string;
@@ -13,12 +14,6 @@ export interface ImportedPickSet {
 
 const STORAGE_KEY = "wc2026-imported-picks";
 
-function normalizePick(s: string): PickSelection {
-    if (s === "tie") return "draw";
-    if (s === "home" || s === "draw" || s === "away") return s;
-    return null;
-}
-
 function loadImported(): Record<string, ImportedPickSet> {
     try {
         const raw = localStorage.getItem(STORAGE_KEY);
@@ -26,20 +21,13 @@ function loadImported(): Record<string, ImportedPickSet> {
         const parsed = JSON.parse(raw);
         let needsRewrite = false;
         for (const set of Object.values(parsed) as ImportedPickSet[]) {
-            if (!set.picks) continue;
-            for (const entry of Object.values(set.picks)) {
-                if (typeof entry.selection === "string") {
-                    const normalized = normalizePick(entry.selection);
-                    if (normalized !== entry.selection) {
-                        entry.selection = normalized;
-                        needsRewrite = true;
-                    }
-                }
+            if (set.picks && normalizePicksStore(set.picks)) {
+                needsRewrite = true;
             }
         }
         if (needsRewrite) {
             console.log("[useImportedPicks] Normalized legacy 'tie' picks — rewriting localStorage");
-            saveImported(parsed);
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(parsed));
         }
         return parsed;
     } catch {
@@ -82,10 +70,7 @@ export function useImportedPicks() {
 
     const getImportedPick = useCallback(
         (id: string, matchId: number): PickSelection => {
-            const sel = imported[id]?.picks[String(matchId)]?.selection ?? null;
-            // Normalize legacy "tie" → "draw"
-            if ((sel as string) === "tie") return "draw";
-            return sel;
+            return imported[id]?.picks[String(matchId)]?.selection ?? null;
         },
         [imported],
     );
