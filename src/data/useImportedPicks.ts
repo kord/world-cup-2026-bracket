@@ -13,10 +13,35 @@ export interface ImportedPickSet {
 
 const STORAGE_KEY = "wc2026-imported-picks";
 
+function normalizePick(s: string): PickSelection {
+    if (s === "tie") return "draw";
+    if (s === "home" || s === "draw" || s === "away") return s;
+    return null;
+}
+
 function loadImported(): Record<string, ImportedPickSet> {
     try {
         const raw = localStorage.getItem(STORAGE_KEY);
-        return raw ? JSON.parse(raw) : {};
+        if (!raw) return {};
+        const parsed = JSON.parse(raw);
+        let needsRewrite = false;
+        for (const set of Object.values(parsed) as ImportedPickSet[]) {
+            if (!set.picks) continue;
+            for (const entry of Object.values(set.picks)) {
+                if (typeof entry.selection === "string") {
+                    const normalized = normalizePick(entry.selection);
+                    if (normalized !== entry.selection) {
+                        entry.selection = normalized;
+                        needsRewrite = true;
+                    }
+                }
+            }
+        }
+        if (needsRewrite) {
+            console.log("[useImportedPicks] Normalized legacy 'tie' picks — rewriting localStorage");
+            saveImported(parsed);
+        }
+        return parsed;
     } catch {
         return {};
     }

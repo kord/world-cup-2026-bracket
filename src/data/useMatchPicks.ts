@@ -23,18 +23,27 @@ function loadPicks(): PicksStore {
         if (!raw) return {};
         const parsed = JSON.parse(raw);
         const result: PicksStore = {};
+        let needsRewrite = false;
         for (const [key, val] of Object.entries(parsed)) {
             if (typeof val === "object" && val !== null && "selection" in val) {
                 const entry = val as PickEntry;
                 // Normalize legacy "tie" → "draw"
                 if (typeof entry.selection === "string") {
-                    entry.selection = normalizePick(entry.selection);
+                    const normalized = normalizePick(entry.selection);
+                    if (normalized !== entry.selection) needsRewrite = true;
+                    entry.selection = normalized;
                 }
                 result[key] = entry;
             } else if (typeof val === "string") {
                 // Migrate old format: "1":"home" → "1":{selection:"home",timestamp:0}
-                result[key] = { selection: normalizePick(val), timestamp: 0 };
+                const normalized = normalizePick(val);
+                if (normalized !== val) needsRewrite = true;
+                result[key] = { selection: normalized, timestamp: 0 };
             }
+        }
+        if (needsRewrite) {
+            console.log("[useMatchPicks] Normalized legacy 'tie' picks — rewriting localStorage");
+            savePicks(result);
         }
         return result;
     } catch {
