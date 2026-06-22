@@ -91,7 +91,7 @@ export function KnockoutBracket() {
                                     const awayResolved = !isPlaceholder(r.away);
                                     const homeFlag = homeResolved ? flagUrl(r.home) : null;
                                     const awayFlag = awayResolved ? flagUrl(r.away) : null;
-                                    const roundLabel = f.round === "Final" ? "F" : f.round === "Third Place" ? "3rd" : null;
+                                    const roundLabel = f.round === "Final" ? "Final" : f.round === "Third Place" ? "3rd Place" : null;
                                     const isFeeder = highlightedFeeders.includes(f.id);
                                     const isHovered = hovered === f.id;
                                     const isNext = f.id === nextMatchId;
