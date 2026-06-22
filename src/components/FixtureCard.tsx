@@ -1,5 +1,5 @@
 import type { MatchFixture } from "../types";
-import type { PickSelection } from "../data/useMatchPicks";
+import type { PickSelection } from "../data/pickStore";
 import type { ImportedPickSet } from "../data/useImportedPicks";
 import { flagUrl } from "../data/countryCodes";
 import { getMatchTimeInfo } from "../data/matchTime";

@@ -1,7 +1,5 @@
 import { useState, useCallback } from "react";
-import { loadAndNormalizePicks, savePicks } from "./pickStore";
-
-export type PickSelection = "home" | "draw" | "away" | null;
+import { loadAndNormalizePicks, type PickSelection, savePicks } from "./pickStore";
 
 interface PickEntry {
     selection: PickSelection;

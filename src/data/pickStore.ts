@@ -2,7 +2,9 @@
  * Shared pick-store logic: reads, normalizes, and rewrites localStorage.
  * Used by both useMatchPicks (own picks) and useImportedPicks (friend picks).
  */
-import type { PicksStore, PickSelection } from "./useMatchPicks";
+import type { PicksStore } from "./useMatchPicks";
+
+export type PickSelection = "home" | "draw" | "away" | null;
 
 /** Normalize legacy "tie" → "draw". Returns null for unrecognized values. */
 export function normalizePick(s: string): PickSelection {
@@ -81,4 +83,4 @@ export function loadAndNormalizePicks(
 /** Save a picks store to localStorage. */
 export function savePicks(storageKey: string, picks: PicksStore): void {
     localStorage.setItem(storageKey, JSON.stringify(picks));
-}
+} 

@@ -3,7 +3,7 @@ import { flagUrl } from "../data/countryCodes";
 import { findFixture } from "../data/fixtures";
 import { getMatchTimeInfo, type MatchStatus } from "../data/matchTime";
 import { predictByName, type EloPrediction } from "../data/eloRatings";
-import type { PickSelection } from "../data/useMatchPicks";
+import type { PickSelection } from "../data/pickStore";
 import type { ImportedPickSet } from "../data/useImportedPicks";
 import { getScrapeResult, isPickCorrect } from "../data/matchResults";
 import { RESULT_DELAY_MS } from "../data/constants";
