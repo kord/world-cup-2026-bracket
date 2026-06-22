@@ -2,6 +2,8 @@
 
 Vite + React + TypeScript app for the 2026 FIFA World Cup bracket challenge. Pick winners across all 72 group-stage matches, browse the knockout bracket, and compete with friends via shareable leaderboards.
 
+All frontend with persistance only through localstorage. It is easy to share your picks and import others'.
+
 Written with much assistance from Deepseek.
 
 ## Features
