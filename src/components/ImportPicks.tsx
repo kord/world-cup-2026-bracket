@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 
 interface ImportPicksProps {
     onImport: (encoded: string) => { name: string } | null;
@@ -6,55 +6,45 @@ interface ImportPicksProps {
 }
 
 export function ImportPicks({ onImport, onClose }: ImportPicksProps) {
-    const [encoded, setEncoded] = useState("");
+    const [value, setValue] = useState("");
     const [error, setError] = useState<string | null>(null);
-    const [success, setSuccess] = useState<string | null>(null);
+    const inputRef = useRef<HTMLInputElement>(null);
+
+    useEffect(() => { inputRef.current?.focus(); }, []);
 
     const handleSubmit = () => {
         setError(null);
-        if (!encoded.trim()) {
-            setError("Paste the share string");
+        if (!value.trim()) {
+            setError("Paste the share string and press Enter");
             return;
         }
-        const result = onImport(encoded.trim());
+        const result = onImport(value.trim());
         if (result === null) {
-            setError("Invalid share string — check and try again");
+            setError("Invalid share string");
             return;
         }
-        setSuccess(result.name);
-        setTimeout(() => onClose(), 1500);
+        setValue("");
+        setError(null);
+        onClose();
     };
 
     return (
         <div className="import-overlay" onClick={onClose}>
             <div className="import-modal" onClick={e => e.stopPropagation()}>
                 <h3>Import picks</h3>
-                {success ? (
-                    <p className="import-success">Imported "{success}" ✓</p>
-                ) : (
-                    <>
-                        <label className="import-label">
-                            Share string
-                            <textarea
-                                className="import-textarea"
-                                placeholder="Paste the share string here..."
-                                value={encoded}
-                                onChange={e => setEncoded(e.target.value)}
-                                rows={3}
-                                autoFocus
-                            />
-                        </label>
-                        {error && <p className="import-error">{error}</p>}
-                        <div className="import-actions">
-                            <button className="import-btn import-btn-primary" onClick={handleSubmit}>
-                                Import
-                            </button>
-                            <button className="import-btn import-btn-cancel" onClick={onClose}>
-                                Cancel
-                            </button>
-                        </div>
-                    </>
-                )}
+                <input
+                    ref={inputRef}
+                    className="import-input"
+                    type="text"
+                    placeholder="Paste share string and press Enter"
+                    value={value}
+                    onChange={e => { setValue(e.target.value); setError(null); }}
+                    onKeyDown={e => { if (e.key === "Enter") handleSubmit(); }}
+                />
+                {error && <p className="import-error">{error}</p>}
+                <button className="import-btn import-btn-cancel" onClick={onClose}>
+                    Cancel
+                </button>
             </div>
         </div>
     );
