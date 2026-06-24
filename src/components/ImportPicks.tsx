@@ -14,18 +14,14 @@ export function ImportPicks({ onImport, onClose }: ImportPicksProps) {
 
     const handleSubmit = () => {
         setError(null);
-        if (!value.trim()) {
+        const trimmed = value.trim();
+        if (!trimmed) {
             setError("Paste the share string and press Enter");
             return;
         }
-        const result = onImport(value.trim());
-        if (result === null) {
-            setError("Invalid share string");
-            return;
-        }
-        setValue("");
-        setError(null);
-        onClose();
+        const result = onImport(trimmed);
+        if (result) { setValue(""); onClose(); return; }
+        setError("Invalid share string — check and try again");
     };
 
     return (

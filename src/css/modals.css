@@ -85,10 +85,10 @@
 
 .import-btn {
     font: inherit;
-    font-size: 0.78rem;
+    font-size: 0.75rem;
     font-weight: 600;
-    padding: 7px 16px;
-    border-radius: 5px;
+    padding: 5px 16px;
+    border-radius: 6px;
     border: 1px solid var(--border);
     cursor: pointer;
     transition: background 0.15s, border-color 0.15s;
@@ -126,7 +126,12 @@
 
 /* Manage friends */
 .manage-modal {
-    max-width: 360px;
+    max-width: 440px;
+}
+
+.share-modal .import-input {
+    font-size: 0.7rem;
+    text-overflow: ellipsis;
 }
 
 .manage-empty {
@@ -285,4 +290,17 @@
 .all-teams-pts {
     font-weight: 700;
     color: var(--text-h);
+}
+
+/* Share modal */
+.share-modal {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+
+    h4 {
+        margin: 0;
+        color: var(--text-h);
+        font-size: 0.95rem;
+    }
 }

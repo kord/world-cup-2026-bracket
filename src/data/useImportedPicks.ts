@@ -47,7 +47,7 @@ export function useImportedPicks() {
             const decoded = decodePicks(encoded.trim());
             if (!decoded) return null;
             const id = Date.now().toString(36);
-            const set: ImportedPickSet = { id, name: decoded.name, picks: decoded.picks, importedAt: Date.now() };
+            const set: ImportedPickSet = { id, name: decoded.name, picks: decoded.gs, importedAt: Date.now() };
             setImported(prev => {
                 const next = { ...prev, [id]: set };
                 saveImported(next);

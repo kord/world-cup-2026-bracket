@@ -10,8 +10,9 @@ import { Toolbar } from "./components/Toolbar";
 import { useMatchPicks } from "./data/useMatchPicks";
 import { useImportedPicks } from "./data/useImportedPicks";
 import { getGroupFixtureIds, getFutureFixtureIds } from "./data/fixtures";
-import { encodePicks, decodePicks } from "./data/pickEncoding";
+import { decodePicks } from "./data/pickEncoding";
 import { AllTeamsModal } from "./components/AllTeamsModal";
+import { useKnockoutPicks } from "./data/useKnockoutPicks";
 
 function App() {
   const groups = getGroups();
@@ -36,8 +37,7 @@ function App() {
   });
   const { picks, getPick, togglePick, fillAllHome, fillHome, fillAllAway } = useMatchPicks();
   const { imported, addImported, removeImported, getImportedPick } = useImportedPicks();
-
-  // Compute pick completion per group (only future matches count)
+  const { picks: koPicks } = useKnockoutPicks();
   const groupFixtureIds = useMemo(() => getGroupFixtureIds(), []);
   const futureIds = useMemo(() => getFutureFixtureIds(), []);
   const futureIdSet = useMemo(() => new Set(futureIds), [futureIds]);
@@ -52,14 +52,6 @@ function App() {
   }, [picks, groupFixtureIds, futureIdSet]);
 
   const activeGroup = groups.find((g) => g.name === selectedGroup) ?? null;
-
-  const allFuturePicked = useMemo(() => {
-    return futureIds.length > 0 && futureIds.every((id) => picks[String(id)] != null);
-  }, [futureIds, picks]);
-
-  const handleShare = (name: string): string => {
-    return encodePicks(name, picks);
-  };
 
   // Handle ?add=xyz URL parameter on first load
   useEffect(() => {
@@ -210,11 +202,10 @@ function App() {
         <ManageFriends
           imported={imported}
           myPicks={picks}
-          allFuturePicked={allFuturePicked}
           onImport={addImported}
-          onShare={handleShare}
           onRemove={removeImported}
           onClose={() => setShowManage(false)}
+          myKnockoutPicks={koPicks}
         />
       )}
 

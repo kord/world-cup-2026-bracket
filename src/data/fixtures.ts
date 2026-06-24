@@ -223,3 +223,8 @@ export function getGroupFixtureIds(): Record<string, number[]> {
     }
     return map;
 }
+
+/** True if all 72 group-stage matches are in the past (or 24h buffer after last kickoff). */
+export function isGroupStageComplete(): boolean {
+    return getFutureFixtureIds().length === 0;
+}

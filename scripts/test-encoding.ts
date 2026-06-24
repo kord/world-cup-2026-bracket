@@ -31,16 +31,16 @@ console.log("\n1. Roundtrip encode → decode");
         const sel = i % 3 === 1 ? "home" : i % 3 === 2 ? "draw" : "away";
         picks[String(i)] = { selection: sel, timestamp: 0 };
     }
-    const encoded = encodePicks(name, picks);
+    const encoded = encodePicks(name, picks, {});
     console.log(`   Encoded: ${encoded}`);
     const decoded = decodePicks(encoded);
     assert(decoded !== null, "decode returned non-null");
     if (decoded) {
         assertEq(decoded.name, name, "name roundtrips");
-        assertEq(Object.keys(decoded.picks).length, 72, "72 picks roundtrip");
+        assertEq(Object.keys(decoded.gs).length, 72, "72 picks roundtrip");
         let allMatch = true;
         for (let i = 1; i <= 72; i++) {
-            if (decoded.picks[String(i)]?.selection !== picks[String(i)]?.selection) {
+            if (decoded.gs[String(i)]?.selection !== picks[String(i)]?.selection) {
                 allMatch = false;
                 break;
             }
@@ -48,7 +48,7 @@ console.log("\n1. Roundtrip encode → decode");
         assert(allMatch, "all pick selections match");
         // Verify draw distribution
         const counts = { home: 0, draw: 0, away: 0 };
-        for (const [, e] of Object.entries(decoded.picks)) counts[e.selection]++;
+        for (const [, e] of Object.entries(decoded.gs)) counts[e.selection!]++;
         assertEq(counts.draw, 24, "24 draws (i%3=2)");
         assertEq(counts.home, 24, "24 homes (i%3=1)");
         assertEq(counts.away, 24, "24 always (i%3=0)");
@@ -58,7 +58,7 @@ console.log("\n1. Roundtrip encode → decode");
 // ── Test 2: provided strings ──────────────────────────────────────────────
 
 const TEST_STRINGS = [
-    "UDBaWUBaMjrLnzDO2EnCn5DEeEHCvxrW22s=",
+    "UDBaWUBaMjrLnzDO2EnCn5DEeEHCvxrW22syMDI2Vw==",
 ];
 
 for (let i = 0; i < TEST_STRINGS.length; i++) {
@@ -67,23 +67,23 @@ for (let i = 0; i < TEST_STRINGS.length; i++) {
     assert(decoded !== null, "decode returned non-null");
     if (decoded) {
         console.log(`   Name: "${decoded.name}"`);
-        const pickEntries = Object.entries(decoded.picks);
+        const pickEntries = Object.entries(decoded.gs);
         console.log(`   Picks: ${pickEntries.length}`);
         const counts = { home: 0, draw: 0, away: 0 };
         for (const [, entry] of pickEntries) {
-            counts[entry.selection]++;
+            counts[entry.selection!]++;
         }
         console.log(`   Home: ${counts.home}, Draw: ${counts.draw}, Away: ${counts.away}`);
 
         // Re-encode and compare
-        const reEncoded = encodePicks(decoded.name, decoded.picks);
+        const reEncoded = encodePicks(decoded.name, decoded.gs, decoded.ko);
         console.log(`   Re-encoded: ${reEncoded}`);
         assertEq(reEncoded, TEST_STRINGS[i], "re-encode matches original");
 
         // Contiguity check: picks should be contiguous by kickoff time
         const allFixtures = getAllFixtures().sort((a, b) => a.kickoff - b.kickoff);
         const chronoIds = allFixtures.map(f => f.id);
-        const pickedSet = new Set(Object.keys(decoded.picks).map(Number));
+        const pickedSet = new Set(Object.keys(decoded.gs).map(Number));
         const pickedChrono = chronoIds.filter(id => pickedSet.has(id));
         if (pickedChrono.length > 0) {
             const firstIdx = chronoIds.indexOf(pickedChrono[0]);
@@ -112,7 +112,7 @@ assert(decodePicks("abc") === null, 'too short → null');
 
 console.log("\n4. Empty name roundtrip");
 {
-    const encoded = encodePicks("", {});
+    const encoded = encodePicks("", {}, {});
     console.log(`   Encoded: ${encoded}`);
     const decoded = decodePicks(encoded);
     assert(decoded !== null && decoded.name === "", "empty name roundtrips");
@@ -126,13 +126,13 @@ console.log("\n5. All draws roundtrip");
     for (let i = 1; i <= 72; i++) {
         picks[String(i)] = { selection: "draw", timestamp: 0 };
     }
-    const encoded = encodePicks("Drawer", picks);
+    const encoded = encodePicks("Drawer", picks, {});
     const decoded = decodePicks(encoded);
     assert(decoded !== null, "decode non-null");
     if (decoded) {
         assertEq(decoded.name, "Drawer", "name");
         let allDraw = true;
-        for (const [, e] of Object.entries(decoded.picks)) {
+        for (const [, e] of Object.entries(decoded.gs)) {
             if (e.selection !== "draw") { allDraw = false; break; }
         }
         assert(allDraw, "all picks are draw");
@@ -146,11 +146,11 @@ console.log("\n6. Legacy 'tie' encodes as 'draw'");
     const picks: PicksStore = {
         "4": { selection: "tie" as any, timestamp: 0 },
     };
-    const encoded = encodePicks("test", picks);
+    const encoded = encodePicks("test", picks, {});
     const decoded = decodePicks(encoded);
     assert(decoded !== null, "decode non-null");
     if (decoded) {
-        assertEq(decoded.picks["4"]?.selection, "draw", "tie encoded/decoded as draw");
+        assertEq(decoded.gs["4"]?.selection, "draw", "tie encoded/decoded as draw");
     }
 }
 
@@ -210,8 +210,8 @@ console.log("\n7. Shirley full dataset encodes to expected string");
         "71": { selection: "away", timestamp: 0 },
         "72": { selection: "home", timestamp: 0 },
     };
-    const EXPECTED = "UDBaWUBaMjrLnzDO2EnCn5DEeEHCvxrW22s=";
-    const encoded = encodePicks("shirley", shirleyFull);
+    const EXPECTED = "UDBaWUBaMjrLnzDO2EnCn5DEeEHCvxrW22syMDI2Vw==";
+    const encoded = encodePicks("shirley", shirleyFull, {});
     console.log(`   Encoded: ${encoded}`);
     console.log(`   Expected: ${EXPECTED}`);
     assertEq(encoded, EXPECTED, "Shirley full dataset matches expected string");
@@ -219,8 +219,8 @@ console.log("\n7. Shirley full dataset encodes to expected string");
     assert(decoded !== null, "decode non-null");
     if (decoded) {
         assertEq(decoded.name, "shirley", "name roundtrips");
-        assertEq(Object.keys(decoded.picks).length, 50, "50 picks (4 included via tie→draw fix)");
-        assertEq(decoded.picks["4"]?.selection, "draw", "#4 is draw");
+        assertEq(Object.keys(decoded.gs).length, 50, "50 picks (4 included via tie→draw fix)");
+        assertEq(decoded.gs["4"]?.selection, "draw", "#4 is draw");
     }
 }
 
