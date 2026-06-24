@@ -38,9 +38,10 @@ export function ImportPicks({ onImport, onClose }: ImportPicksProps) {
                     onKeyDown={e => { if (e.key === "Enter") handleSubmit(); }}
                 />
                 {error && <p className="import-error">{error}</p>}
-                <button className="import-btn import-btn-cancel" onClick={onClose}>
-                    Cancel
-                </button>
+                <div className="import-actions">
+                    <button className="import-btn import-btn-primary" onClick={handleSubmit}>Import</button>
+                    <button className="import-btn import-btn-cancel" onClick={onClose}>Cancel</button>
+                </div>
             </div>
         </div>
     );
