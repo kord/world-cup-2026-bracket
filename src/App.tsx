@@ -25,6 +25,7 @@ function App() {
   const [confirmClear, setConfirmClear] = useState(false);
   const [showManage, setShowManage] = useState(false);
   const [showAllTeams, setShowAllTeams] = useState(false);
+  const [knockoutMode, setKnockoutMode] = useState<"actual" | "picks">("actual");
   const [addedFriendName, setAddedFriendName] = useState<string | null>(null);
   const urlProcessed = useRef(false);
   const [view, setView] = useState<"group" | "knockout" | "leaderboard">(() => {
@@ -162,6 +163,9 @@ function App() {
           <button className="clear-picks-btn dev-btn" onClick={() => setShowAllTeams(true)}>
             All teams
           </button>
+          <button className="clear-picks-btn dev-btn" onClick={() => setKnockoutMode(m => m === "actual" ? "picks" : "actual")}>
+            KO: {knockoutMode === "actual" ? "Actual" : "My Picks"}
+          </button>
         </div>
       )}
 
@@ -185,7 +189,7 @@ function App() {
               onSelectGroup={(group: SetStateAction<string | null>) => { setSelectedGroup(group); setView("group"); }}
             />
           ) : view === "knockout" ? (
-            <KnockoutBracket />
+            <KnockoutBracket mode={knockoutMode} />
           ) : activeGroup ? (
             <GroupDetail
               group={activeGroup}

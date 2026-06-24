@@ -3,6 +3,7 @@ import { KNOCKOUT_FIXTURES, type KnockoutFixture } from "../data/knockoutFixture
 import { formatLocal, getStatusFromKickoff } from "../data/matchTime";
 import { resolveFixture } from "../data/knockoutResolver";
 import { flagUrl } from "../data/countryCodes";
+import { useKnockoutPicks, type KnockoutPick } from "../data/useKnockoutPicks";
 
 function shortTeam(name: string): string {
     return name.replace("Winner ", "1").replace("Runner-up ", "2").replace("Best 3rd (", "3rd ").replace("Loser ", "L").replace(")", "");
@@ -45,15 +46,57 @@ function parseFeedRef(name: string): number | null {
     return m ? parseInt(m[1]) : null;
 }
 
-export function KnockoutBracket() {
+export function KnockoutBracket({ mode }: { mode: "actual" | "picks" }) {
     const [hovered, setHovered] = useState<number | null>(null);
     const columns = useMemo(() => buildColumns(), []);
+    const { getPick, togglePick, picks } = useKnockoutPicks();
 
-    const resolved = useMemo(() => {
+    // Actual resolved teams from group-stage results
+    const actualResolved = useMemo(() => {
         const map = new Map<number, { home: string; away: string }>();
-        for (const f of KNOCKOUT_FIXTURES) map.set(f.id, resolveFixture(f.home, f.away));
+        for (const f of KNOCKOUT_FIXTURES) {
+            map.set(f.id, resolveFixture(f.home, f.away));
+        }
         return map;
     }, []);
+
+    // In "picks" mode: overlay user picks, propagating forward through bracket
+    const resolved = useMemo(() => {
+        const map = new Map(actualResolved);
+        if (mode !== "picks") return map;
+
+        const readPick = (id: number): KnockoutPick =>
+            (picks[String(id)]?.selection as KnockoutPick) ?? null;
+
+        // Recursively resolve a slot: only follow user picks, never auto-propagate.
+        const resolveSlot = (name: string, visited: Set<number>): string => {
+            const id = parseFeedRef(name);
+            if (id == null || visited.has(id)) return name;
+            visited.add(id);
+            const feeder = map.get(id);
+            if (!feeder) return name;
+            const pick = readPick(id);
+            const isLoser = /^Loser\b/i.test(name);
+            if (pick === "home") {
+                return resolveSlot(isLoser ? feeder.away : feeder.home, visited);
+            }
+            if (pick === "away") {
+                return resolveSlot(isLoser ? feeder.home : feeder.away, visited);
+            }
+            return name;
+        };
+
+        for (const f of KNOCKOUT_FIXTURES) {
+            const r = map.get(f.id);
+            if (!r) continue;
+            map.set(f.id, {
+                home: resolveSlot(r.home, new Set()),
+                away: resolveSlot(r.away, new Set()),
+            });
+        }
+
+        return map;
+    }, [actualResolved, mode, picks]);
 
     const nextMatchId = useMemo(() => {
         let earliest: KnockoutFixture | null = null;
@@ -95,6 +138,9 @@ export function KnockoutBracket() {
                                     const isFeeder = highlightedFeeders.includes(f.id);
                                     const isHovered = hovered === f.id;
                                     const isNext = f.id === nextMatchId;
+                                    const pick = getPick(f.id);
+                                    const isFuture = getStatusFromKickoff(f.kickoff) === "future";
+                                    const showPicks = mode === "picks" && isFuture;
                                     return (
                                         <div key={f.id}
                                             className={`bracket-match${isHovered ? " bracket-hovered" : ""}${isFeeder ? " bracket-feeder" : ""}${isNext ? " bracket-next" : ""}`}
@@ -102,13 +148,21 @@ export function KnockoutBracket() {
                                             onMouseLeave={() => setHovered(null)}>
                                             {roundLabel && <span className="bracket-round-label">{roundLabel}</span>}
                                             <div className="bracket-teams">
-                                                <span className={`bracket-team${homeResolved ? " bracket-resolved" : ""}`} title={homeResolved ? r.home : f.home}>
+                                                <span
+                                                    className={`bracket-team${homeResolved ? " bracket-resolved" : ""}${showPicks ? " bracket-pickable" : ""}${showPicks && pick === "home" ? " bracket-picked" : ""}`}
+                                                    title={homeResolved ? r.home : f.home}
+                                                    onClick={() => showPicks && togglePick(f.id, "home")}
+                                                >
                                                     {homeFlag && <img className="flag" src={homeFlag} alt="" width="18" height="12" />}
-                                                    {homeResolved ? r.home : shortTeam(f.home)}
+                                                    {homeResolved ? r.home : r.home !== f.home ? shortTeam(r.home) : shortTeam(f.home)}
                                                 </span>
-                                                <span className={`bracket-team${awayResolved ? " bracket-resolved" : ""}`} title={awayResolved ? r.away : f.away}>
+                                                <span
+                                                    className={`bracket-team${awayResolved ? " bracket-resolved" : ""}${showPicks ? " bracket-pickable" : ""}${showPicks && pick === "away" ? " bracket-picked" : ""}`}
+                                                    title={awayResolved ? r.away : f.away}
+                                                    onClick={() => showPicks && togglePick(f.id, "away")}
+                                                >
                                                     {awayFlag && <img className="flag" src={awayFlag} alt="" width="18" height="12" />}
-                                                    {awayResolved ? r.away : shortTeam(f.away)}
+                                                    {awayResolved ? r.away : r.away !== f.away ? shortTeam(r.away) : shortTeam(f.away)}
                                                 </span>
                                             </div>
                                             <div className="bracket-info">

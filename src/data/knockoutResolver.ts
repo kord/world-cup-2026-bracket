@@ -254,25 +254,8 @@ export function resolveSlot(placeholder: string): string | null {
     m = placeholder.match(/^Runner-up ([A-L])$/);
     if (m) return groups[m[1]]?.runnerUp ?? null;
 
-    // "Best 3rd (A/B/C/D/F)" etc.
-    m = placeholder.match(/^Best 3rd \(([A-L\/]+)\)$/);
-    if (m) {
-        const candidateGroups = m[1].split("/");
-        // If only one candidate group, it's just that group's 3rd place
-        if (candidateGroups.length === 1) {
-            return groups[candidateGroups[0]]?.third ?? null;
-        }
-        // For multiple candidates, try to narrow down:
-        // If all but one candidate group have a different locked 3rd place
-        // (e.g., their 3rd place is actually locked as 2nd), we can resolve.
-        const lockedCandidates: string[] = [];
-        for (const g of candidateGroups) {
-            const third = groups[g]?.third;
-            if (third) lockedCandidates.push(third);
-        }
-        if (lockedCandidates.length === 1) return lockedCandidates[0];
-        return null;
-    }
+    // "Best 3rd (A/B/C/D/F)" etc. — never resolve until all groups are complete
+    if (/^Best 3rd \(/.test(placeholder)) return null;
 
     // "Winner M74" etc. (feed-forward matches) — can't resolve yet
     if (/^(Winner|Loser) M\d+$/i.test(placeholder)) return null;

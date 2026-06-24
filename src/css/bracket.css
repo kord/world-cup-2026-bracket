@@ -137,6 +137,24 @@
     justify-content: center;
     gap: 2px;
     padding: 1px 0;
+    cursor: default;
+}
+
+.bracket-pickable {
+    cursor: pointer;
+    border-radius: 3px;
+    transition: background 0.1s, color 0.1s;
+
+    &:hover {
+        background: rgba(56, 161, 105, 0.15);
+        color: #38a169;
+    }
+}
+
+.bracket-picked {
+    background: rgba(56, 161, 105, 0.25) !important;
+    color: #2f855a !important;
+    font-weight: 700;
 }
 
 .bracket-resolved {
