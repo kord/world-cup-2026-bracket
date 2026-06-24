@@ -11,6 +11,7 @@ import { useMatchPicks } from "./data/useMatchPicks";
 import { useImportedPicks } from "./data/useImportedPicks";
 import { getGroupFixtureIds, getFutureFixtureIds } from "./data/fixtures";
 import { encodePicks, decodePicks } from "./data/pickEncoding";
+import { AllTeamsModal } from "./components/AllTeamsModal";
 
 function App() {
   const groups = getGroups();
@@ -23,6 +24,7 @@ function App() {
   });
   const [confirmClear, setConfirmClear] = useState(false);
   const [showManage, setShowManage] = useState(false);
+  const [showAllTeams, setShowAllTeams] = useState(false);
   const [addedFriendName, setAddedFriendName] = useState<string | null>(null);
   const urlProcessed = useRef(false);
   const [view, setView] = useState<"group" | "knockout" | "leaderboard">(() => {
@@ -157,6 +159,9 @@ function App() {
           <button className="clear-picks-btn dev-btn" onClick={() => fillAllAway()}>
             Fill all away
           </button>
+          <button className="clear-picks-btn dev-btn" onClick={() => setShowAllTeams(true)}>
+            All teams
+          </button>
         </div>
       )}
 
@@ -207,6 +212,10 @@ function App() {
           onRemove={removeImported}
           onClose={() => setShowManage(false)}
         />
+      )}
+
+      {showAllTeams && (
+        <AllTeamsModal onClose={() => setShowAllTeams(false)} />
       )}
 
       {addedFriendName && (

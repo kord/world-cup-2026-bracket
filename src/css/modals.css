@@ -217,3 +217,72 @@
         background: var(--accent-bg);
     }
 }
+
+/* All teams modal */
+.all-teams-modal {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 20px 24px;
+    max-width: 900px;
+    width: 95%;
+    max-height: 90vh;
+    display: flex;
+    flex-direction: column;
+    box-shadow: var(--shadow);
+
+    h3 {
+        margin: 0 0 12px;
+        color: var(--text-h);
+        font-size: 1.1rem;
+    }
+}
+
+.all-teams-table-wrap {
+    overflow: auto;
+    flex: 1;
+}
+
+.all-teams-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.75rem;
+
+    th,
+    td {
+        padding: 4px 8px;
+        text-align: center;
+        border-bottom: 1px solid var(--border);
+        white-space: nowrap;
+    }
+
+    th {
+        font-weight: 700;
+        color: var(--text-h);
+        cursor: pointer;
+        user-select: none;
+        position: sticky;
+        top: 0;
+        background: var(--bg);
+        z-index: 1;
+
+        &:hover {
+            color: var(--accent);
+        }
+    }
+
+    td {
+        color: var(--text);
+    }
+}
+
+.all-teams-name {
+    text-align: left !important;
+    font-weight: 600;
+    color: var(--text-h);
+}
+
+.all-teams-pts {
+    font-weight: 700;
+    color: var(--text-h);
+}
