@@ -1,8 +1,9 @@
 import { useMemo } from "react";
 import type { Group } from "../types";
 import type { PicksStore } from "../data/useMatchPicks";
-import type { ImportedPickSet } from "../data/useImportedPicks";
+import type { ImportedPickSet, KnockoutStore } from "../data/useImportedPicks";
 import { getScrapeResult, isPickCorrect } from "../data/matchResults";
+import { getKnockoutSuccessRate } from "../data/knockoutMatchResults";
 
 interface LeaderboardProps {
     groups: Group[];
@@ -10,9 +11,10 @@ interface LeaderboardProps {
     myPicks: PicksStore;
     imported: Record<string, ImportedPickSet>;
     onSelectGroup: (group: string) => void;
+    myKnockoutPicks?: KnockoutStore;
 }
 
-export function Leaderboard({ groups, groupFixtureIds, myPicks, imported, onSelectGroup }: LeaderboardProps) {
+export function Leaderboard({ groups, groupFixtureIds, myPicks, imported, onSelectGroup, myKnockoutPicks }: LeaderboardProps) {
     const friends = useMemo(() => Object.values(imported), [imported]);
 
     // Compute per-group stats for all people (each has their own denominator)
@@ -125,6 +127,33 @@ export function Leaderboard({ groups, groupFixtureIds, myPicks, imported, onSele
                     );
                 })()}
             </table>
+
+            {hasFriends && (() => {
+                const myKo = getKnockoutSuccessRate(myKnockoutPicks ?? {});
+                const friendKo = friends.map(f => getKnockoutSuccessRate(f.koPicks ?? {}));
+                const anyKo = myKo.total > 0 || friendKo.some(f => f.total > 0);
+                if (!anyKo) return null;
+                return (
+                    <table className="leaderboard-table" style={{ marginTop: 16 }}>
+                        <thead>
+                            <tr>
+                                <th>Knockout</th>
+                                <th>You</th>
+                                {friends.map(f => <th key={f.id}>{f.name}</th>)}
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td className="lb-group">Correct</td>
+                                <td className="lb-score lb-mid">{myKo.total > 0 ? `${myKo.correct}/${myKo.total}` : "—"}</td>
+                                {friendKo.map((fk, i) => (
+                                    <td key={i} className="lb-score lb-mid">{fk.total > 0 ? `${fk.correct}/${fk.total}` : "—"}</td>
+                                ))}
+                            </tr>
+                        </tbody>
+                    </table>
+                );
+            })()}
         </div>
     );
 }

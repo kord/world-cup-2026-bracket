@@ -191,6 +191,7 @@ function App() {
               myPicks={picks}
               imported={imported}
               onSelectGroup={(group: SetStateAction<string | null>) => { setSelectedGroup(group); setView("group"); }}
+              myKnockoutPicks={koPicks}
             />
           ) : view === "knockout" ? (
             <KnockoutBracket mode={knockoutMode} getPick={getKoPick} togglePick={toggleKoPick} picks={koPicks} />

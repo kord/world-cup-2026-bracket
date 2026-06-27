@@ -2,6 +2,7 @@ import { useState } from "react";
 import type { ImportedPickSet, PicksStore, KnockoutStore } from "../data/useImportedPicks";
 import { ImportPicks } from "./ImportPicks";
 import { getSuccessRate } from "../data/matchResults";
+import { getKnockoutSuccessRate } from "../data/knockoutMatchResults";
 import { encodePicks } from "../data/pickEncoding";
 
 interface ManageFriendsProps {
@@ -35,6 +36,7 @@ export function ManageFriends({ imported, myPicks, onImport, onRemove, onClose, 
     const [copied, setCopied] = useState(false);
     const entries = Object.values(imported).sort((a, b) => b.importedAt - a.importedAt);
     const myRate = getSuccessRate(myPicks);
+    const myKoRate = getKnockoutSuccessRate(myKnockoutPicks ?? {});
 
     const handleImport = (encoded: string) => {
         const result = onImport(encoded);
@@ -124,12 +126,20 @@ export function ManageFriends({ imported, myPicks, onImport, onRemove, onClose, 
                 ) : (
                     <>
                         <ul className="manage-list">
+                            <li className="manage-item manage-header">
+                                <span className="manage-name">Name</span>
+                                <span className="manage-rate">GS</span>
+                                <span className="manage-rate">KO</span>
+                                <span className="manage-copy" aria-hidden="true" style={{ visibility: "hidden" }}>📋</span>
+                                <span className="manage-remove" aria-hidden="true" style={{ visibility: "hidden" }}>✕</span>
+                            </li>
                             <li className="manage-item manage-you">
                                 <span className="manage-name">
                                     You
                                     <span className="manage-phase-icons">{phaseIcons(true, Object.keys(myKnockoutPicks ?? {}).length > 0)}</span>
                                 </span>
                                 <span className="manage-rate">{rateDisplay(myRate)}</span>
+                                <span className="manage-rate">{rateDisplay(myKoRate)}</span>
                                 <span className="manage-copy" aria-hidden="true" style={{ visibility: "hidden" }}>📋</span>
                                 <span className="manage-remove" aria-hidden="true" style={{ visibility: "hidden" }}>✕</span>
                             </li>
@@ -138,6 +148,7 @@ export function ManageFriends({ imported, myPicks, onImport, onRemove, onClose, 
                             ) : (
                                 entries.map(e => {
                                     const rate = getSuccessRate(e.picks);
+                                    const koRate = getKnockoutSuccessRate(e.koPicks ?? {});
                                     return (
                                         <li key={e.id} className="manage-item">
                                             <span className="manage-name">
@@ -145,6 +156,7 @@ export function ManageFriends({ imported, myPicks, onImport, onRemove, onClose, 
                                                 <span className="manage-phase-icons">{phaseIcons(true, (e.koPicks && Object.keys(e.koPicks).length > 0) || false)}</span>
                                             </span>
                                             <span className="manage-rate">{rateDisplay(rate)}</span>
+                                            <span className="manage-rate">{rateDisplay(koRate)}</span>
                                             <button className="manage-copy" onClick={() => copyFriendUrl(e.name, e.picks, e.koPicks)} title="Copy">📋</button>
                                             <button className="manage-remove" onClick={() => onRemove(e.id)} title="Remove">✕</button>
                                         </li>
