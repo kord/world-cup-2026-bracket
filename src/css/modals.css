@@ -443,6 +443,14 @@
     margin-top: 4px;
 }
 
+.ko-share-hint {
+    font-size: 0.75rem;
+    color: var(--text);
+    margin: 0;
+    text-align: center;
+    line-height: 1.4;
+}
+
 .ko-qr-code {
     align-self: center;
     /* border-radius: 8px; */

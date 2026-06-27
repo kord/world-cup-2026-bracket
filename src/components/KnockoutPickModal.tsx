@@ -252,6 +252,7 @@ export function KnockoutPickModal({ onClose, getPick, togglePick, picks, clearAl
                                 height="160"
                             />
                             <input className="import-input" readOnly value={shareUrl} onClick={e => (e.target as HTMLInputElement).select()} />
+                            <p className="ko-share-hint">Share this URL or QR code so others can see your picks.</p>
                             <div className="import-actions">
                                 <button className="import-btn import-btn-primary" onClick={() => { navigator.clipboard.writeText(shareUrl); setCopied(true); setTimeout(() => setCopied(false), 2000); }}>
                                     {copied ? "✓ Copied!" : "Copy"}
