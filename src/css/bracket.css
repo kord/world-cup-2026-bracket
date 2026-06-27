@@ -3,6 +3,31 @@
     width: 100%;
 }
 
+.bracket-toolbar {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 12px;
+}
+
+.ko-pick-wizard-btn {
+    font: inherit;
+    font-size: 0.8rem;
+    font-weight: 600;
+    padding: 8px 20px;
+    border-radius: 8px;
+    border: 2px solid var(--accent);
+    background: var(--accent-bg);
+    color: var(--accent);
+    cursor: pointer;
+    transition: background 0.15s, box-shadow 0.15s;
+
+    &:hover {
+        background: var(--accent);
+        color: #fff;
+        box-shadow: 0 0 0 3px var(--accent-border);
+    }
+}
+
 .bracket-scroll {
     display: flex;
     gap: 4px;

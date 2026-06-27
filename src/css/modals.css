@@ -248,6 +248,168 @@
     flex: 1;
 }
 
+/* Knockout pick modal */
+.ko-pick-modal {
+    max-width: 400px;
+    text-align: center;
+    padding: 18px;
+}
+
+.ko-pick-progress {
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: var(--accent);
+    margin: 0;
+}
+
+.ko-pick-empty,
+.ko-pick-done {
+    font-size: 0.85rem;
+    color: var(--text);
+    margin: 8px 0;
+    line-height: 1.5;
+}
+
+.ko-pick-done {
+    color: #38a169;
+    font-weight: 600;
+}
+
+.ko-pick-match {
+    background: var(--code-bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.ko-pick-round {
+    font-size: 0.72rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--text);
+}
+
+.ko-pick-teams {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.ko-pick-team {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 12px 8px;
+    border: 2px solid var(--border);
+    border-radius: 8px;
+    background: var(--bg);
+    cursor: pointer;
+    transition: border-color 0.15s, background 0.15s, box-shadow 0.15s;
+    font: inherit;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--text-h);
+    min-height: 48px;
+
+    &:hover:not(:disabled) {
+        border-color: var(--accent);
+        background: var(--accent-bg);
+        box-shadow: 0 0 0 2px var(--accent-border);
+    }
+
+    &:disabled {
+        cursor: default;
+        opacity: 0.7;
+    }
+
+    &.ko-pick-selected {
+        border-color: var(--accent);
+        background: var(--accent-bg);
+        color: var(--accent);
+    }
+
+    &.ko-pick-placeholder {
+        color: var(--text);
+        font-style: italic;
+        font-weight: 500;
+    }
+}
+
+.ko-pick-vs {
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: var(--text);
+    text-transform: uppercase;
+    flex-shrink: 0;
+}
+
+.ko-pick-check {
+    font-size: 0.9rem;
+    color: var(--accent);
+    flex-shrink: 0;
+}
+
+.ko-pick-venue {
+    font-size: 0.68rem;
+    color: var(--text);
+}
+
+/* Knockout summary table (all-done state) */
+.ko-summary-table {
+    width: auto;
+    margin: 4px auto;
+    border-collapse: collapse;
+    font-size: 0.78rem;
+
+    th {
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        font-size: 0.58rem;
+        color: var(--text);
+        padding: 4px 6px;
+        border-bottom: 2px solid var(--border);
+        text-align: left;
+    }
+
+    td {
+        padding: 4px 6px;
+        border-bottom: 1px solid var(--border);
+        color: var(--text-h);
+    }
+}
+
+.ko-summary-pos {
+    font-weight: 700;
+    white-space: nowrap;
+    font-size: 0.72rem;
+}
+
+.ko-summary-team {
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.ko-summary-unresolved {
+    color: var(--text);
+    font-style: italic;
+}
+
+.ko-share-section {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 4px;
+}
+
 .all-teams-table {
     width: 100%;
     border-collapse: collapse;

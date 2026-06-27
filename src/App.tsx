@@ -30,10 +30,11 @@ function App() {
   const [addedFriendName, setAddedFriendName] = useState<string | null>(null);
   const urlProcessed = useRef(false);
   const [view, setView] = useState<"group" | "knockout" | "leaderboard">(() => {
-    // Read initial view from URL
+    // Read initial view from URL — default is knockout
     const p = new URLSearchParams(window.location.search).get("view");
-    if (p === "knockout" || p === "leaderboard") return p;
-    return "group";
+    if (p === "leaderboard") return p;
+    if (p === "group" || p === "schedule") return "group";
+    return "knockout";
   });
   const { picks, getPick, togglePick, fillAllHome, fillHome, fillAllAway } = useMatchPicks();
   const { imported, addImported, removeImported, getImportedPick } = useImportedPicks();
@@ -92,15 +93,19 @@ function App() {
   // Sync view + selected group to URL so links are shareable
   useEffect(() => {
     const url = new URL(window.location.href);
-    if (view === "group") {
+    if (view === "knockout") {
+      // knockout is the default — clean URL
       url.searchParams.delete("view");
+      url.searchParams.delete("group");
+    } else if (view === "group") {
+      url.searchParams.set("view", "schedule");
+      if (selectedGroup) {
+        url.searchParams.set("group", selectedGroup);
+      } else {
+        url.searchParams.delete("group");
+      }
     } else {
       url.searchParams.set("view", view);
-      url.searchParams.delete("group");
-    }
-    if (view === "group" && selectedGroup) {
-      url.searchParams.set("group", selectedGroup);
-    } else {
       url.searchParams.delete("group");
     }
     window.history.replaceState(null, "", url);
@@ -118,7 +123,7 @@ function App() {
   return (
     <div className="app">
       <header className="app-header">
-        <div className="header-title" onClick={() => { setSelectedGroup(null); setView("group"); }}>
+        <div className="header-title" onClick={() => { setSelectedGroup(null); setView("knockout"); }}>
           <img className="header-icon" src="/football.svg" alt="" />
           <div>
             <h1>World Cup 2026</h1>
