@@ -20,11 +20,11 @@ function rateDisplay(rate: { correct: number; total: number }): string {
     return `${rate.correct}/${rate.total} (${pct}%)`;
 }
 
-function phaseIcons(hasGS: boolean, hasKO: boolean): string {
-    if (hasGS && hasKO) return "⚽🏆";
-    if (hasKO) return "🏆";
-    if (hasGS) return "⚽";
-    return "";
+function phaseIcons(hasGS: boolean, hasKO: boolean): { icons: string; title: string } {
+    if (hasGS && hasKO) return { icons: "⚽🏆", title: "Group Stage + Knockout picks" };
+    if (hasKO) return { icons: "🏆", title: "Knockout picks only" };
+    if (hasGS) return { icons: "⚽", title: "Group Stage picks only" };
+    return { icons: "", title: "" };
 }
 
 export function ManageFriends({ imported, myPicks, onImport, onRemove, onClose, myKnockoutPicks }: ManageFriendsProps) {
@@ -136,7 +136,7 @@ export function ManageFriends({ imported, myPicks, onImport, onRemove, onClose, 
                             <li className="manage-item manage-you">
                                 <span className="manage-name">
                                     You
-                                    <span className="manage-phase-icons">{phaseIcons(true, Object.keys(myKnockoutPicks ?? {}).length > 0)}</span>
+                                    {(() => { const p = phaseIcons(true, Object.keys(myKnockoutPicks ?? {}).length > 0); return p.icons ? <span className="manage-phase-icons" title={p.title}>{p.icons}</span> : null; })()}
                                 </span>
                                 <span className="manage-rate">{rateDisplay(myRate)}</span>
                                 <span className="manage-rate">{rateDisplay(myKoRate)}</span>
@@ -153,7 +153,7 @@ export function ManageFriends({ imported, myPicks, onImport, onRemove, onClose, 
                                         <li key={e.id} className="manage-item">
                                             <span className="manage-name">
                                                 {e.name}
-                                                <span className="manage-phase-icons">{phaseIcons(true, (e.koPicks && Object.keys(e.koPicks).length > 0) || false)}</span>
+                                                {(() => { const p = phaseIcons(true, (e.koPicks && Object.keys(e.koPicks).length > 0) || false); return p.icons ? <span className="manage-phase-icons" title={p.title}>{p.icons}</span> : null; })()}
                                             </span>
                                             <span className="manage-rate">{rateDisplay(rate)}</span>
                                             <span className="manage-rate">{rateDisplay(koRate)}</span>

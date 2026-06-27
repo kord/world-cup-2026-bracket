@@ -4,6 +4,8 @@ import { formatLocal, getStatusFromKickoff } from "../data/matchTime";
 import { resolveFixture } from "../data/knockoutResolver";
 import { flagUrl } from "../data/countryCodes";
 import type { KnockoutPick, KnockoutStore } from "../data/useKnockoutPicks";
+import type { ImportedPickSet } from "../data/useImportedPicks";
+import { knockoutPhaseScrapeResults } from "../data/knockout-phase-scrape-results";
 
 function shortTeam(name: string): string {
     return name.replace("Winner ", "1").replace("Runner-up ", "2").replace("Best 3rd (", "3rd ").replace("Loser ", "L").replace(")", "");
@@ -46,11 +48,12 @@ function parseFeedRef(name: string): number | null {
     return m ? parseInt(m[1]) : null;
 }
 
-export function KnockoutBracket({ mode, getPick, togglePick, picks }: {
+export function KnockoutBracket({ mode, getPick, togglePick, picks, imported }: {
     mode: "actual" | "picks";
     getPick: (matchId: number) => KnockoutPick;
     togglePick: (matchId: number, selection: KnockoutPick) => void;
     picks: KnockoutStore;
+    imported: Record<string, ImportedPickSet>;
 }) {
     const [hovered, setHovered] = useState<number | null>(null);
     const columns = useMemo(() => buildColumns(), []);
@@ -122,6 +125,27 @@ export function KnockoutBracket({ mode, getPick, togglePick, picks }: {
 
     const highlightedFeeders = hovered != null ? (feederIds.get(hovered) ?? []) : [];
 
+    // Precompute pick results for played matches
+    const pickResults = useMemo(() => {
+        const map = new Map<number, { name: string; correct: boolean | null }[]>();
+        const friends = Object.values(imported);
+        for (const f of KNOCKOUT_FIXTURES) {
+            const result = knockoutPhaseScrapeResults[f.id];
+            if (!result?.result) continue;
+            const rows: { name: string; correct: boolean | null }[] = [];
+            // You
+            const myPick = picks[String(f.id)]?.selection;
+            rows.push({ name: "You", correct: myPick != null ? myPick === result.result : null });
+            // Friends
+            for (const friend of friends) {
+                const fp = friend.koPicks?.[String(f.id)]?.selection;
+                rows.push({ name: friend.name, correct: fp != null ? fp === result.result : null });
+            }
+            if (rows.length > 0) map.set(f.id, rows);
+        }
+        return map;
+    }, [picks, imported]);
+
     return (
         <div className="bracket">
             <div className="bracket-scroll">
@@ -145,12 +169,22 @@ export function KnockoutBracket({ mode, getPick, togglePick, picks }: {
                                     const pick = getPick(f.id);
                                     const isFuture = getStatusFromKickoff(f.kickoff) === "future";
                                     const showPicks = mode === "picks" && isFuture;
+                                    const results = pickResults.get(f.id);
                                     return (
                                         <div key={f.id}
                                             className={`bracket-match${isHovered ? " bracket-hovered" : ""}${isFeeder ? " bracket-feeder" : ""}${isNext ? " bracket-next" : ""}`}
                                             onMouseEnter={() => setHovered(f.id)}
                                             onMouseLeave={() => setHovered(null)}>
                                             {roundLabel && <span className="bracket-round-label">{roundLabel}</span>}
+                                            {results && isHovered && (
+                                                <div className="bracket-pick-results">
+                                                    {results.map(r => (
+                                                        <span key={r.name} className={`bracket-pr-row${r.correct === true ? " pr-correct" : r.correct === false ? " pr-wrong" : " pr-nopick"}`}>
+                                                            {r.name}
+                                                        </span>
+                                                    ))}
+                                                </div>
+                                            )}
                                             <div className="bracket-teams">
                                                 <span
                                                     className={`bracket-team${homeResolved ? " bracket-resolved" : ""}${showPicks ? " bracket-pickable" : ""}${showPicks && pick === "home" ? " bracket-picked" : ""}`}

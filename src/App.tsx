@@ -194,7 +194,7 @@ function App() {
               myKnockoutPicks={koPicks}
             />
           ) : view === "knockout" ? (
-            <KnockoutBracket mode={knockoutMode} getPick={getKoPick} togglePick={toggleKoPick} picks={koPicks} />
+            <KnockoutBracket mode={knockoutMode} getPick={getKoPick} togglePick={toggleKoPick} picks={koPicks} imported={imported} />
           ) : activeGroup ? (
             <GroupDetail
               group={activeGroup}
