@@ -5,7 +5,7 @@ import { KNOCKOUT_FIXTURES } from "./knockoutFixtures";
 const STORAGE_KEY = "wc2026-knockout-picks";
 
 export type KnockoutPick = "home" | "away" | null;
-type KnockoutStore = Record<string, { selection: KnockoutPick; timestamp: number }>;
+export type KnockoutStore = Record<string, { selection: KnockoutPick; timestamp: number }>;
 
 function parseFeedRef(name: string): number | null {
     const m = name.match(/[WL](?:inner|oser)\s+M(\d+)/i);
@@ -77,5 +77,10 @@ export function useKnockoutPicks() {
         [downstreamMap],
     );
 
-    return { picks, getPick, togglePick };
+    const clearAll = useCallback(() => {
+        setPicks({});
+        savePicks(STORAGE_KEY, {} as any);
+    }, []);
+
+    return { picks, getPick, togglePick, clearAll };
 }

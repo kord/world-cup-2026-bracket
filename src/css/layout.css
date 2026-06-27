@@ -49,6 +49,23 @@
     }
 }
 
+/* Shared toolbar button base */
+.toolbar-btn {
+    font: inherit;
+    font-size: 0.75rem;
+    padding: 5px 16px;
+    border: 1px solid var(--accent);
+    border-radius: 6px;
+    background: var(--bg);
+    color: var(--accent);
+    cursor: pointer;
+    transition: background 0.15s, color 0.15s, border-color 0.15s;
+
+    &:hover {
+        background: var(--accent-bg);
+    }
+}
+
 /* View toggle */
 .view-toggle {
     display: flex;
@@ -56,14 +73,7 @@
 }
 
 .view-btn {
-    font: inherit;
-    font-size: 0.75rem;
-    padding: 5px 16px;
-    border: 1px solid var(--border);
-    background: var(--bg);
-    color: var(--text);
-    cursor: pointer;
-    transition: background 0.15s, color 0.15s;
+    border-radius: 0;
 
     &:first-child {
         border-radius: 6px 0 0 6px;
@@ -73,14 +83,13 @@
         border-radius: 0 6px 6px 0;
     }
 
-    &:hover {
-        background: var(--accent-bg);
+    &+& {
+        border-left: none;
     }
 
     &.active {
         background: var(--accent);
         color: #fff;
-        border-color: var(--accent);
         font-weight: 600;
     }
 }
@@ -103,15 +112,8 @@
 }
 
 .clear-picks-btn {
-    font: inherit;
-    font-size: 0.75rem;
-    padding: 5px 16px;
-    border: 1px solid var(--border);
-    border-radius: 6px;
-    background: var(--bg);
+    border-color: var(--border);
     color: var(--text);
-    cursor: pointer;
-    transition: background 0.15s, border-color 0.15s, color 0.15s;
 
     &:hover {
         border-color: #e53e3e;
@@ -130,20 +132,15 @@
 }
 
 .share-btn {
-    font: inherit;
-    font-size: 0.75rem;
-    padding: 5px 16px;
-    border: 1px solid #38a169;
-    border-radius: 6px;
+    border-color: #38a169;
     background: #38a169;
     color: #fff;
-    cursor: pointer;
     min-width: 100px;
     white-space: nowrap;
-    transition: opacity 0.15s;
 
     &:hover {
         opacity: 0.85;
+        background: #38a169;
     }
 }
 
@@ -157,21 +154,7 @@
     }
 }
 
-.import-picks-btn {
-    font: inherit;
-    font-size: 0.75rem;
-    padding: 5px 16px;
-    border: 1px solid var(--accent);
-    border-radius: 6px;
-    background: var(--bg);
-    color: var(--accent);
-    cursor: pointer;
-    transition: background 0.15s;
-
-    &:hover {
-        background: var(--accent-bg);
-    }
-}
+.import-picks-btn {}
 
 /* Dev toolbar */
 .dev-toolbar {

@@ -180,6 +180,15 @@
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.manage-phase-icons {
+    font-size: 0.7rem;
+    flex-shrink: 0;
+    opacity: 0.8;
 }
 
 .manage-rate {
@@ -408,6 +417,27 @@
     flex-direction: column;
     gap: 10px;
     margin-top: 4px;
+}
+
+.ko-qr-code {
+    align-self: center;
+    /* border-radius: 8px; */
+    border: 1px solid var(--border);
+}
+
+.manage-qr {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    padding: 8px 0;
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+}
+
+.manage-qr-label {
+    font-size: 0.65rem;
+    color: var(--text);
 }
 
 .all-teams-table {

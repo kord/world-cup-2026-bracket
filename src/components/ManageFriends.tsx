@@ -1,10 +1,8 @@
 import { useState } from "react";
-import type { ImportedPickSet, PicksStore } from "../data/useImportedPicks";
+import type { ImportedPickSet, PicksStore, KnockoutStore } from "../data/useImportedPicks";
 import { ImportPicks } from "./ImportPicks";
 import { getSuccessRate } from "../data/matchResults";
 import { encodePicks } from "../data/pickEncoding";
-
-type KnockoutStore = Record<string, { selection: "home" | "away" | null; timestamp: number }>;
 
 interface ManageFriendsProps {
     imported: Record<string, ImportedPickSet>;
@@ -19,6 +17,13 @@ function rateDisplay(rate: { correct: number; total: number }): string {
     if (rate.total === 0) return "—";
     const pct = Math.round((rate.correct / rate.total) * 100);
     return `${rate.correct}/${rate.total} (${pct}%)`;
+}
+
+function phaseIcons(hasGS: boolean, hasKO: boolean): string {
+    if (hasGS && hasKO) return "⚽🏆";
+    if (hasKO) return "🏆";
+    if (hasGS) return "⚽";
+    return "";
 }
 
 export function ManageFriends({ imported, myPicks, onImport, onRemove, onClose, myKnockoutPicks }: ManageFriendsProps) {
@@ -67,8 +72,8 @@ export function ManageFriends({ imported, myPicks, onImport, onRemove, onClose, 
         } catch { }
     };
 
-    const copyFriendUrl = (name: string, picks: PicksStore) => {
-        const encoded = encodePicks(name, picks, {});
+    const copyFriendUrl = (name: string, picks: PicksStore, koPicks?: KnockoutStore) => {
+        const encoded = encodePicks(name, picks, koPicks ?? {});
         const base = import.meta.env.PROD
             ? "https://worldcup2026.therestinmotion.com/?add="
             : window.location.origin + "/?add=";
@@ -103,6 +108,13 @@ export function ManageFriends({ imported, myPicks, onImport, onRemove, onClose, 
                 ) : showShare ? (
                     <div className="share-modal">
                         <h4>Your share link</h4>
+                        <img
+                            className="ko-qr-code"
+                            src={`https://api.qrserver.com/v1/create-qr-code/?size=160x160&data=${encodeURIComponent(shareUrl)}`}
+                            alt="QR code for sharing"
+                            width="160"
+                            height="160"
+                        />
                         <input className="import-input" readOnly value={shareUrl} onClick={e => (e.target as HTMLInputElement).select()} />
                         <div className="import-actions">
                             <button className="import-btn import-btn-primary" onClick={copyShareUrl}>{copied ? "✓ Copied!" : "Copy"}</button>
@@ -113,7 +125,10 @@ export function ManageFriends({ imported, myPicks, onImport, onRemove, onClose, 
                     <>
                         <ul className="manage-list">
                             <li className="manage-item manage-you">
-                                <span className="manage-name">You</span>
+                                <span className="manage-name">
+                                    You
+                                    <span className="manage-phase-icons">{phaseIcons(true, Object.keys(myKnockoutPicks ?? {}).length > 0)}</span>
+                                </span>
                                 <span className="manage-rate">{rateDisplay(myRate)}</span>
                                 <span className="manage-copy" aria-hidden="true" style={{ visibility: "hidden" }}>📋</span>
                                 <span className="manage-remove" aria-hidden="true" style={{ visibility: "hidden" }}>✕</span>
@@ -125,15 +140,29 @@ export function ManageFriends({ imported, myPicks, onImport, onRemove, onClose, 
                                     const rate = getSuccessRate(e.picks);
                                     return (
                                         <li key={e.id} className="manage-item">
-                                            <span className="manage-name">{e.name}</span>
+                                            <span className="manage-name">
+                                                {e.name}
+                                                <span className="manage-phase-icons">{phaseIcons(true, (e.koPicks && Object.keys(e.koPicks).length > 0) || false)}</span>
+                                            </span>
                                             <span className="manage-rate">{rateDisplay(rate)}</span>
-                                            <button className="manage-copy" onClick={() => copyFriendUrl(e.name, e.picks)} title="Copy">📋</button>
+                                            <button className="manage-copy" onClick={() => copyFriendUrl(e.name, e.picks, e.koPicks)} title="Copy">📋</button>
                                             <button className="manage-remove" onClick={() => onRemove(e.id)} title="Remove">✕</button>
                                         </li>
                                     );
                                 })
                             )}
                         </ul>
+
+                        {/* <div className="manage-qr">
+                            <img
+                                className="ko-qr-code"
+                                src="https://api.qrserver.com/v1/create-qr-code/?size=120x120&data=https://worldcup2026.therestinmotion.com/"
+                                alt="QR code for worldcup2026.therestinmotion.com"
+                                width="120"
+                                height="120"
+                            />
+                            <span className="manage-qr-label">Scan to visit</span>
+                        </div> */}
 
                         <div className="import-actions">
                             <button className="import-btn import-btn-primary" onClick={openShare}>Share</button>

@@ -3,8 +3,7 @@ import { KNOCKOUT_FIXTURES, type KnockoutFixture } from "../data/knockoutFixture
 import { formatLocal, getStatusFromKickoff } from "../data/matchTime";
 import { resolveFixture } from "../data/knockoutResolver";
 import { flagUrl } from "../data/countryCodes";
-import { useKnockoutPicks, type KnockoutPick } from "../data/useKnockoutPicks";
-import { KnockoutPickModal } from "./KnockoutPickModal";
+import type { KnockoutPick, KnockoutStore } from "../data/useKnockoutPicks";
 
 function shortTeam(name: string): string {
     return name.replace("Winner ", "1").replace("Runner-up ", "2").replace("Best 3rd (", "3rd ").replace("Loser ", "L").replace(")", "");
@@ -47,11 +46,14 @@ function parseFeedRef(name: string): number | null {
     return m ? parseInt(m[1]) : null;
 }
 
-export function KnockoutBracket({ mode }: { mode: "actual" | "picks" }) {
+export function KnockoutBracket({ mode, getPick, togglePick, picks }: {
+    mode: "actual" | "picks";
+    getPick: (matchId: number) => KnockoutPick;
+    togglePick: (matchId: number, selection: KnockoutPick) => void;
+    picks: KnockoutStore;
+}) {
     const [hovered, setHovered] = useState<number | null>(null);
-    const [showPickModal, setShowPickModal] = useState(false);
     const columns = useMemo(() => buildColumns(), []);
-    const { getPick, togglePick, picks } = useKnockoutPicks();
 
     // Actual resolved teams from group-stage results
     const actualResolved = useMemo(() => {
@@ -122,14 +124,6 @@ export function KnockoutBracket({ mode }: { mode: "actual" | "picks" }) {
 
     return (
         <div className="bracket">
-            {mode === "picks" && (
-                <div className="bracket-toolbar">
-                    <button className="ko-pick-wizard-btn" onClick={() => setShowPickModal(true)}>
-                        🏆 Resolve Knockout Picks
-                    </button>
-                </div>
-            )}
-            {showPickModal && <KnockoutPickModal onClose={() => setShowPickModal(false)} />}
             <div className="bracket-scroll">
                 {columns.map((col, ci) => {
                     const isCenter = ci === 3;

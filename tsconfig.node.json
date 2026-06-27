@@ -26,6 +26,7 @@
     "vite.config.ts",
     "scripts/test-encoding.ts",
     "scripts/scrape-results.ts",
+    "scripts/scrape-knockout.ts",
     "scripts/scrape-elo.ts"
   ]
 }

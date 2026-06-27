@@ -9,7 +9,7 @@
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview",
-    "scrape": "npx tsx scripts/scrape-results.ts",
+    "scrape": "npx tsx scripts/scrape-results.ts && npx tsx scripts/scrape-knockout.ts",
     "test": "npx tsx scripts/test-encoding.ts",
     "prebuild": "npm run scrape && npm run test"
   },

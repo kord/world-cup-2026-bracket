@@ -5,6 +5,7 @@ import { GroupDetail } from "./components/GroupDetail";
 import { NextMatches } from "./components/NextMatches";
 import { KnockoutBracket } from "./components/KnockoutBracket";
 import { ManageFriends } from "./components/ManageFriends";
+import { KnockoutPickModal } from "./components/KnockoutPickModal";
 import { Leaderboard } from "./components/Leaderboard";
 import { Toolbar } from "./components/Toolbar";
 import { useMatchPicks } from "./data/useMatchPicks";
@@ -27,6 +28,7 @@ function App() {
   const [showManage, setShowManage] = useState(false);
   const [showAllTeams, setShowAllTeams] = useState(false);
   const [knockoutMode, setKnockoutMode] = useState<"actual" | "picks">("actual");
+  const [showKnockoutPicks, setShowKnockoutPicks] = useState(false);
   const [addedFriendName, setAddedFriendName] = useState<string | null>(null);
   const urlProcessed = useRef(false);
   const [view, setView] = useState<"group" | "knockout" | "leaderboard">(() => {
@@ -38,7 +40,7 @@ function App() {
   });
   const { picks, getPick, togglePick, fillAllHome, fillHome, fillAllAway } = useMatchPicks();
   const { imported, addImported, removeImported, getImportedPick } = useImportedPicks();
-  const { picks: koPicks } = useKnockoutPicks();
+  const { picks: koPicks, getPick: getKoPick, togglePick: toggleKoPick, clearAll: clearKoPicks } = useKnockoutPicks();
   const groupFixtureIds = useMemo(() => getGroupFixtureIds(), []);
   const futureIds = useMemo(() => getFutureFixtureIds(), []);
   const futureIdSet = useMemo(() => new Set(futureIds), [futureIds]);
@@ -137,10 +139,8 @@ function App() {
           </div>
         </div>
         <Toolbar
-          confirmClear={confirmClear}
-          onClear={handleClear}
-          onClearBlur={() => setConfirmClear(false)}
           onManageFriends={() => setShowManage(true)}
+          onKnockoutPicks={() => setShowKnockoutPicks(true)}
           view={view}
           onViewChange={setView}
         />
@@ -148,19 +148,26 @@ function App() {
 
       {import.meta.env.DEV && (
         <div className="dev-toolbar">
-          <button className="clear-picks-btn dev-btn" onClick={() => fillHome(futureIds)}>
+          <button className="toolbar-btn clear-picks-btn dev-btn" onClick={() => fillHome(futureIds)}>
             Fill future home
           </button>
-          <button className="clear-picks-btn dev-btn" onClick={() => fillAllHome()}>
+          <button className="toolbar-btn clear-picks-btn dev-btn" onClick={() => fillAllHome()}>
             Fill all home
           </button>
-          <button className="clear-picks-btn dev-btn" onClick={() => fillAllAway()}>
+          <button className="toolbar-btn clear-picks-btn dev-btn" onClick={() => fillAllAway()}>
             Fill all away
           </button>
-          <button className="clear-picks-btn dev-btn" onClick={() => setShowAllTeams(true)}>
+          <button className="toolbar-btn clear-picks-btn dev-btn" onClick={() => setShowAllTeams(true)}>
             All teams
           </button>
-          <button className="clear-picks-btn dev-btn" onClick={() => setKnockoutMode(m => m === "actual" ? "picks" : "actual")}>
+          <button
+            className={`toolbar-btn clear-picks-btn dev-btn${confirmClear ? " confirm" : ""}`}
+            onClick={handleClear}
+            onBlur={() => setConfirmClear(false)}
+          >
+            {confirmClear ? "Click again to confirm" : "Clear all picks"}
+          </button>
+          <button className="toolbar-btn clear-picks-btn dev-btn" onClick={() => setKnockoutMode(m => m === "actual" ? "picks" : "actual")}>
             KO: {knockoutMode === "actual" ? "Actual" : "My Picks"}
           </button>
         </div>
@@ -186,7 +193,7 @@ function App() {
               onSelectGroup={(group: SetStateAction<string | null>) => { setSelectedGroup(group); setView("group"); }}
             />
           ) : view === "knockout" ? (
-            <KnockoutBracket mode={knockoutMode} />
+            <KnockoutBracket mode={knockoutMode} getPick={getKoPick} togglePick={toggleKoPick} picks={koPicks} />
           ) : activeGroup ? (
             <GroupDetail
               group={activeGroup}
@@ -211,6 +218,16 @@ function App() {
           onRemove={removeImported}
           onClose={() => setShowManage(false)}
           myKnockoutPicks={koPicks}
+        />
+      )}
+
+      {showKnockoutPicks && (
+        <KnockoutPickModal
+          onClose={() => setShowKnockoutPicks(false)}
+          getPick={getKoPick}
+          togglePick={toggleKoPick}
+          picks={koPicks}
+          clearAll={clearKoPicks}
         />
       )}
 

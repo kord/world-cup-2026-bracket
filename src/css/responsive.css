@@ -196,15 +196,13 @@
         }
     }
 
-    .clear-picks-btn,
-    .share-btn,
-    .import-picks-btn {
+    .toolbar-btn {
         font-size: 0.68rem;
         padding: 4px 10px;
         margin-top: 6px;
     }
 
-    .view-btn {
+    .toolbar-btn.view-btn {
         font-size: 0.62rem;
         padding: 3px 8px;
     }

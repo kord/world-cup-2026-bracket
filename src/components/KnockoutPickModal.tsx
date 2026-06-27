@@ -2,9 +2,18 @@ import { useState, useMemo, useCallback } from "react";
 import { KNOCKOUT_FIXTURES, type KnockoutFixture } from "../data/knockoutFixtures";
 import { resolveFixture } from "../data/knockoutResolver";
 import { flagUrl } from "../data/countryCodes";
-import { useKnockoutPicks, type KnockoutPick } from "../data/useKnockoutPicks";
+import type { KnockoutPick, KnockoutStore } from "../data/useKnockoutPicks";
 import { useMatchPicks } from "../data/useMatchPicks";
+import { formatLocal } from "../data/matchTime";
 import { encodePicks } from "../data/pickEncoding";
+
+interface KnockoutPickModalProps {
+    onClose: () => void;
+    getPick: (matchId: number) => KnockoutPick;
+    togglePick: (matchId: number, selection: KnockoutPick) => void;
+    picks: KnockoutStore;
+    clearAll: () => void;
+}
 
 function isPlaceholder(name: string): boolean {
     return /^(Winner|Runner-up|Best 3rd|Loser)\b/.test(name);
@@ -19,6 +28,15 @@ function shortTeam(name: string): string {
     return name.replace("Winner ", "1").replace("Runner-up ", "2").replace("Best 3rd (", "3rd ").replace("Loser ", "L").replace(")", "");
 }
 
+const ROUND_DEFS: { label: string; ids: number[] }[] = [
+    { label: "Round of 32", ids: [73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88] },
+    { label: "Round of 16", ids: [89, 90, 91, 92, 93, 94, 95, 96] },
+    { label: "Quarterfinal", ids: [97, 98, 99, 100] },
+    { label: "Semifinal", ids: [101, 102] },
+    { label: "Third Place", ids: [103] },
+    { label: "Final", ids: [104] },
+];
+
 interface MatchDisplay {
     fixture: KnockoutFixture;
     home: string;
@@ -27,24 +45,16 @@ interface MatchDisplay {
     awayResolved: boolean;
 }
 
-export function KnockoutPickModal({ onClose }: { onClose: () => void }) {
-    const { getPick, togglePick, picks } = useKnockoutPicks();
+export function KnockoutPickModal({ onClose, getPick, togglePick, picks, clearAll }: KnockoutPickModalProps) {
     const { picks: gsPicks } = useMatchPicks();
-    const [currentIdx, setCurrentIdx] = useState(() => {
-        // If all matches already picked, jump straight to summary
-        const stored = localStorage.getItem("wc2026-knockout-picks");
-        if (!stored) return 0;
-        try {
-            const parsed = JSON.parse(stored);
-            const count = KNOCKOUT_FIXTURES.filter(f => parsed[String(f.id)]?.selection != null).length;
-            return count >= KNOCKOUT_FIXTURES.length ? KNOCKOUT_FIXTURES.length : 0;
-        } catch {
-            return 0;
-        }
-    });
     const [shareName, setShareName] = useState("");
     const [shareUrl, setShareUrl] = useState("");
     const [copied, setCopied] = useState(false);
+
+    // Per-round ordering: start with fixture-ID order, skip moves to end of round
+    const [roundOrders, setRoundOrders] = useState<number[][]>(() =>
+        ROUND_DEFS.map(r => [...r.ids]),
+    );
 
     // Resolve all slots using actual results + user picks (same logic as KnockoutBracket)
     const resolved = useMemo(() => {
@@ -80,40 +90,77 @@ export function KnockoutPickModal({ onClose }: { onClose: () => void }) {
         return map;
     }, [picks]);
 
-    // All 32 matches are shown — resolved teams display with flag, placeholders show shortened name
-    const allMatches: MatchDisplay[] = useMemo(() => {
-        return KNOCKOUT_FIXTURES.map(f => {
+    // Build display data for all matches
+    const displayMap = useMemo(() => {
+        const map = new Map<number, MatchDisplay>();
+        for (const f of KNOCKOUT_FIXTURES) {
             const r = resolved.get(f.id);
             const home = r?.home ?? f.home;
             const away = r?.away ?? f.away;
-            return {
+            map.set(f.id, {
                 fixture: f,
                 home,
                 away,
                 homeResolved: !isPlaceholder(home),
                 awayResolved: !isPlaceholder(away),
-            };
-        });
+            });
+        }
+        return map;
     }, [resolved]);
 
-    const total = allMatches.length; // always 32
-    const totalPicked = allMatches.filter(m => getPick(m.fixture.id) != null).length;
-    const match = allMatches[currentIdx] ?? null;
+    // Find current round: first round that still has unpicked matches
+    const currentRoundIdx = useMemo(() => {
+        for (let ri = 0; ri < ROUND_DEFS.length; ri++) {
+            const order = roundOrders[ri];
+            if (order.some(id => getPick(id) == null)) return ri;
+        }
+        return ROUND_DEFS.length; // all done
+    }, [roundOrders, getPick]);
+
+    // Current match: first unpicked in the current round's order
+    const currentMatchId = useMemo(() => {
+        if (currentRoundIdx >= ROUND_DEFS.length) return null;
+        const order = roundOrders[currentRoundIdx];
+        return order.find(id => getPick(id) == null) ?? null;
+    }, [currentRoundIdx, roundOrders, getPick]);
+
+    const total = KNOCKOUT_FIXTURES.length;
+    const totalPicked = useMemo(() => {
+        let count = 0;
+        for (const f of KNOCKOUT_FIXTURES) {
+            if (getPick(f.id) != null) count++;
+        }
+        return count;
+    }, [getPick]);
+
+    const currentRoundRemaining = useMemo(() => {
+        if (currentRoundIdx >= ROUND_DEFS.length) return 0;
+        return roundOrders[currentRoundIdx].filter(id => getPick(id) == null).length;
+    }, [currentRoundIdx, roundOrders, getPick]);
 
     const handlePick = useCallback(
         (matchId: number, sel: "home" | "away") => {
             togglePick(matchId, sel);
-            // Auto-advance to next match after picking
-            if (currentIdx < total - 1) {
-                setCurrentIdx(prev => prev + 1);
-            }
         },
-        [togglePick, currentIdx, total],
+        [togglePick],
     );
 
-    // All-done state: iterated through all 32 matches
-    if (!match) {
-        // Resolve final positions from matches 103 (Third Place) and 104 (Final)
+    const handleSkip = useCallback(() => {
+        if (currentMatchId == null || currentRoundIdx >= ROUND_DEFS.length) return;
+        setRoundOrders(prev => {
+            const next = prev.map(r => [...r]);
+            const order = next[currentRoundIdx];
+            const idx = order.indexOf(currentMatchId);
+            if (idx >= 0) {
+                order.splice(idx, 1);
+                order.push(currentMatchId);
+            }
+            return next;
+        });
+    }, [currentMatchId, currentRoundIdx]);
+
+    // All-done state: every match in every round has been picked
+    if (currentRoundIdx >= ROUND_DEFS.length) {
         const final = resolved.get(104);
         const third = resolved.get(103);
         const finalPick = getPick(104);
@@ -189,15 +236,28 @@ export function KnockoutPickModal({ onClose }: { onClose: () => void }) {
                                 <button className="import-btn import-btn-primary" onClick={generateShareUrl} disabled={!shareName.trim()}>
                                     Share
                                 </button>
+                                <button className="import-btn import-btn-cancel" onClick={() => { clearAll(); onClose(); }}>
+                                    Start Over
+                                </button>
                                 <button className="import-btn import-btn-cancel" onClick={onClose}>Close</button>
                             </div>
                         </div>
                     ) : (
                         <div className="ko-share-section">
+                            <img
+                                className="ko-qr-code"
+                                src={`https://api.qrserver.com/v1/create-qr-code/?size=160x160&data=${encodeURIComponent(shareUrl)}`}
+                                alt="QR code for sharing"
+                                width="160"
+                                height="160"
+                            />
                             <input className="import-input" readOnly value={shareUrl} onClick={e => (e.target as HTMLInputElement).select()} />
                             <div className="import-actions">
                                 <button className="import-btn import-btn-primary" onClick={() => { navigator.clipboard.writeText(shareUrl); setCopied(true); setTimeout(() => setCopied(false), 2000); }}>
                                     {copied ? "✓ Copied!" : "Copy"}
+                                </button>
+                                <button className="import-btn import-btn-cancel" onClick={() => { clearAll(); onClose(); }}>
+                                    Start Over
                                 </button>
                                 <button className="import-btn import-btn-cancel" onClick={onClose}>Close</button>
                             </div>
@@ -208,6 +268,8 @@ export function KnockoutPickModal({ onClose }: { onClose: () => void }) {
         );
     }
 
+    const match = displayMap.get(currentMatchId!)!;
+    const currentRound = ROUND_DEFS[currentRoundIdx];
     const pick = getPick(match.fixture.id);
     const homeFlag = match.homeResolved ? flagUrl(match.home) : null;
     const awayFlag = match.awayResolved ? flagUrl(match.away) : null;
@@ -219,7 +281,8 @@ export function KnockoutPickModal({ onClose }: { onClose: () => void }) {
             <div className="import-modal ko-pick-modal" onClick={e => e.stopPropagation()}>
                 <h3>Knockout Picks</h3>
                 <p className="ko-pick-progress">
-                    {totalPicked} / {total} picks made
+                    {totalPicked} / {total} picks made · <strong>{currentRound.label}</strong>
+                    {currentRoundRemaining > 1 && <> · {currentRoundRemaining} left in round</>}
                 </p>
 
                 <div className="ko-pick-match">
@@ -247,25 +310,24 @@ export function KnockoutPickModal({ onClose }: { onClose: () => void }) {
                             {pick === "away" && <span className="ko-pick-check">✓</span>}
                         </button>
                     </div>
-                    <div className="ko-pick-venue">{match.fixture.venue}</div>
+                    <div className="ko-pick-venue">
+                        {formatLocal(match.fixture.kickoff)}
+                        {" · "}
+                        <a
+                            className="bracket-venue"
+                            href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(match.fixture.venue)}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                        >
+                            {match.fixture.venue}
+                        </a>
+                    </div>
                 </div>
 
                 <div className="import-actions">
-                    {totalPicked >= total ? (
-                        <button className="import-btn import-btn-primary" onClick={() => setCurrentIdx(total)}>
-                            Finish → Summary
-                        </button>
-                    ) : (
-                        <button
-                            className="import-btn import-btn-cancel"
-                            onClick={() => {
-                                const nextUnpicked = allMatches.findIndex(m => getPick(m.fixture.id) == null);
-                                if (nextUnpicked >= 0) setCurrentIdx(nextUnpicked);
-                            }}
-                        >
-                            Skip
-                        </button>
-                    )}
+                    <button className="import-btn import-btn-cancel" onClick={handleSkip}>
+                        Skip
+                    </button>
                     <button className="import-btn import-btn-cancel" onClick={onClose}>Close</button>
                 </div>
             </div>

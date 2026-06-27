@@ -2,6 +2,7 @@ import { useState, useCallback } from "react";
 import type { PicksStore, PickSelection } from "./useMatchPicks";
 
 export type { PicksStore };
+export type KnockoutStore = Record<string, { selection: "home" | "away" | null; timestamp: number }>;
 import { decodePicks } from "./pickEncoding";
 import { normalizePicksStore } from "./pickStore";
 
@@ -9,6 +10,7 @@ export interface ImportedPickSet {
     id: string;
     name: string;
     picks: PicksStore;
+    koPicks?: KnockoutStore;
     importedAt: number;
 }
 
@@ -47,7 +49,13 @@ export function useImportedPicks() {
             const decoded = decodePicks(encoded.trim());
             if (!decoded) return null;
             const id = Date.now().toString(36);
-            const set: ImportedPickSet = { id, name: decoded.name, picks: decoded.gs, importedAt: Date.now() };
+            const set: ImportedPickSet = {
+                id,
+                name: decoded.name,
+                picks: decoded.gs,
+                koPicks: Object.keys(decoded.ko).length > 0 ? decoded.ko : undefined,
+                importedAt: Date.now(),
+            };
             setImported(prev => {
                 const next = { ...prev, [id]: set };
                 saveImported(next);

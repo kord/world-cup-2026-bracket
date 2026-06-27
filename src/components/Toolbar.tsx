@@ -1,22 +1,16 @@
 import type { ReactNode } from "react";
 
 interface ToolbarProps {
-    confirmClear: boolean;
-    onClear: () => void;
-    onClearBlur: () => void;
     onManageFriends: () => void;
-    clearLabel?: string;
+    onKnockoutPicks?: () => void;
     view?: "group" | "knockout" | "leaderboard";
     onViewChange?: (view: "group" | "knockout" | "leaderboard") => void;
     children?: ReactNode;
 }
 
 export function Toolbar({
-    confirmClear,
-    onClear,
-    onClearBlur,
     onManageFriends,
-    clearLabel,
+    onKnockoutPicks,
     view,
     onViewChange,
     children,
@@ -26,33 +20,31 @@ export function Toolbar({
             {view && onViewChange && (
                 <div className="view-toggle">
                     <button
-                        className={`view-btn${view === "group" ? " active" : ""}`}
+                        className={`toolbar-btn view-btn${view === "group" ? " active" : ""}`}
                         onClick={() => onViewChange("group")}
                     >
                         Group Stage
                     </button>
                     <button
-                        className={`view-btn${view === "knockout" ? " active" : ""}`}
+                        className={`toolbar-btn view-btn${view === "knockout" ? " active" : ""}`}
                         onClick={() => onViewChange("knockout")}
                     >
                         Knockout
                     </button>
                     <button
-                        className={`view-btn${view === "leaderboard" ? " active" : ""}`}
+                        className={`toolbar-btn view-btn${view === "leaderboard" ? " active" : ""}`}
                         onClick={() => onViewChange("leaderboard")}
                     >
                         Leaderboard
                     </button>
                 </div>
             )}
-            <button
-                className={`clear-picks-btn${confirmClear ? " confirm" : ""}`}
-                onClick={onClear}
-                onBlur={onClearBlur}
-            >
-                {confirmClear ? "Click again to confirm" : (clearLabel ?? "Clear all picks")}
-            </button>
-            <button className="import-picks-btn" onClick={onManageFriends}>
+            {onKnockoutPicks && (
+                <button className="toolbar-btn import-picks-btn" onClick={onKnockoutPicks}>
+                    🏆 Your Knockout Picks
+                </button>
+            )}
+            <button className="toolbar-btn import-picks-btn" onClick={onManageFriends}>
                 Manage friends
             </button>
             {children}
