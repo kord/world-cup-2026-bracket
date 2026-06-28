@@ -4,6 +4,7 @@ import { ImportPicks } from "./ImportPicks";
 import { getSuccessRate } from "../data/matchResults";
 import { getKnockoutSuccessRate } from "../data/knockoutMatchResults";
 import { encodePicks } from "../data/pickEncoding";
+import { KoPickSchematic } from "./KoPickSchematic";
 
 interface ManageFriendsProps {
     imported: Record<string, ImportedPickSet>;
@@ -34,9 +35,12 @@ export function ManageFriends({ imported, myPicks, onImport, onRemove, onClose, 
     const [shareUrl, setShareUrl] = useState("");
     const [shareName, setShareName] = useState("");
     const [copied, setCopied] = useState(false);
+    const [schematic, setSchematic] = useState<{ name: string; picks: KnockoutStore } | null>(null);
     const entries = Object.values(imported).sort((a, b) => b.importedAt - a.importedAt);
     const myRate = getSuccessRate(myPicks);
     const myKoRate = getKnockoutSuccessRate(myKnockoutPicks ?? {});
+    const koCount = Object.keys(myKnockoutPicks ?? {}).length;
+    const koIncomplete = koCount > 0 && koCount < 32;
 
     const handleImport = (encoded: string) => {
         const result = onImport(encoded);
@@ -84,8 +88,9 @@ export function ManageFriends({ imported, myPicks, onImport, onRemove, onClose, 
     };
 
     return (
-        <div className="import-overlay" onClick={onClose}>
-            <div className="import-modal manage-modal" onClick={e => e.stopPropagation()}>
+        <>
+            <div className="import-overlay" onClick={onClose}>
+                <div className="import-modal manage-modal" onClick={e => e.stopPropagation()}>
                 <h3>Manage friends</h3>
 
                 {showImport ? (
@@ -136,7 +141,7 @@ export function ManageFriends({ imported, myPicks, onImport, onRemove, onClose, 
                             <li className="manage-item manage-you">
                                 <span className="manage-name">
                                     You
-                                    {(() => { const p = phaseIcons(true, Object.keys(myKnockoutPicks ?? {}).length > 0); return p.icons ? <span className="manage-phase-icons" title={p.title}>{p.icons}</span> : null; })()}
+                                    {(() => { const p = phaseIcons(true, Object.keys(myKnockoutPicks ?? {}).length > 0); return p.icons ? <span className="manage-phase-icons" title={p.title} onClick={Object.keys(myKnockoutPicks ?? {}).length > 0 ? () => setSchematic({ name: "You", picks: myKnockoutPicks ?? {} }) : undefined}>{p.icons}</span> : null; })()}
                                 </span>
                                 <span className="manage-rate">{rateDisplay(myRate)}</span>
                                 <span className="manage-rate">{rateDisplay(myKoRate)}</span>
@@ -153,7 +158,7 @@ export function ManageFriends({ imported, myPicks, onImport, onRemove, onClose, 
                                         <li key={e.id} className="manage-item">
                                             <span className="manage-name">
                                                 {e.name}
-                                                {(() => { const p = phaseIcons(true, (e.koPicks && Object.keys(e.koPicks).length > 0) || false); return p.icons ? <span className="manage-phase-icons" title={p.title}>{p.icons}</span> : null; })()}
+                                                {(() => { const p = phaseIcons(true, (e.koPicks && Object.keys(e.koPicks).length > 0) || false); return p.icons ? <span className="manage-phase-icons" title={p.title} onClick={(e.koPicks && Object.keys(e.koPicks).length > 0) ? () => setSchematic({ name: e.name, picks: e.koPicks ?? {} }) : undefined}>{p.icons}</span> : null; })()}
                                             </span>
                                             <span className="manage-rate">{rateDisplay(rate)}</span>
                                             <span className="manage-rate">{rateDisplay(koRate)}</span>
@@ -177,7 +182,11 @@ export function ManageFriends({ imported, myPicks, onImport, onRemove, onClose, 
                         </div> */}
 
                         <div className="import-actions">
-                            <button className="import-btn import-btn-primary" onClick={openShare}>Share</button>
+                            {koIncomplete ? (
+                                <span className="ko-incomplete-warn">Finish all {32} KO picks to share</span>
+                            ) : (
+                                <button className="import-btn import-btn-primary" onClick={openShare}>Share</button>
+                            )}
                             <button className="import-btn import-btn-primary" onClick={() => setShowImport(true)}>Import</button>
                             <button className="import-btn import-btn-cancel" onClick={onClose}>Close</button>
                         </div>
@@ -185,5 +194,13 @@ export function ManageFriends({ imported, myPicks, onImport, onRemove, onClose, 
                 )}
             </div>
         </div>
+        {schematic && (
+            <KoPickSchematic
+                picks={schematic.picks}
+                name={schematic.name}
+                onClose={() => setSchematic(null)}
+            />
+        )}
+    </>
     );
 }

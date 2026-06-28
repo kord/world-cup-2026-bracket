@@ -89,7 +89,7 @@ export function NextMatches({ getPick, onPick, onSelectGroup, imported, getImpor
 
             {upcomingKo.length > 0 && (
                 <>
-                    <p className="next-match-label">Upcoming</p>
+                    <p className="next-match-label">Knockout · Upcoming</p>
                     <div className="next-matches-grid">
                         {upcomingKo.map(({ fixture: f, home, away }) => {
                             const homeFlag = flagUrl(home);

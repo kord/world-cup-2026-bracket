@@ -211,6 +211,9 @@
     font-size: 0.7rem;
     flex-shrink: 0;
     opacity: 0.8;
+    cursor: pointer;
+
+    &:hover { opacity: 1; }
 }
 
 .manage-rate {
@@ -458,6 +461,88 @@
     margin: 0;
     text-align: center;
     line-height: 1.4;
+}
+
+/* Knockout pick schematic (mini bracket in Manage Friends) */
+.ko-schematic-modal {
+    max-width: 600px;
+}
+
+.ko-schematic {
+    display: flex;
+    gap: 3px;
+    justify-content: center;
+    overflow-x: auto;
+}
+
+.ko-sch-col {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    flex: 1 1 0;
+    min-width: 55px;
+}
+
+.ko-sch-center {
+    flex: 0 0 auto;
+    min-width: 50px;
+}
+
+.ko-sch-title {
+    font-size: 0.45rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    text-align: center;
+    color: var(--accent);
+    padding-bottom: 1px;
+    border-bottom: 1px solid var(--accent-border);
+    margin-bottom: 2px;
+}
+
+.ko-sch-center .ko-sch-title {
+    color: #e53e3e;
+    border-bottom-color: #e53e3e;
+}
+
+.ko-sch-cell {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 3px;
+    min-height: 20px;
+    padding: 2px 4px;
+    border: 1px solid var(--border);
+    border-radius: 3px;
+    background: var(--bg);
+    opacity: 0.35;
+    overflow: hidden;
+}
+
+.ko-sch-picked {
+    opacity: 1;
+    border-color: var(--accent-border);
+    background: var(--accent-bg);
+}
+
+.ko-sch-label {
+    font-size: 0.5rem;
+    font-weight: 600;
+    color: var(--text-h);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.ko-sch-empty {
+    font-size: 0.5rem;
+    color: var(--text);
+}
+
+.ko-incomplete-warn {
+    font-size: 0.72rem;
+    font-weight: 600;
+    color: #e53e3e;
+    padding: 5px 0;
 }
 
 .ko-qr-code {
