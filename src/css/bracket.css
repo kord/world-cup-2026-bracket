@@ -177,9 +177,11 @@
         outline: none;
     }
 
-    &:hover {
-        background: rgba(56, 161, 105, 0.15);
-        color: #38a169;
+    @media (hover: hover) {
+        &:hover {
+            background: rgba(56, 161, 105, 0.15);
+            color: #38a169;
+        }
     }
 }
 

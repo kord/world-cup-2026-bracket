@@ -357,10 +357,12 @@
         outline: none;
     }
 
-    &:hover:not(:disabled) {
-        border-color: var(--accent);
-        background: var(--accent-bg);
-        box-shadow: 0 0 0 2px var(--accent-border);
+    @media (hover: hover) {
+        &:hover:not(:disabled) {
+            border-color: var(--accent);
+            background: var(--accent-bg);
+            box-shadow: 0 0 0 2px var(--accent-border);
+        }
     }
 
     &:disabled {
