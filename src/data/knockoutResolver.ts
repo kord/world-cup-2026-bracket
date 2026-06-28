@@ -1,3 +1,6 @@
+import { KNOCKOUT_FIXTURES } from "./knockoutFixtures";
+import { knockoutPhaseScrapeResults } from "./knockout-phase-scrape-results";
+import { manualKnockoutResults } from "./manual-knockout-results";
 /**
  * Knockout slot resolver.
  *
@@ -260,7 +263,22 @@ export function resolveSlot(placeholder: string, matchId?: number): string | nul
     if (bestThird) return bestThird;
 
     // "Winner M74" etc. (feed-forward matches) — can't resolve yet
-    if (/^(Winner|Loser) M\d+$/i.test(placeholder)) return null;
+    // "Winner M73" / "Loser M73" � resolve if feeder match has a result
+    let ff = placeholder.match(/^(Winner|Loser) M(\d+)$/i);
+    if (ff) {
+        const feederId = parseInt(ff[2]);
+        const koResult = manualKnockoutResults[feederId] ?? knockoutPhaseScrapeResults[feederId];
+        if (koResult?.result) {
+            const feederFix = KNOCKOUT_FIXTURES.find(fx => fx.id === feederId);
+            if (feederFix) {
+                const resolved = resolveFixture(feederFix.home, feederFix.away, feederId);
+                const isWinner = /^Winner/i.test(ff[1]);
+                return isWinner
+                    ? (koResult.result === "home" ? resolved.home : resolved.away)
+                    : (koResult.result === "home" ? resolved.away : resolved.home);
+            }
+        }
+    }
 
     return null;
 }

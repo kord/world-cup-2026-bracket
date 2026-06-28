@@ -16,7 +16,7 @@ function isPlaceholder(name: string): boolean {
     return /^(Winner|Runner-up|Best 3rd|Loser)\b/.test(name);
 }
 
-// ── Bracket paths (outside-in: edges feed toward center) ──────────────────
+// â”€â”€ Bracket paths (outside-in: edges feed toward center) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 const LEFT_R32 = [73, 75, 74, 77, 76, 78, 79, 80];
 const LEFT_R16 = [90, 89, 91, 92];
@@ -170,6 +170,8 @@ export function KnockoutBracket({ mode, getPick, togglePick, picks, imported }: 
                                     const pick = getPick(f.id);
                                     const isFuture = getStatusFromKickoff(f.kickoff) === "future";
                                     const showPicks = mode === "picks" && isFuture;
+                                    const koResult = manualKnockoutResults[f.id] ?? knockoutPhaseScrapeResults[f.id];
+                                    const hasKoResult = koResult?.result != null;
                                     const results = pickResults.get(f.id);
                                     return (
                                         <div key={f.id}
@@ -206,13 +208,7 @@ export function KnockoutBracket({ mode, getPick, togglePick, picks, imported }: 
                                             </div>
                                             <div className="bracket-info">
                                                 <span className="bracket-date">
-                                                    {getStatusFromKickoff(f.kickoff) !== "future" && (
-                                                        <span className={`status-badge status-${getStatusFromKickoff(f.kickoff)}`}>
-                                                            {getStatusFromKickoff(f.kickoff) === "past" ? "Played" : "LIVE"}
-                                                        </span>
-                                                    )}
-                                                    {(getStatusFromKickoff(f.kickoff) !== "future") && " "}#{f.id} · {formatLocal(f.kickoff)}
-                                                    {getStatusFromKickoff(f.kickoff) === "future" && <>#{f.id} · {formatLocal(f.kickoff)}</>}
+                                                    {hasKoResult ? <>{koResult.homeScore}-{koResult.awayScore}{koResult.homeShootout != null ? ` (${koResult.homeShootout}-${koResult.awayShootout} pens)` : ""} · </> : null} {formatLocal(f.kickoff)}
                                                 </span>
                                                 <a className="bracket-venue"
                                                     href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(f.venue)}`}
