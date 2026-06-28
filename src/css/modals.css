@@ -349,6 +349,13 @@
     font-weight: 600;
     color: var(--text-h);
     min-height: 48px;
+    -webkit-tap-highlight-color: transparent;
+    -webkit-touch-callout: none;
+    user-select: none;
+
+    &:focus:not(:focus-visible) {
+        outline: none;
+    }
 
     &:hover:not(:disabled) {
         border-color: var(--accent);

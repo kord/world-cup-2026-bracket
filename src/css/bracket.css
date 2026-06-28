@@ -163,12 +163,19 @@
     gap: 2px;
     padding: 1px 0;
     cursor: default;
+    -webkit-tap-highlight-color: transparent;
+    user-select: none;
 }
 
 .bracket-pickable {
     cursor: pointer;
     border-radius: 3px;
     transition: background 0.1s, color 0.1s;
+    -webkit-touch-callout: none;
+
+    &:focus:not(:focus-visible) {
+        outline: none;
+    }
 
     &:hover {
         background: rgba(56, 161, 105, 0.15);
