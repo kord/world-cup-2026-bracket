@@ -64,10 +64,11 @@ export function encodePicks(name: string, gsPicks: PicksStore, koPicks: Knockout
         if (nb.length > 255) throw new Error("Name too long");
         const gs = encodeGS(gsPicks);
         const { mask, data: kd } = encodeKO(koPicks);
-        const bytes = new Uint8Array([nb.length, ...nb, ...gs, mask, ...kd]);
+        // Split 32-bit mask into 4 bytes (was a bug: stored as 1 byte, losing top 24 bits)
+        const maskBytes = [(mask >>> 24) & 0xFF, (mask >>> 16) & 0xFF, (mask >>> 8) & 0xFF, mask & 0xFF];
+        const bytes = new Uint8Array([nb.length, ...nb, ...gs, ...maskBytes, ...kd]);
         const obfuscated = new Uint8Array(bytes.length);
         for (let i = 0; i < bytes.length; i++) obfuscated[i] = bytes[i] ^ XOR_KEY[i % XOR_KEY.length];
-        // Build binary string safely for btoa
         let bin = "";
         for (let i = 0; i < obfuscated.length; i++) bin += String.fromCharCode(obfuscated[i]);
         return btoa(bin);
@@ -90,8 +91,10 @@ export function decodePicks(encoded: string): UnifiedPicks | null {
         const name = new TextDecoder().decode(deobfuscated.slice(1, 1 + nameLen));
         const gs = decodeGS(Array.from(deobfuscated.slice(1 + nameLen, 1 + nameLen + 18)));
         let ko: KnockoutStore = {};
-        if (deobfuscated.length >= 1 + nameLen + 23) {
-            ko = decodeKO(deobfuscated[1 + nameLen + 18], Array.from(deobfuscated.slice(1 + nameLen + 19, 1 + nameLen + 23)));
+        // 4-byte mask + 4-byte data = 8 bytes for KO
+        if (deobfuscated.length >= 1 + nameLen + 26) {
+            const mask = (deobfuscated[1 + nameLen + 18] << 24) | (deobfuscated[1 + nameLen + 19] << 16) | (deobfuscated[1 + nameLen + 20] << 8) | deobfuscated[1 + nameLen + 21];
+            ko = decodeKO(mask, Array.from(deobfuscated.slice(1 + nameLen + 22, 1 + nameLen + 26)));
         }
         return { name, gs, ko };
     } catch (e) {

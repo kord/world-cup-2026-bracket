@@ -39,31 +39,35 @@ export function KoPickSchematic({ picks, name, onClose }: KoPickSchematicProps) 
     return (
         <div className="import-overlay" onClick={onClose}>
             <div className="import-modal ko-schematic-modal" onClick={e => e.stopPropagation()}>
-                <h3>{name}'s Knockout Picks</h3>
+                <h3>{name}'s{"''"}s Knockout Picks</h3>
                 <div className="ko-schematic">
                     {COLUMNS.map((col, ci) => {
                         const isCenter = ci === 3;
                         return (
                             <div key={ci} className={`ko-sch-col${isCenter ? " ko-sch-center" : ""}`}>
                                 <div className="ko-sch-title">{col.label}</div>
-                                {col.ids.map(id => {
-                                    const winner = pickMap.get(id);
-                                    if (!winner) {
+                                <div className="ko-sch-cells">
+                                    {col.ids.map(id => {
+                                        const winner = pickMap.get(id);
+                                        if (!winner) {
+                                            return (
+                                                <div key={id} className="ko-sch-cell" title={`#${id}`}>
+                                                    <span className="ko-sch-empty">�</span>
+                                                </div>
+                                            );
+                                        }
+                                        const isResolved = resolvedMap.get(id) ?? false;
+                                        const flag = isResolved ? flagUrl(winner) : null;
                                         return (
-                                            <div key={id} className="ko-sch-cell" title={`#${id}`}>
-                                                <span className="ko-sch-empty">—</span>
+                                            <div key={id} className="ko-sch-cell ko-sch-picked" title={`${winner} � · #${id}`}>
+                                                {flag
+                                                    ? <img className="flag" src={flag} alt={winner} width={16} height={11} />
+                                                    : <span className="ko-sch-empty">{winner}</span>
+                                                }
                                             </div>
                                         );
-                                    }
-                                    const isResolved = resolvedMap.get(id) ?? false;
-                                    const flag = isResolved ? flagUrl(winner) : null;
-                                    return (
-                                        <div key={id} className="ko-sch-cell ko-sch-picked" title={`${winner} · #${id}`}>
-                                            {flag && <img className="flag" src={flag} alt="" width={14} height={10} />}
-                                            <span className="ko-sch-label">{winner}</span>
-                                        </div>
-                                    );
-                                })}
+                                    })}
+                                </div>
                             </div>
                         );
                     })}

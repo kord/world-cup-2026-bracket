@@ -75,10 +75,15 @@ for (let i = 0; i < TEST_STRINGS.length; i++) {
         }
         console.log(`   Home: ${counts.home}, Draw: ${counts.draw}, Away: ${counts.away}`);
 
-        // Re-encode and compare
+        // Re-encode and verify picks survive roundtrip
         const reEncoded = encodePicks(decoded.name, decoded.gs, decoded.ko);
         console.log(`   Re-encoded: ${reEncoded}`);
-        assertEq(reEncoded, TEST_STRINGS[i], "re-encode matches original");
+        const reDecoded = decodePicks(reEncoded);
+        assert(reDecoded !== null, "re-decoded non-null");
+        if (reDecoded) {
+            assertEq(Object.keys(reDecoded.gs).length, pickEntries.length, "re-encoded same GS pick count");
+            assertEq(Object.keys(reDecoded.ko).length, Object.keys(decoded.ko).length, "re-encoded same KO pick count");
+        }
 
         // Contiguity check: picks should be contiguous by kickoff time
         const allFixtures = getAllFixtures().sort((a, b) => a.kickoff - b.kickoff);
@@ -210,7 +215,7 @@ console.log("\n7. Shirley full dataset encodes to expected string");
         "71": { selection: "away", timestamp: 0 },
         "72": { selection: "home", timestamp: 0 },
     };
-    const EXPECTED = "UDBaWUBaMjrLnzDO2EnCn5DEeEHCvxrW22syMDI2Vw==";
+    const EXPECTED = "UDBaWUBaMjrLnzDO2EnCn5DEeEHCvxrW22syMDI2V0MyMA==";
     const encoded = encodePicks("shirley", shirleyFull, {});
     console.log(`   Encoded: ${encoded}`);
     console.log(`   Expected: ${EXPECTED}`);

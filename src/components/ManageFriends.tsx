@@ -91,86 +91,86 @@ export function ManageFriends({ imported, myPicks, onImport, onRemove, onClose, 
         <>
             <div className="import-overlay" onClick={onClose}>
                 <div className="import-modal manage-modal" onClick={e => e.stopPropagation()}>
-                <h3>Manage friends</h3>
+                    <h3>Manage friends</h3>
 
-                {showImport ? (
-                    <ImportPicks onImport={handleImport} onClose={() => setShowImport(false)} />
-                ) : showNameInput ? (
-                    <div className="share-modal">
-                        <h4>Your name</h4>
-                        <input
-                            className="import-input"
-                            type="text"
-                            placeholder="Enter your name"
-                            value={shareName}
-                            onChange={e => setShareName(e.target.value)}
-                            onKeyDown={e => { if (e.key === "Enter") generateUrl(); }}
-                            autoFocus
-                        />
-                        <div className="import-actions">
-                            <button className="import-btn import-btn-primary" onClick={generateUrl} disabled={!shareName.trim()}>Generate</button>
-                            <button className="import-btn import-btn-cancel" onClick={() => setShowNameInput(false)}>Cancel</button>
+                    {showImport ? (
+                        <ImportPicks onImport={handleImport} onClose={() => setShowImport(false)} />
+                    ) : showNameInput ? (
+                        <div className="share-modal">
+                            <h4>Your name</h4>
+                            <input
+                                className="import-input"
+                                type="text"
+                                placeholder="Enter your name"
+                                value={shareName}
+                                onChange={e => setShareName(e.target.value)}
+                                onKeyDown={e => { if (e.key === "Enter") generateUrl(); }}
+                                autoFocus
+                            />
+                            <div className="import-actions">
+                                <button className="import-btn import-btn-primary" onClick={generateUrl} disabled={!shareName.trim()}>Generate</button>
+                                <button className="import-btn import-btn-cancel" onClick={() => setShowNameInput(false)}>Cancel</button>
+                            </div>
                         </div>
-                    </div>
-                ) : showShare ? (
-                    <div className="share-modal">
-                        <h4>Your share link</h4>
-                        <img
-                            className="ko-qr-code"
-                            src={`https://api.qrserver.com/v1/create-qr-code/?size=160x160&data=${encodeURIComponent(shareUrl)}`}
-                            alt="QR code for sharing"
-                            width="160"
-                            height="160"
-                        />
-                        <input className="import-input" readOnly value={shareUrl} onClick={e => (e.target as HTMLInputElement).select()} />
-                        <div className="import-actions">
-                            <button className="import-btn import-btn-primary" onClick={copyShareUrl}>{copied ? "✓ Copied!" : "Copy"}</button>
-                            <button className="import-btn import-btn-cancel" onClick={() => { setShowShare(false); setCopied(false); }}>Close</button>
+                    ) : showShare ? (
+                        <div className="share-modal">
+                            <h4>Your share link</h4>
+                            <img
+                                className="ko-qr-code"
+                                src={`https://api.qrserver.com/v1/create-qr-code/?size=160x160&data=${encodeURIComponent(shareUrl)}`}
+                                alt="QR code for sharing"
+                                width="160"
+                                height="160"
+                            />
+                            <input className="import-input" readOnly value={shareUrl} onClick={e => (e.target as HTMLInputElement).select()} />
+                            <div className="import-actions">
+                                <button className="import-btn import-btn-primary" onClick={copyShareUrl}>{copied ? "✓ Copied!" : "Copy"}</button>
+                                <button className="import-btn import-btn-cancel" onClick={() => { setShowShare(false); setCopied(false); }}>Close</button>
+                            </div>
                         </div>
-                    </div>
-                ) : (
-                    <>
-                        <ul className="manage-list">
-                            <li className="manage-item manage-header">
-                                <span className="manage-name">Name</span>
-                                <span className="manage-rate">GS</span>
-                                <span className="manage-rate">KO</span>
-                                <span className="manage-copy" aria-hidden="true" style={{ visibility: "hidden" }}>📋</span>
-                                <span className="manage-remove" aria-hidden="true" style={{ visibility: "hidden" }}>✕</span>
-                            </li>
-                            <li className="manage-item manage-you">
-                                <span className="manage-name">
-                                    You
-                                    {(() => { const p = phaseIcons(true, Object.keys(myKnockoutPicks ?? {}).length > 0); return p.icons ? <span className="manage-phase-icons" title={p.title} onClick={Object.keys(myKnockoutPicks ?? {}).length > 0 ? () => setSchematic({ name: "You", picks: myKnockoutPicks ?? {} }) : undefined}>{p.icons}</span> : null; })()}
-                                </span>
-                                <span className="manage-rate">{rateDisplay(myRate)}</span>
-                                <span className="manage-rate">{rateDisplay(myKoRate)}</span>
-                                <span className="manage-copy" aria-hidden="true" style={{ visibility: "hidden" }}>📋</span>
-                                <span className="manage-remove" aria-hidden="true" style={{ visibility: "hidden" }}>✕</span>
-                            </li>
-                            {entries.length === 0 ? (
-                                <p className="manage-empty">No imported picks yet.</p>
-                            ) : (
-                                entries.map(e => {
-                                    const rate = getSuccessRate(e.picks);
-                                    const koRate = getKnockoutSuccessRate(e.koPicks ?? {});
-                                    return (
-                                        <li key={e.id} className="manage-item">
-                                            <span className="manage-name">
-                                                {e.name}
-                                                {(() => { const p = phaseIcons(true, (e.koPicks && Object.keys(e.koPicks).length > 0) || false); return p.icons ? <span className="manage-phase-icons" title={p.title} onClick={(e.koPicks && Object.keys(e.koPicks).length > 0) ? () => setSchematic({ name: e.name, picks: e.koPicks ?? {} }) : undefined}>{p.icons}</span> : null; })()}
-                                            </span>
-                                            <span className="manage-rate">{rateDisplay(rate)}</span>
-                                            <span className="manage-rate">{rateDisplay(koRate)}</span>
-                                            <button className="manage-copy" onClick={() => copyFriendUrl(e.name, e.picks, e.koPicks)} title="Copy">📋</button>
-                                            <button className="manage-remove" onClick={() => onRemove(e.id)} title="Remove">✕</button>
-                                        </li>
-                                    );
-                                })
-                            )}
-                        </ul>
+                    ) : (
+                        <>
+                            <ul className="manage-list">
+                                <li className="manage-item manage-header">
+                                    <span className="manage-name">Name</span>
+                                    <span className="manage-rate">GS</span>
+                                    <span className="manage-rate">KO</span>
+                                    <span className="manage-copy" aria-hidden="true" style={{ visibility: "hidden" }}>📋</span>
+                                    <span className="manage-remove" aria-hidden="true" style={{ visibility: "hidden" }}>✕</span>
+                                </li>
+                                <li className="manage-item manage-you">
+                                    <span className="manage-name">
+                                        You
+                                        {(() => { const p = phaseIcons(true, Object.keys(myKnockoutPicks ?? {}).length > 0); return p.icons ? <span className="manage-phase-icons" title={p.title} onClick={Object.keys(myKnockoutPicks ?? {}).length > 0 ? () => setSchematic({ name: "You", picks: myKnockoutPicks ?? {} }) : undefined}>{p.icons}</span> : null; })()}
+                                    </span>
+                                    <span className="manage-rate">{rateDisplay(myRate)}</span>
+                                    <span className="manage-rate">{rateDisplay(myKoRate)}</span>
+                                    <span className="manage-copy" aria-hidden="true" style={{ visibility: "hidden" }}>📋</span>
+                                    <span className="manage-remove" aria-hidden="true" style={{ visibility: "hidden" }}>✕</span>
+                                </li>
+                                {entries.length === 0 ? (
+                                    <p className="manage-empty">No imported picks yet.</p>
+                                ) : (
+                                    entries.map(e => {
+                                        const rate = getSuccessRate(e.picks);
+                                        const koRate = getKnockoutSuccessRate(e.koPicks ?? {});
+                                        return (
+                                            <li key={e.id} className="manage-item">
+                                                <span className="manage-name">
+                                                    {e.name}
+                                                    {(() => { const p = phaseIcons(true, (e.koPicks && Object.keys(e.koPicks).length > 0) || false); return p.icons ? <span className="manage-phase-icons" title={p.title} onClick={(e.koPicks && Object.keys(e.koPicks).length > 0) ? () => setSchematic({ name: e.name, picks: e.koPicks ?? {} }) : undefined}>{p.icons}</span> : null; })()}
+                                                </span>
+                                                <span className="manage-rate">{rateDisplay(rate)}</span>
+                                                <span className="manage-rate">{rateDisplay(koRate)}</span>
+                                                <button className="manage-copy" onClick={() => copyFriendUrl(e.name, e.picks, e.koPicks)} title="Copy">📋</button>
+                                                <button className="manage-remove" onClick={() => onRemove(e.id)} title="Remove">✕</button>
+                                            </li>
+                                        );
+                                    })
+                                )}
+                            </ul>
 
-                        {/* <div className="manage-qr">
+                            {/* <div className="manage-qr">
                             <img
                                 className="ko-qr-code"
                                 src="https://api.qrserver.com/v1/create-qr-code/?size=120x120&data=https://worldcup2026.therestinmotion.com/"
@@ -181,26 +181,26 @@ export function ManageFriends({ imported, myPicks, onImport, onRemove, onClose, 
                             <span className="manage-qr-label">Scan to visit</span>
                         </div> */}
 
-                        <div className="import-actions">
-                            {koIncomplete ? (
-                                <span className="ko-incomplete-warn">Finish all {32} KO picks to share</span>
-                            ) : (
-                                <button className="import-btn import-btn-primary" onClick={openShare}>Share</button>
-                            )}
-                            <button className="import-btn import-btn-primary" onClick={() => setShowImport(true)}>Import</button>
-                            <button className="import-btn import-btn-cancel" onClick={onClose}>Close</button>
-                        </div>
-                    </>
-                )}
+                            <div className="import-actions">
+                                {koIncomplete ? (
+                                    <span className="ko-incomplete-warn">Finish all {32} KO picks to share</span>
+                                ) : (
+                                    <button className="import-btn import-btn-primary" onClick={openShare}>Share</button>
+                                )}
+                                <button className="import-btn import-btn-primary" onClick={() => setShowImport(true)}>Import</button>
+                                <button className="import-btn import-btn-cancel" onClick={onClose}>Close</button>
+                            </div>
+                        </>
+                    )}
+                </div>
             </div>
-        </div>
-        {schematic && (
-            <KoPickSchematic
-                picks={schematic.picks}
-                name={schematic.name}
-                onClose={() => setSchematic(null)}
-            />
-        )}
-    </>
+            {schematic && (
+                <KoPickSchematic
+                    picks={schematic.picks}
+                    name={schematic.name}
+                    onClose={() => setSchematic(null)}
+                />
+            )}
+        </>
     );
 }
