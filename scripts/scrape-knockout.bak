@@ -28,26 +28,27 @@ async function scrapeMatch(f: KnockoutFixture): Promise<ParsedResult> {
     try {
         const html = await fetch(url).then(r => r.text());
 
-        // Check if match is finished/live
-        const statusM = html.match(/(?:Finished|FINISHED|LIVE)/i);
+        // Extract status: look for "Finished", "LIVE", or absence
+        const isFinished = /(?:Finished|FINISHED)/i.test(html);
+        const isLive = /LIVE/i.test(html) && !isFinished;
+
         if (!statusM) {
             return { id: f.id, result: null, homeScore: null, awayScore: null, homeShootout: null, awayShootout: null, home: f.home, away: f.away };
         }
 
-        // Search for score ONLY near the status indicator (avoid matching dates/years)
-        const statusIdx = html.search(/(?:Finished|FINISHED|LIVE)/i);
-        const nearby = html.substring(Math.max(0, statusIdx - 400), statusIdx + 200);
-        const scoreM = nearby.match(/(\d+)\s*[-–—]\s*(\d+)/);
+        // Extract score — look for pattern like "0 - 1" near the match header
+        // The score appears in a dedicated element
+        const scoreM = html.match(/(\d+)\s*[-–—]\s*(\d+)/);
         if (!scoreM) {
-            console.log(`  [${f.id}] ${f.home} vs ${f.away} — status: ${statusM[0]}, no score found`);
+            console.log(`  [${f.id}] ${f.home} vs ${f.away} — no score found`);
             return { id: f.id, result: null, homeScore: null, awayScore: null, homeShootout: null, awayShootout: null, home: f.home, away: f.away };
         }
 
         const homeScore = parseInt(scoreM[1]);
         const awayScore = parseInt(scoreM[2]);
 
-        // Check for shootout in the same nearby text
-        const shootoutM = nearby.match(/pen(?:alty|alties)?[^<]*\(?\s*(\d+)\s*[-–—]\s*(\d+)\s*\)?/i);
+        // Check for shootout (penalties) — look for "(p)" or "pen" near score
+        const shootoutM = html.match(/pen(?:alty|alties)?[^<]*\(?\s*(\d+)\s*[-–—]\s*(\d+)\s*\)?/i);
         const homeShootout = shootoutM ? parseInt(shootoutM[1]) : null;
         const awayShootout = shootoutM ? parseInt(shootoutM[2]) : null;
 
@@ -66,15 +67,11 @@ async function scrapeMatch(f: KnockoutFixture): Promise<ParsedResult> {
 }
 
 async function main() {
-    console.log(`Scraping knockout match pages from worldcupstats.football...\n`);
+    const ids = KNOCKOUT_FIXTURES.map(f => f.id);
+    console.log(`Scraping ${ids.length} knockout match pages from worldcupstats.football...\n`);
 
     const results: ParsedResult[] = [];
     for (const f of KNOCKOUT_FIXTURES) {
-        if (f.kickoff > Date.now()) {
-            console.log(`  [${f.id}] ${f.home} vs ${f.away} — not kicked off yet, skipping`);
-            results.push({ id: f.id, result: null, homeScore: null, awayScore: null, homeShootout: null, awayShootout: null, home: f.home, away: f.away });
-            continue;
-        }
         const r = await scrapeMatch(f);
         results.push(r);
     }

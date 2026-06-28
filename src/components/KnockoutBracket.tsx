@@ -6,6 +6,7 @@ import { flagUrl } from "../data/countryCodes";
 import type { KnockoutPick, KnockoutStore } from "../data/useKnockoutPicks";
 import type { ImportedPickSet } from "../data/useImportedPicks";
 import { knockoutPhaseScrapeResults } from "../data/knockout-phase-scrape-results";
+import { manualKnockoutResults } from "../data/manual-knockout-results";
 
 function shortTeam(name: string): string {
     return name.replace("Winner ", "1").replace("Runner-up ", "2").replace("Best 3rd (", "3rd ").replace("Loser ", "L").replace(")", "");
@@ -130,7 +131,7 @@ export function KnockoutBracket({ mode, getPick, togglePick, picks, imported }: 
         const map = new Map<number, { name: string; correct: boolean | null }[]>();
         const friends = Object.values(imported);
         for (const f of KNOCKOUT_FIXTURES) {
-            const result = knockoutPhaseScrapeResults[f.id];
+            const result = manualKnockoutResults[f.id] ?? knockoutPhaseScrapeResults[f.id];
             if (!result?.result) continue;
             const rows: { name: string; correct: boolean | null }[] = [];
             // You

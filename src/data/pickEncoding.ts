@@ -1,4 +1,4 @@
-﻿import type { PicksStore } from "./useMatchPicks";
+import type { PicksStore } from "./useMatchPicks";
 
 const XOR_KEY = [0x57, 0x43, 0x32, 0x30, 0x32, 0x36]; // "WC2026"
 
@@ -71,7 +71,8 @@ export function encodePicks(name: string, gsPicks: PicksStore, koPicks: Knockout
         for (let i = 0; i < bytes.length; i++) obfuscated[i] = bytes[i] ^ XOR_KEY[i % XOR_KEY.length];
         let bin = "";
         for (let i = 0; i < obfuscated.length; i++) bin += String.fromCharCode(obfuscated[i]);
-        return btoa(bin);
+        // Use URL-safe base64 (no + or / in query params)
+        return btoa(bin).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
     } catch (err) {
         console.error("[pickEncoding] encode failed:", { error: err, name });
         throw err;
@@ -80,7 +81,11 @@ export function encodePicks(name: string, gsPicks: PicksStore, koPicks: Knockout
 
 export function decodePicks(encoded: string): UnifiedPicks | null {
     try {
-        const raw = atob(encoded.trim());
+        // Convert URL-safe base64 back to standard
+        let raw = encoded.trim();
+        raw = raw.replace(/ /g, "+").replace(/-/g, "+").replace(/_/g, "/");
+        while (raw.length % 4) raw += "=";
+        raw = atob(raw);
         const bytes = new Uint8Array(raw.length);
         for (let i = 0; i < raw.length; i++) bytes[i] = raw.charCodeAt(i);
         const deobfuscated = new Uint8Array(bytes.length);

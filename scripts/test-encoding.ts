@@ -215,7 +215,7 @@ console.log("\n7. Shirley full dataset encodes to expected string");
         "71": { selection: "away", timestamp: 0 },
         "72": { selection: "home", timestamp: 0 },
     };
-    const EXPECTED = "UDBaWUBaMjrLnzDO2EnCn5DEeEHCvxrW22syMDI2V0MyMA==";
+    const EXPECTED = "UDBaWUBaMjrLnzDO2EnCn5DEeEHCvxrW22syMDI2V0MyMA";
     const encoded = encodePicks("shirley", shirleyFull, {});
     console.log(`   Encoded: ${encoded}`);
     console.log(`   Expected: ${EXPECTED}`);
