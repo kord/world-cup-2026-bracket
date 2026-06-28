@@ -1,6 +1,10 @@
 import { useMemo } from "react";
 import { FixtureCard } from "./FixtureCard";
 import { getLiveFixtures, getUpcomingFixtures } from "../data/fixtures";
+import { KNOCKOUT_FIXTURES } from "../data/knockoutFixtures";
+import { resolveFixture } from "../data/knockoutResolver";
+import { flagUrl } from "../data/countryCodes";
+import { formatLocal, getStatusFromKickoff } from "../data/matchTime";
 
 interface NextMatchesProps {
     getPick: (id: number) => import("../data/useMatchPicks").PickSelection;
@@ -20,7 +24,20 @@ export function NextMatches({ getPick, onPick, onSelectGroup, imported, getImpor
         [upcomingFixtures, liveIds],
     );
 
-    if (liveFixtures.length === 0 && upcomingFiltered.length === 0) return null;
+    // Upcoming knockout fixtures (not yet played, future kickoff)
+    const upcomingKo = useMemo(() => {
+        return KNOCKOUT_FIXTURES
+            .filter(f => getStatusFromKickoff(f.kickoff) === "future")
+            .slice(0, 4)
+            .map(f => {
+                const r = resolveFixture(f.home, f.away, f.id);
+                return { fixture: f, home: r.home, away: r.away };
+            });
+    }, []);
+
+    const hasGroupStage = liveFixtures.length > 0 || upcomingFiltered.length > 0;
+
+    if (!hasGroupStage && upcomingKo.length === 0) return null;
 
     return (
         <div className="next-matches">
@@ -69,6 +86,37 @@ export function NextMatches({ getPick, onPick, onSelectGroup, imported, getImpor
                     </>
                 );
             })()}
+
+            {upcomingKo.length > 0 && (
+                <>
+                    <p className="next-match-label">Upcoming</p>
+                    <div className="next-matches-grid">
+                        {upcomingKo.map(({ fixture: f, home, away }) => {
+                            const homeFlag = flagUrl(home);
+                            const awayFlag = flagUrl(away);
+                            return (
+                                <div key={f.id} className="matchup-card match-future">
+                                    <div className="matchup-row">
+                                        <span className="matchup-team">
+                                            {homeFlag && <img className="flag" src={homeFlag} alt="" width="28" height="19" />}
+                                            <span className="matchup-team-name">{home}</span>
+                                        </span>
+                                        <span className="matchup-vs">vs</span>
+                                        <span className="matchup-team">
+                                            {awayFlag && <img className="flag" src={awayFlag} alt="" width="28" height="19" />}
+                                            <span className="matchup-team-name">{away}</span>
+                                        </span>
+                                    </div>
+                                    <div className="matchup-fixture">
+                                        <span className="fixture-date">{formatLocal(f.kickoff)}</span>
+                                        <span className="fixture-date">{f.round} · #{f.id}</span>
+                                    </div>
+                                </div>
+                            );
+                        })}
+                    </div>
+                </>
+            )}
         </div>
     );
 }

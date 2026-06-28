@@ -10,6 +10,7 @@
 import { getStandings, type TeamStanding } from "./standings";
 import { getAllFixtures } from "./fixtures";
 import type { MatchFixture } from "../types";
+import { resolveBestThird } from "./bestThirds";
 import { groupPhaseScrapeResults } from "./group-phase-scrape-results";
 
 // ── Types ───────────────────────────────────────────────────────────────────
@@ -243,7 +244,7 @@ export function resolveAllGroups(): Record<string, ResolvedGroup> {
  * Handles: "Winner A", "Runner-up B", "3rd (A/B/C)" etc.
  * Returns null if the slot isn't yet determined.
  */
-export function resolveSlot(placeholder: string): string | null {
+export function resolveSlot(placeholder: string, matchId?: number): string | null {
     const groups = resolveAllGroups();
 
     // "Winner X"
@@ -254,8 +255,9 @@ export function resolveSlot(placeholder: string): string | null {
     m = placeholder.match(/^Runner-up ([A-L])$/);
     if (m) return groups[m[1]]?.runnerUp ?? null;
 
-    // "Best 3rd (A/B/C/D/F)" etc. — never resolve until all groups are complete
-    if (/^Best 3rd \(/.test(placeholder)) return null;
+    // "Best 3rd (A/B/C/D/F)" etc.
+    const bestThird = resolveBestThird(placeholder, matchId);
+    if (bestThird) return bestThird;
 
     // "Winner M74" etc. (feed-forward matches) — can't resolve yet
     if (/^(Winner|Loser) M\d+$/i.test(placeholder)) return null;
@@ -266,9 +268,9 @@ export function resolveSlot(placeholder: string): string | null {
 /**
  * Resolve both home and away slots for a knockout fixture.
  */
-export function resolveFixture(home: string, away: string): { home: string; away: string } {
+export function resolveFixture(home: string, away: string, matchId?: number): { home: string; away: string } {
     return {
-        home: resolveSlot(home) ?? home,
-        away: resolveSlot(away) ?? away,
+        home: resolveSlot(home, matchId) ?? home,
+        away: resolveSlot(away, matchId) ?? away,
     };
 }

@@ -62,7 +62,7 @@ export function KnockoutBracket({ mode, getPick, togglePick, picks, imported }: 
     const actualResolved = useMemo(() => {
         const map = new Map<number, { home: string; away: string }>();
         for (const f of KNOCKOUT_FIXTURES) {
-            map.set(f.id, resolveFixture(f.home, f.away));
+            map.set(f.id, resolveFixture(f.home, f.away, f.id));
         }
         return map;
     }, []);
