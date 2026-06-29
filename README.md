@@ -25,6 +25,45 @@ Written with much assistance from Deepseek.
 - **Dark/light mode** — adapts to system preference via CSS custom properties
 - **Responsive** — mobile-friendly with collapsible sidebar
 
+## Knockout phase
+
+The knockout bracket covers all 32 matches from Round of 32 through the Final (match IDs **73–104**). Once the group stage completes, team slots in the R32 are resolved automatically from group standings — winners, runners-up, and the eight best 3rd-place teams populate the bracket. As knockout results come in, later rounds fill in via feed-forward references (`Winner M73`, `Loser M101`, etc.).
+
+### Making knockout picks
+
+Tap the **"KO Picks"** button in the toolbar to open the pick modal. Each match shows the two teams (or placeholders before they're resolved) and you choose a winner by tapping the home or away side. Only one pick per match — no draws in the knockout stage. Picks persist in `localStorage` alongside your group-stage picks and are included when you share via the **Share** feature.
+
+### Viewing the bracket
+
+The bracket view has two modes, toggled in the toolbar:
+
+- **Actual** — shows the real bracket with resolved teams and match results as they come in. Completed matches display scores and highlight the advancing team.
+- **Picks** — overlays your knockout picks on the bracket with green (correct) and red (incorrect) color coding for matches that have a result.
+
+### KO Pick Schematic
+
+When viewing a friend's picks in Manage Friends, you can open their **KO Pick Schematic** — a compact column layout showing their predicted winner for every knockout match. Each picked cell is subtly styled:
+- **Green border** — pick was correct
+- **Red border** — pick was wrong
+- **No color** — match not yet played
+- **Golden gradient** — the Final (always highlighted)
+
+### Entering results
+
+Knockout results don't have an automatic scraper yet. Instead, edit `src/data/manual-knockout-results.ts` and fill in each match as it finishes:
+
+```ts
+// #76 · Mon, Jun 29 · NRG Stadium
+// Home: Brazil  ·  Away: Japan
+76: { result: "home", homeScore: 2, awayScore: 1 },
+```
+
+Set `result` to `"home"` or `"away"` depending on who won. The file includes commented-out placeholders for all 32 matches with home/away annotations so you can quickly uncomment and fill scores.
+
+### How resolution works
+
+`knockoutResolver.ts` combines group standings (from `standings.ts`) with the best 3rd-place allocation (from `bestThirds.ts`) to resolve placeholder names like `Winner E` or `Best 3rd (A/B/C/D/F)` into actual team names. Feed-forward slots like `Winner M74` resolve recursively by following the bracket chain through completed results. The resolver handles all FIFA tiebreaker rules (points → goal difference → goals for → head-to-head).
+
 ## Getting Started
 
 ```bash

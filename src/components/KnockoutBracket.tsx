@@ -109,8 +109,10 @@ export function KnockoutBracket({ mode, getPick, togglePick, picks, imported }: 
     const nextMatchId = useMemo(() => {
         let earliest: KnockoutFixture | null = null;
         for (const f of KNOCKOUT_FIXTURES) {
-            if (getStatusFromKickoff(f.kickoff) === "future" && (!earliest || f.kickoff < earliest.kickoff))
+            const status = getStatusFromKickoff(f.kickoff);
+            if (status === "future" && (!earliest || f.kickoff < earliest.kickoff))
                 earliest = f;
+            if (status === "live") return f.id; // live match takes precedence
         }
         return earliest?.id ?? null;
     }, []);
