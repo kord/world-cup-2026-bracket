@@ -23,17 +23,17 @@ export const manualKnockoutResults: Record<number, ManualKnockoutResult> = {
     // Home: Runner-up A  ·  Away: Runner-up B
     73: { result: "away", homeScore: 0, awayScore: 1 },
 
+    // #76 · Mon, Jun 29 · NRG Stadium
+    // Home: Brazil  ·  Away: Japan
+    76: { result: "home", homeScore: 2, awayScore: 1 },
+
     // #74 · Mon, Jun 29 · Gillette Stadium
     // Home: Germany  ·  Away: Paraguay
-    // 74: { result: "", homeScore: 0, awayScore: 0 },
+    74: { result: "away", homeScore: 1, awayScore: 1, homeShootout: 3, awayShootout: 4 },
 
     // #75 · Mon, Jun 29 · Estadio BBVA
     // Home: Netherlands  ·  Away: Morocco
     // 75: { result: "", homeScore: 0, awayScore: 0 },
-
-    // #76 · Mon, Jun 29 · NRG Stadium
-    // Home: Brazil  ·  Away: Japan
-    76: { result: "home", homeScore: 2, awayScore: 1 },
 
     // #77 · Tue, Jun 30 · MetLife Stadium
     // Home: France  ·  Away: Best 3rd (C/D/F/G/H)
