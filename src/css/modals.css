@@ -531,16 +531,22 @@
     opacity: 0.35;
 }
 
+/* Center flags when  */
+.ko-sch-cell .flag {
+    margin-left: 6px;
+    margin-right: 6px;
+}
+
 .ko-sch-picked {
     opacity: 1;
-    border-color: var(--accent-border);
-    background: var(--accent-bg);
+    /* border-color: var(--accent-border);
+    background: var(--accent-bg); */
 }
 
 .ko-sch-final {
     border-color: #d4a843;
-    background: linear-gradient(135deg, #fbf3d5 0%, #fae8a4 50%, #f7d66b 100%);
-    box-shadow: 0 0 6px rgba(212, 168, 67, 0.5);
+    background: linear-gradient(135deg, #16130a 0%, #fae8a4 50%, #2d2408 100%);
+    box-shadow: 0 0 6px rgba(212, 168, 67, 0.8);
     font-weight: 700;
 }
 
