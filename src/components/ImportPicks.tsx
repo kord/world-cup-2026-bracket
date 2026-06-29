@@ -12,9 +12,15 @@ export function ImportPicks({ onImport, onClose }: ImportPicksProps) {
 
     useEffect(() => { inputRef.current?.focus(); }, []);
 
+    const extractCode = (raw: string): string => {
+        // If it looks like a URL with ?add=<code>, extract just the code
+        const m = raw.match(/[?&]add=([^&]+)/);
+        return m ? decodeURIComponent(m[1]) : raw;
+    };
+
     const handleSubmit = () => {
         setError(null);
-        const trimmed = value.trim();
+        const trimmed = extractCode(value.trim());
         if (!trimmed) {
             setError("Paste the share string and press Enter");
             return;
