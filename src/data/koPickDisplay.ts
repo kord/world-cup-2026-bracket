@@ -40,26 +40,43 @@ function resolvePickWinner(
     const f = byId.get(matchId);
     if (!f) return `#${matchId}`;
 
-    // First try group-stage resolution
+    const slot = side === "home" ? f.home : f.away;
+
+    // If the slot is a feed-forward ref (Winner/Loser M##), follow the user's
+    // pick chain BEFORE calling resolveFixture — resolveFixture uses actual KO
+    // results, which would override the user's prediction.
+    const feederId = parseFeedRef(slot);
+    if (feederId != null) {
+        const feederPick: KnockoutPick = picks[String(feederId)]?.selection ?? null;
+        if (feederPick) {
+            const feederF = byId.get(feederId);
+            if (feederF) {
+                const isLoser = /^Loser\b/i.test(slot);
+                const feederSide = isLoser
+                    ? (feederPick === "home" ? "away" : "home")  // loser is opposite of pick
+                    : feederPick; // winner is the pick
+                return resolvePickWinner(feederId, feederSide, picks, visited);
+            }
+        }
+    }
+
+    // Resolve group-stage placeholders (Winner E → Germany, Runner-up A → South Africa, etc.)
     const r = resolveFixture(f.home, f.away, matchId);
     const raw = side === "home" ? r.home : r.away;
 
     // If resolved to an actual team, return it
     if (!isPlaceholder(raw)) return raw;
 
-    // If it's a feed-forward ref (Winner/Loser M##), follow the user's pick
-    const feederId = parseFeedRef(raw);
-    if (feederId != null) {
-        const feederPick: KnockoutPick = picks[String(feederId)]?.selection ?? null;
+    // If resolution produced a feed-forward ref, follow it
+    const refId = parseFeedRef(raw);
+    if (refId != null) {
+        const feederPick = picks[String(refId)]?.selection ?? null;
         if (feederPick) {
-            const feederF = byId.get(feederId);
-            if (feederF) {
-                const isLoser = /^Loser\b/i.test(raw);
-                const feederSide = isLoser
-                    ? (feederPick === "home" ? "away" : "home")  // loser is opposite of pick
-                    : feederPick; // winner is the pick
-                return resolvePickWinner(feederId, feederSide, picks, visited);
-            }
+            const isLoser = /^Loser\b/i.test(raw);
+            const feederSide = isLoser
+                ? (feederPick === "home" ? "away" : "home")
+                : feederPick;
+            return resolvePickWinner(refId, feederSide, picks, visited);
         }
     }
 
