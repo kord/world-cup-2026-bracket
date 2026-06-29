@@ -181,7 +181,7 @@ export function KnockoutBracket({ mode, getPick, togglePick, picks, imported }: 
                                             {roundLabel && <span className="bracket-round-label">{roundLabel}</span>}
                                             {results && isHovered && (
                                                 <div className="bracket-pick-results">
-                                                    {results.map(r => (
+                                                    {results.filter(r => r.correct !== null).map(r => (
                                                         <span key={r.name} className={`bracket-pr-row${r.correct === true ? " pr-correct" : r.correct === false ? " pr-wrong" : " pr-nopick"}`}>
                                                             {r.name}
                                                         </span>
