@@ -216,7 +216,10 @@
     gap: 3px;
 }
 
-.bracket-venue {
+
+
+.bracket-venue,
+.bracket-match-score {
     font-style: italic;
     color: inherit;
     text-decoration: none;

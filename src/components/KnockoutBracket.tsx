@@ -207,8 +207,11 @@ export function KnockoutBracket({ mode, getPick, togglePick, picks, imported }: 
                                                 </span>
                                             </div>
                                             <div className="bracket-info">
+                                                <span className="bracket-match-score">
+                                                    {hasKoResult ? <>{koResult.homeScore}-{koResult.awayScore}{koResult.homeShootout != null ? ` (${koResult.homeShootout}-${koResult.awayShootout} pens)` : ""} Final</> : null}
+                                                </span>
                                                 <span className="bracket-date">
-                                                    {hasKoResult ? <>{koResult.homeScore}-{koResult.awayScore}{koResult.homeShootout != null ? ` (${koResult.homeShootout}-${koResult.awayShootout} pens)` : ""} · </> : null} {formatLocal(f.kickoff)}
+                                                    {formatLocal(f.kickoff)}
                                                 </span>
                                                 <a className="bracket-venue"
                                                     href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(f.venue)}`}

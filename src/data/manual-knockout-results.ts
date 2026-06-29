@@ -17,4 +17,5 @@ export interface ManualKnockoutResult {
 export const manualKnockoutResults: Record<number, ManualKnockoutResult> = {
     // Canada 1–0 South Africa — Sun, Jun 28
     73: { result: "away", homeScore: 0, awayScore: 1 },
+    76: { result: "home", homeScore: 2, awayScore: 1 },
 };

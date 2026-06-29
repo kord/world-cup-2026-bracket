@@ -531,7 +531,7 @@
     opacity: 0.35;
 }
 
-/* Center flags when  */
+/* Center flags when in .ko-sch-cell */
 .ko-sch-cell .flag {
     margin-left: 6px;
     margin-right: 6px;
