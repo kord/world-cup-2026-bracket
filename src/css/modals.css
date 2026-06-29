@@ -550,6 +550,24 @@
     font-weight: 700;
 }
 
+.ko-sch-won {
+    border-color: #38a169;
+}
+
+.ko-sch-lost {
+    border-color: #c0392b;
+}
+
+.ko-sch-final.ko-sch-won {
+    border-color: #38a169;
+    box-shadow: 0 0 6px rgba(56, 161, 105, 0.6);
+}
+
+.ko-sch-final.ko-sch-lost {
+    border-color: #c0392b;
+    box-shadow: 0 0 6px rgba(192, 57, 43, 0.6);
+}
+
 .ko-sch-empty {
     font-size: 0.45rem;
     font-weight: 600;

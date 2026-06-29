@@ -1,6 +1,7 @@
 import { KNOCKOUT_FIXTURES } from "./knockoutFixtures";
 import { resolveFixture } from "./knockoutResolver";
 import type { KnockoutStore, KnockoutPick } from "./useKnockoutPicks";
+import { getKoResult } from "./knockoutMatchResults";
 
 const byId = new Map(KNOCKOUT_FIXTURES.map(f => [f.id, f]));
 
@@ -9,6 +10,8 @@ export interface KoPickEntry {
     round: string;
     winner: string;
     winnerResolved: boolean;
+    /** null = match not yet played / no result; "won" = pick matched result; "lost" = pick didn't match */
+    pickResult: "won" | "lost" | null;
 }
 
 function parseFeedRef(name: string): number | null {
@@ -79,11 +82,19 @@ export function getKoPickList(picks: KnockoutStore): KoPickEntry[] {
         const winner = resolvePickWinner(f.id, pick, picks);
         const resolved = !isPlaceholder(winner);
 
+        // Determine if the pick was correct
+        const koResult = getKoResult(f.id);
+        let pickResult: "won" | "lost" | null = null;
+        if (koResult?.result && pick) {
+            pickResult = pick === koResult.result ? "won" : "lost";
+        }
+
         result.push({
             matchId: f.id,
             round: f.round,
             winner,
             winnerResolved: resolved,
+            pickResult,
         });
     }
     return result;

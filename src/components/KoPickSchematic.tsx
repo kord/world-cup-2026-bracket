@@ -31,9 +31,11 @@ export function KoPickSchematic({ picks, name, onClose }: KoPickSchematicProps) 
     const pickList = useMemo(() => getKoPickList(picks), [picks]);
     const pickMap = new Map<number, string>();
     const resolvedMap = new Map<number, boolean>();
+    const resultMap = new Map<number, "won" | "lost" | null>();
     for (const p of pickList) {
         pickMap.set(p.matchId, p.winner);
         resolvedMap.set(p.matchId, p.winnerResolved);
+        resultMap.set(p.matchId, p.pickResult);
     }
 
     return (
@@ -59,8 +61,10 @@ export function KoPickSchematic({ picks, name, onClose }: KoPickSchematicProps) 
                                         const isResolved = resolvedMap.get(id) ?? false;
                                         const flag = isResolved ? flagUrl(winner) : null;
                                         const isFinal = id === 104;
+                                        const pickResult = resultMap.get(id) ?? null;
+                                        const resultClass = pickResult === "won" ? " ko-sch-won" : pickResult === "lost" ? " ko-sch-lost" : "";
                                         return (
-                                            <div key={id} className={`ko-sch-cell ko-sch-picked${isFinal ? " ko-sch-final" : ""}`} title={`${winner} · #${id}`}>
+                                            <div key={id} className={`ko-sch-cell ko-sch-picked${isFinal ? " ko-sch-final" : ""}${resultClass}`} title={`${winner} · #${id}${pickResult ? ` (${pickResult})` : ""}`}>
                                                 {flag
                                                     ? <img className="flag" src={flag} alt={winner} width={16} height={11} />
                                                     : <span className="ko-sch-empty">{winner}</span>

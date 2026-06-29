@@ -3,7 +3,7 @@ import { manualKnockoutResults } from "./manual-knockout-results";
 import type { KnockoutStore } from "./useKnockoutPicks";
 
 /** Get the effective result for a KO match (manual overrides scrape) */
-function getKoResult(id: number) {
+export function getKoResult(id: number) {
     return manualKnockoutResults[id] ?? knockoutPhaseScrapeResults[id];
 }
 
