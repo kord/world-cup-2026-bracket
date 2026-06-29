@@ -58,8 +58,9 @@ export function KoPickSchematic({ picks, name, onClose }: KoPickSchematicProps) 
                                         }
                                         const isResolved = resolvedMap.get(id) ?? false;
                                         const flag = isResolved ? flagUrl(winner) : null;
+                                        const isFinal = id === 104;
                                         return (
-                                            <div key={id} className="ko-sch-cell ko-sch-picked" title={`${winner} · #${id}`}>
+                                            <div key={id} className={`ko-sch-cell ko-sch-picked${isFinal ? " ko-sch-final" : ""}`} title={`${winner} · #${id}`}>
                                                 {flag
                                                     ? <img className="flag" src={flag} alt={winner} width={16} height={11} />
                                                     : <span className="ko-sch-empty">{winner}</span>
