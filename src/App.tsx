@@ -30,6 +30,7 @@ function App() {
   const [knockoutMode, setKnockoutMode] = useState<"actual" | "picks">("actual");
   const [showKnockoutPicks, setShowKnockoutPicks] = useState(false);
   const [addedFriendName, setAddedFriendName] = useState<string | null>(null);
+  const [importDuplicate, setImportDuplicate] = useState(false);
   const urlProcessed = useRef(false);
   const [view, setView] = useState<"group" | "knockout" | "leaderboard">(() => {
     // Read initial view from URL — default is knockout
@@ -63,17 +64,27 @@ function App() {
     const params = new URLSearchParams(window.location.search);
     const addCode = params.get("add");
     if (!addCode) return;
-    urlProcessed.current = true;
 
     // Decode first to get the name
     const decoded = decodePicks(addCode);
-    if (!decoded) return;
+    if (!decoded) {
+      console.warn("[App] URL import: invalid add code, ignoring");
+      return;
+    }
 
     // Check if a friend with this name is already imported
-    const stored = localStorage.getItem("wc2026-imported-picks");
-    const existing: Record<string, { name: string }> = stored ? JSON.parse(stored) : {};
+    let existing: Record<string, { name: string }> = {};
+    try {
+      const stored = localStorage.getItem("wc2026-imported-picks");
+      existing = stored ? JSON.parse(stored) : {};
+    } catch (e) {
+      console.error("[App] URL import: failed to parse localStorage", e);
+    }
     const alreadyExists = Object.values(existing).some((f) => f.name === decoded.name);
     if (alreadyExists) {
+      console.warn("[App] URL import: '%s' already imported, showing duplicate message", decoded.name);
+      setImportDuplicate(true);
+      setAddedFriendName(decoded.name);
       // Still clean the URL
       const url = new URL(window.location.href);
       url.searchParams.delete("add");
@@ -83,7 +94,10 @@ function App() {
 
     const result = addImported(addCode);
     if (result) {
+      setImportDuplicate(false);
       setAddedFriendName(result.name);
+    } else {
+      console.error("[App] URL import: addImported returned null for '%s'", decoded.name);
     }
 
     // Clean the URL
@@ -237,12 +251,16 @@ function App() {
       )}
 
       {addedFriendName && (
-        <div className="import-overlay" onClick={() => setAddedFriendName(null)}>
+        <div className="import-overlay" onClick={() => { setAddedFriendName(null); setImportDuplicate(false); }}>
           <div className="import-modal" onClick={e => e.stopPropagation()}>
-            <h3>Friend added</h3>
-            <p className="import-success">{addedFriendName} has been added to your friends.</p>
+            <h3>{importDuplicate ? "Already added" : "Friend added"}</h3>
+            <p className={importDuplicate ? "import-error" : "import-success"}>
+              {importDuplicate
+                ? `${addedFriendName} is already in your friends.`
+                : `${addedFriendName} has been added to your friends.`}
+            </p>
             <div className="import-actions">
-              <button className="import-btn import-btn-primary" onClick={() => setAddedFriendName(null)}>
+              <button className="import-btn import-btn-primary" onClick={() => { setAddedFriendName(null); setImportDuplicate(false); }}>
                 OK
               </button>
             </div>
