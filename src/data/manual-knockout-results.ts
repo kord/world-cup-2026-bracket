@@ -33,18 +33,18 @@ export const manualKnockoutResults: Record<number, ManualKnockoutResult> = {
 
     // #75 · Mon, Jun 29 · Estadio BBVA
     // Home: Netherlands  ·  Away: Morocco
-    // 75: { result: "home", homeScore: 1, awayScore: 0 },
-
-    // #77 · Tue, Jun 30 · MetLife Stadium
-    // Home: France  ·  Away: Best 3rd (C/D/F/G/H)
-    // 77: { result: "", homeScore: 0, awayScore: 0 },
+    75: { result: "away", homeScore: 1, awayScore: 1, homeShootout: 2, awayShootout: 3 },
 
     // #78 · Tue, Jun 30 · AT&T Stadium
     // Home: Ivory Coast  ·  Away: Norway
-    // 78: { result: "", homeScore: 0, awayScore: 0 },
+    78: { result: "away", homeScore: 1, awayScore: 2 },
+
+    // #77 · Tue, Jun 30 · MetLife Stadium
+    // Home: France  ·  Away: Sweden
+    // 77: { result: "", homeScore: 0, awayScore: 0 },
 
     // #79 · Tue, Jun 30 · Estadio Azteca
-    // Home: Mexico  ·  Away: Best 3rd (C/E/F/H/I)
+    // Home: Mexico  ·  Away: Ecuador
     // 79: { result: "", homeScore: 0, awayScore: 0 },
 
     // #80 · Wed, Jul 1 · Mercedes-Benz Stadium
@@ -96,7 +96,7 @@ export const manualKnockoutResults: Record<number, ManualKnockoutResult> = {
     // 90: { result: "", homeScore: 0, awayScore: 0 },
 
     // #91 · Sun, Jul 5 · MetLife Stadium
-    // Home: Brazil  ·  Away: Winner M78
+    // Home: Brazil  ·  Away: Norway
     // 91: { result: "", homeScore: 0, awayScore: 0 },
 
     // #92 · Sun, Jul 5 · Estadio Azteca
