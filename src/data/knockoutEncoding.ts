@@ -2,6 +2,7 @@
  * Encode/decode knockout-round picks into shareable strings.
  * 32 matches (IDs 73–104), 1 bit per match (0=home, 1=away, unset omitted).
  */
+import { FINAL_MATCH_ID } from "./knockoutFixtures";
 import type { KnockoutPick } from "./useKnockoutPicks";
 
 const XOR_KEY = [0x4B, 0x4F, 0x32, 0x30, 0x32, 0x36]; // "KO2026"
@@ -22,7 +23,7 @@ export function encodeKnockoutPicks(name: string, picks: KnockoutStore): string 
 
     // Pack 32 matches into 4 bytes (8 matches per byte, 1 bit each)
     const pickBytes: number[] = Array(4).fill(0);
-    for (let i = 73; i <= 104; i++) {
+    for (let i = 73; i <= FINAL_MATCH_ID; i++) {
         const pick = picks[String(i)]?.selection;
         const bit = pick === "away" ? 1 : 0;
         const idx = i - 73;
@@ -61,7 +62,7 @@ export function decodeKnockoutPicks(encoded: string): { name: string; picks: Kno
 
         const pickBytes = deobfuscated.slice(1 + nameLen, 1 + nameLen + 4);
         const picks: KnockoutStore = {};
-        for (let i = 73; i <= 104; i++) {
+        for (let i = 73; i <= FINAL_MATCH_ID; i++) {
             const idx = i - 73;
             const byteIdx = Math.floor(idx / 8);
             const shift = 7 - (idx % 8);

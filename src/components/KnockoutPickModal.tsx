@@ -1,5 +1,5 @@
 import { useState, useMemo, useCallback } from "react";
-import { KNOCKOUT_FIXTURES, type KnockoutFixture } from "../data/knockoutFixtures";
+import { FINAL_MATCH_ID, KNOCKOUT_FIXTURES, THIRD_PLACE_MATCH_ID, type KnockoutFixture } from "../data/knockoutFixtures";
 import { resolveFixture } from "../data/knockoutResolver";
 import { flagUrl } from "../data/countryCodes";
 import type { KnockoutPick, KnockoutStore } from "../data/useKnockoutPicks";
@@ -33,8 +33,8 @@ const ROUND_DEFS: { label: string; ids: number[] }[] = [
     { label: "Round of 16", ids: [89, 90, 91, 92, 93, 94, 95, 96] },
     { label: "Quarterfinal", ids: [97, 98, 99, 100] },
     { label: "Semifinal", ids: [101, 102] },
-    { label: "Third Place", ids: [103] },
-    { label: "Final", ids: [104] },
+    { label: "Third Place", ids: [THIRD_PLACE_MATCH_ID] },
+    { label: "Final", ids: [FINAL_MATCH_ID] },
 ];
 
 interface MatchDisplay {
@@ -161,10 +161,10 @@ export function KnockoutPickModal({ onClose, getPick, togglePick, picks, clearAl
 
     // All-done state: every match in every round has been picked
     if (currentRoundIdx >= ROUND_DEFS.length) {
-        const final = resolved.get(104);
-        const third = resolved.get(103);
-        const finalPick = getPick(104);
-        const thirdPick = getPick(103);
+        const final = resolved.get(FINAL_MATCH_ID);
+        const third = resolved.get(THIRD_PLACE_MATCH_ID);
+        const finalPick = getPick(FINAL_MATCH_ID);
+        const thirdPick = getPick(THIRD_PLACE_MATCH_ID);
 
         const first = finalPick === "home" ? final?.home : finalPick === "away" ? final?.away : null;
         const second = finalPick === "home" ? final?.away : finalPick === "away" ? final?.home : null;

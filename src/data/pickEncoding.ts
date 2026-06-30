@@ -1,3 +1,4 @@
+import { FINAL_MATCH_ID } from "./knockoutFixtures";
 import type { PicksStore } from "./useMatchPicks";
 
 const XOR_KEY = [0x57, 0x43, 0x32, 0x30, 0x32, 0x36]; // "WC2026"
@@ -33,7 +34,7 @@ function decodeGS(bytes: number[]): PicksStore {
 function encodeKO(kp: KnockoutStore): { mask: number; data: number[] } {
     const data = Array(4).fill(0);
     let mask = 0;
-    for (let i = 73; i <= 104; i++) {
+    for (let i = 73; i <= FINAL_MATCH_ID; i++) {
         const pick = kp[String(i)]?.selection;
         if (pick == null) continue;
         const idx = i - 73;
@@ -45,7 +46,7 @@ function encodeKO(kp: KnockoutStore): { mask: number; data: number[] } {
 
 function decodeKO(mask: number, data: number[]): KnockoutStore {
     const picks: KnockoutStore = {};
-    for (let i = 73; i <= 104; i++) {
+    for (let i = 73; i <= FINAL_MATCH_ID; i++) {
         const idx = i - 73;
         if (!(mask & (1 << idx))) continue;
         const bi = Math.floor(idx / 8);
