@@ -2,6 +2,7 @@ import { useMemo } from "react";
 import { flagUrl } from "../data/countryCodes";
 import type { KnockoutStore } from "../data/useKnockoutPicks";
 import { getKoPickList } from "../data/koPickDisplay";
+import { FINAL_MATCH_ID, THIRD_PLACE_MATCH_ID } from "../data/knockoutFixtures";
 
 const LEFT_R32 = [73, 75, 74, 77, 76, 78, 79, 80];
 const LEFT_R16 = [90, 89, 91, 92];
@@ -60,11 +61,13 @@ export function KoPickSchematic({ picks, name, onClose }: KoPickSchematicProps) 
                                         }
                                         const isResolved = resolvedMap.get(id) ?? false;
                                         const flag = isResolved ? flagUrl(winner) : null;
-                                        const isFinal = id === 104;
+                                        const isFinal = id === FINAL_MATCH_ID;
+                                        const isThirdPlaceMatch = id === THIRD_PLACE_MATCH_ID;
                                         const pickResult = resultMap.get(id) ?? null;
                                         const resultClass = pickResult === "won" ? " ko-sch-won" : pickResult === "lost" ? " ko-sch-lost" : "";
+                                        const majorMatchClass = isFinal ? " ko-sch-final" : (isThirdPlaceMatch ? " ko-sch-third" : "");
                                         return (
-                                            <div key={id} className={`ko-sch-cell ko-sch-picked${isFinal ? " ko-sch-final" : ""}${resultClass}`} title={`${winner} · #${id}${pickResult ? ` (${pickResult})` : ""}`}>
+                                            <div key={id} className={`ko-sch-cell ko-sch-picked${majorMatchClass}${resultClass}`} title={`${winner} · #${id}${pickResult ? ` (${pickResult})` : ""}`}>
                                                 {flag
                                                     ? <img className="flag" src={flag} alt={winner} width={16} height={11} />
                                                     : <span className="ko-sch-empty">{winner}</span>

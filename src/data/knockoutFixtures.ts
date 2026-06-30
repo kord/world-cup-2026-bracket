@@ -84,6 +84,10 @@ export const KNOCKOUT_FIXTURES: KnockoutFixture[] = [
     ...R32, ...R16, ...QF, ...SF, ...TPO, ...FINAL,
 ];
 
+/** Constants for match IDs */
+export const THIRD_PLACE_MATCH_ID = 103;
+export const FINAL_MATCH_ID = 104;
+
 /** Look up a knockout fixture by match ID */
 export function getKnockoutFixture(id: number): KnockoutFixture | null {
     return KNOCKOUT_FIXTURES.find(f => f.id === id) ?? null;
