@@ -65,6 +65,7 @@
     border-color: var(--accent-border);
 }
 
+/* Highlight the Final and 3rd place matches in the center column */
 .bracket-center .bracket-match {
     &:nth-child(2) {
         border-color: #ac501e;

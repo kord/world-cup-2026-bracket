@@ -20,7 +20,7 @@ export const manualKnockoutResults: Record<number, ManualKnockoutResult> = {
     // ═══════════════════════════════════════════════════════════════
 
     // #73 · Sun, Jun 28 · SoFi Stadium
-    // Home: Runner-up A  ·  Away: Runner-up B
+    // Home: Runner-up A  ·  Away: Canada
     73: { result: "away", homeScore: 0, awayScore: 1 },
 
     // #76 · Mon, Jun 29 · NRG Stadium
@@ -33,7 +33,7 @@ export const manualKnockoutResults: Record<number, ManualKnockoutResult> = {
 
     // #75 · Mon, Jun 29 · Estadio BBVA
     // Home: Netherlands  ·  Away: Morocco
-    // 75: { result: "", homeScore: 0, awayScore: 0 },
+    // 75: { result: "home", homeScore: 1, awayScore: 0 },
 
     // #77 · Tue, Jun 30 · MetLife Stadium
     // Home: France  ·  Away: Best 3rd (C/D/F/G/H)
@@ -88,15 +88,15 @@ export const manualKnockoutResults: Record<number, ManualKnockoutResult> = {
     // ═══════════════════════════════════════════════════════════════
 
     // #89 · Sat, Jul 4 · Lincoln Financial Field
-    // Home: Winner M74  ·  Away: Winner M77
+    // Home: Paraguay  ·  Away: Winner M77
     // 89: { result: "", homeScore: 0, awayScore: 0 },
 
     // #90 · Sat, Jul 4 · NRG Stadium
-    // Home: Winner M73  ·  Away: Winner M75
+    // Home: Canada  ·  Away: Winner M75
     // 90: { result: "", homeScore: 0, awayScore: 0 },
 
     // #91 · Sun, Jul 5 · MetLife Stadium
-    // Home: Winner M76  ·  Away: Winner M78
+    // Home: Brazil  ·  Away: Winner M78
     // 91: { result: "", homeScore: 0, awayScore: 0 },
 
     // #92 · Sun, Jul 5 · Estadio Azteca
