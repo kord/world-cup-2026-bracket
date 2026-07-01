@@ -48,8 +48,8 @@ export const manualKnockoutResults: Record<number, ManualKnockoutResult> = {
     79: { result: "home", homeScore: 2, awayScore: 0 },
 
     // #80 · Wed, Jul 1 · Mercedes-Benz Stadium
-    // Home: England  ·  Away: Best 3rd (E/H/I/J/K)
-    // 80: { result: "", homeScore: 0, awayScore: 0 },
+    // Home: England  ·  Away: D.R. Congo
+    80: { result: "home", homeScore: 2, awayScore: 1 },
 
     // #81 · Wed, Jul 1 · Levi's Stadium
     // Home: United States  ·  Away: Best 3rd (B/E/F/I/J)
