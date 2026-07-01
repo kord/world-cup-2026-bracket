@@ -99,10 +99,13 @@ The `prebuild` hook scrapes the latest match results from [worldcupstats.footbal
 |------|--------|
 | Fixture schedule | worldcuppass.com |
 | Knockout fixtures | worldcupwiki.com/schedule/ |
+| Knockout results | [openfootball/worldcup.json](https://github.com/openfootball/worldcup.json) |
 | Team flags | flagcdn.com |
 | ELO ratings | worldfootballrankings.com |
-| Match results | worldcupstats.football (scraped per-group at build time) |
+| Group-stage results | worldcupstats.football (scraped per-group at build time) |
 | Group/odds data | Local CSV (`data/`) |
+
+Thanks to [openfootball](https://github.com/openfootball) for maintaining the structured match data that powers the knockout-phase scraper.
 
 ## Project structure
 
