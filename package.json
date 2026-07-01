@@ -10,7 +10,7 @@
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview",
-    "test": "npx tsx scripts/test-encoding.ts",
+    "test": "npx tsx scripts/test-encoding.ts && npx tsx scripts/test-knockout-consistency.ts",
     "prebuild": "npm run scrape && npm run test"
   },
   "dependencies": {

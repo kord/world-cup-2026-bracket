@@ -1,16 +1,29 @@
 /**
- * Scrape knockout match results from worldcupstats.football.
- * Fetches each match page (73–104), parses score and status,
- * and writes results to src/data/knockout-phase-scrape-results.ts.
+ * Scrape knockout match results from the openfootball worldcup.json.
+ * Fetches https://raw.githubusercontent.com/openfootball/worldcup.json/master/2026/worldcup.json
+ * filters knockout matches (those with a "num" field, IDs 73–104), and writes
+ * results to src/data/knockout-phase-scrape-results.ts.
+ *
+ * Score priority: et > ft.  "p" (penalties) determines the winner when present.
  *
  * Usage: npx tsx scripts/scrape-knockout.ts
  */
 
-// @ts-ignore
 import { writeFileSync } from "fs";
-import { KNOCKOUT_FIXTURES, type KnockoutFixture } from "../src/data/knockoutFixtures.js";
 
+const JSON_URL = "https://raw.githubusercontent.com/openfootball/worldcup.json/master/2026/worldcup.json";
 const OUT = "src/data/knockout-phase-scrape-results.ts";
+
+interface MatchJson {
+    num?: number;
+    team1: string;
+    team2: string;
+    score?: {
+        ft?: [number, number];
+        et?: [number, number];
+        p?: [number, number];
+    };
+}
 
 interface ParsedResult {
     id: number;
@@ -23,60 +36,60 @@ interface ParsedResult {
     away: string;
 }
 
-async function scrapeMatch(f: KnockoutFixture): Promise<ParsedResult> {
-    const url = `https://worldcupstats.football/matches/${f.id}/`;
-    try {
-        const html = await fetch(url).then(r => r.text());
-
-        // Check if match is finished/live
-        const statusM = html.match(/(?:Finished|FINISHED|LIVE)/i);
-        if (!statusM) {
-            return { id: f.id, result: null, homeScore: null, awayScore: null, homeShootout: null, awayShootout: null, home: f.home, away: f.away };
-        }
-
-        // Search for score ONLY near the status indicator (avoid matching dates/years)
-        const statusIdx = html.search(/(?:Finished|FINISHED|LIVE)/i);
-        const nearby = html.substring(Math.max(0, statusIdx - 400), statusIdx + 200);
-        const scoreM = nearby.match(/(\d+)\s*[-–—]\s*(\d+)/);
-        if (!scoreM) {
-            console.log(`  [${f.id}] ${f.home} vs ${f.away} — status: ${statusM[0]}, no score found`);
-            return { id: f.id, result: null, homeScore: null, awayScore: null, homeShootout: null, awayShootout: null, home: f.home, away: f.away };
-        }
-
-        const homeScore = parseInt(scoreM[1]);
-        const awayScore = parseInt(scoreM[2]);
-
-        // Check for shootout in the same nearby text
-        const shootoutM = nearby.match(/pen(?:alty|alties)?[^<]*\(?\s*(\d+)\s*[-–—]\s*(\d+)\s*\)?/i);
-        const homeShootout = shootoutM ? parseInt(shootoutM[1]) : null;
-        const awayShootout = shootoutM ? parseInt(shootoutM[2]) : null;
-
-        // Determine winner
-        let result: "home" | "away" | null = null;
-        if (homeScore > awayScore) result = "home";
-        else if (awayScore > homeScore) result = "away";
-
-        console.log(`  [${f.id}] ${f.home} ${homeScore}-${awayScore} ${f.away}${homeShootout != null ? ` (${homeShootout}-${awayShootout} pens)` : ""} → ${result ?? "draw"}`);
-
-        return { id: f.id, result, homeScore, awayScore, homeShootout, awayShootout, home: f.home, away: f.away };
-    } catch (e) {
-        console.log(`  [${f.id}] ${f.home} vs ${f.away} — ERROR: ${e}`);
-        return { id: f.id, result: null, homeScore: null, awayScore: null, homeShootout: null, awayShootout: null, home: f.home, away: f.away };
-    }
-}
-
 async function main() {
-    console.log(`Scraping knockout match pages from worldcupstats.football...\n`);
+    console.log(`Fetching ${JSON_URL} ...\n`);
+
+    const data = await fetch(JSON_URL).then(r => r.json()) as { matches?: MatchJson[] };
+    const matches: MatchJson[] = data.matches ?? [];
+
+    // Only knockout matches have a "num" field (73–104)
+    const koMatches = matches.filter(m => typeof m.num === "number" && m.num >= 73 && m.num <= 104);
+    console.log(`Found ${koMatches.length} knockout matches\n`);
 
     const results: ParsedResult[] = [];
-    for (const f of KNOCKOUT_FIXTURES) {
-        if (f.kickoff > Date.now()) {
-            console.log(`  [${f.id}] ${f.home} vs ${f.away} — not kicked off yet, skipping`);
-            results.push({ id: f.id, result: null, homeScore: null, awayScore: null, homeShootout: null, awayShootout: null, home: f.home, away: f.away });
+
+    for (const m of koMatches) {
+        const id = m.num!;
+        const home = m.team1;
+        const away = m.team2;
+
+        if (!m.score) {
+            console.log(`  [${id}] ${home} vs ${away} — no score yet`);
+            results.push({ id, result: null, homeScore: null, awayScore: null, homeShootout: null, awayShootout: null, home, away });
             continue;
         }
-        const r = await scrapeMatch(f);
-        results.push(r);
+
+        const { ft, et, p } = m.score;
+
+        // Pick the right score: et overrides ft
+        const mainScore = et ?? ft;
+        if (!mainScore) {
+            console.log(`  [${id}] ${home} vs ${away} — score object present but no ft/et`);
+            results.push({ id, result: null, homeScore: null, awayScore: null, homeShootout: null, awayShootout: null, home, away });
+            continue;
+        }
+
+        const [homeScore, awayScore] = mainScore;
+
+        // Penalty shootout
+        const homeShootout = p ? p[0] : null;
+        const awayShootout = p ? p[1] : null;
+
+        // Determine winner: penalties take priority, otherwise main score
+        let result: "home" | "away" | null = null;
+        if (p) {
+            result = p[0] > p[1] ? "home" : "away";
+        } else if (homeScore > awayScore) {
+            result = "home";
+        } else if (awayScore > homeScore) {
+            result = "away";
+        }
+
+        const pens = p ? ` (${p[0]}-${p[1]} pens)` : "";
+        const scoreType = et ? "aet" : "";
+        console.log(`  [${id}] ${home} ${homeScore}-${awayScore} ${away}${scoreType ? ` (${scoreType})` : ""}${pens} → ${result}`);
+
+        results.push({ id, result, homeScore, awayScore, homeShootout, awayShootout, home, away });
     }
 
     // Sort by fixture ID
@@ -86,7 +99,7 @@ async function main() {
     const lines: string[] = [
         "// Auto-generated by scripts/scrape-knockout.ts — do not edit",
         "//",
-        `// ${results.filter(r => r.result != null).length} knockout match results scraped from worldcupstats.football`,
+        `// ${results.filter(r => r.result != null).length} knockout match results scraped from openfootball worldcup.json`,
         "//",
         "",
         "export interface KnockoutScrapeResult {",
@@ -109,7 +122,8 @@ async function main() {
             lines.push(`  // #${r.id} ${r.home} vs ${r.away} — not yet played`);
         } else {
             const shootout = r.homeShootout != null ? ` pens(${r.homeShootout}-${r.awayShootout})` : "";
-            lines.push(`  // ${r.home} ${r.homeScore}–${r.awayScore} ${r.away}${shootout}`);
+            const etNote = (r.homeScore === r.awayScore && r.result) ? " aet" : "";
+            lines.push(`  // ${r.home} ${r.homeScore}–${r.awayScore} ${r.away}${etNote}${shootout}`);
             const obj = JSON.stringify({
                 result: r.result,
                 homeScore: r.homeScore,
