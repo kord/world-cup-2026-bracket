@@ -51,13 +51,13 @@ export const manualKnockoutResults: Record<number, ManualKnockoutResult> = {
     // Home: England  ·  Away: D.R. Congo
     80: { result: "home", homeScore: 2, awayScore: 1 },
 
-    // #81 · Wed, Jul 1 · Levi's Stadium
-    // Home: United States  ·  Away: Best 3rd (B/E/F/I/J)
-    // 81: { result: "", homeScore: 0, awayScore: 0 },
-
     // #82 · Wed, Jul 1 · Lumen Field
-    // Home: Belgium  ·  Away: Best 3rd (A/E/H/I/J)
+    // Home: Belgium  ·  Away: Senegal
     // 82: { result: "", homeScore: 0, awayScore: 0 },
+
+    // #81 · Wed, Jul 1 · Levi's Stadium
+    // Home: United States  ·  Away: Bosnia and Herzegovina
+    // 81: { result: "", homeScore: 0, awayScore: 0 },
 
     // #83 · Thu, Jul 2 · BMO Field
     // Home: Portugal  ·  Away: Croatia
@@ -100,7 +100,7 @@ export const manualKnockoutResults: Record<number, ManualKnockoutResult> = {
     // 91: { result: "", homeScore: 0, awayScore: 0 },
 
     // #92 · Sun, Jul 5 · Estadio Azteca
-    // Home: Winner M79  ·  Away: Winner M80
+    // Home: Winner M79  ·  Away: England
     // 92: { result: "", homeScore: 0, awayScore: 0 },
 
     // #93 · Mon, Jul 6 · AT&T Stadium
