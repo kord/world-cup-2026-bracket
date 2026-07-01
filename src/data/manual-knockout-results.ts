@@ -41,11 +41,11 @@ export const manualKnockoutResults: Record<number, ManualKnockoutResult> = {
 
     // #77 · Tue, Jun 30 · MetLife Stadium
     // Home: France  ·  Away: Sweden
-    // 77: { result: "", homeScore: 0, awayScore: 0 },
+    77: { result: "home", homeScore: 3, awayScore: 0 },
 
     // #79 · Tue, Jun 30 · Estadio Azteca
     // Home: Mexico  ·  Away: Ecuador
-    // 79: { result: "", homeScore: 0, awayScore: 0 },
+    79: { result: "home", homeScore: 2, awayScore: 0 },
 
     // #80 · Wed, Jul 1 · Mercedes-Benz Stadium
     // Home: England  ·  Away: Best 3rd (E/H/I/J/K)
